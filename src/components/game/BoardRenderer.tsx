@@ -2,21 +2,21 @@
 
 import type {
   BoardPayload,
-  VellymonPayload,
-  OpponentVellymonPayload,
+  CinderlingPayload,
+  OpponentCinderlingPayload,
 } from "~/hooks/useGameSocket";
 
 type BoardRendererProps = {
   board: BoardPayload;
-  yourActive: VellymonPayload[];
-  opponentActive: OpponentVellymonPayload[];
+  yourActive: CinderlingPayload[];
+  opponentActive: OpponentCinderlingPayload[];
   teamId: 1 | 2;
-  /** Currently selected vellymon UUID (for command input) */
+  /** Currently selected cinderling UUID (for command input) */
   selectedUuid?: string | null;
   /** Callback when a space is clicked */
   onSpaceClick?: (x: number, y: number) => void;
-  /** Callback when a vellymon is clicked */
-  onVellymonClick?: (uuid: string) => void;
+  /** Callback when a cinderling is clicked */
+  onCinderlingClick?: (uuid: string) => void;
 };
 
 const SPACE_COLORS: Record<string, { bg: string; border: string; label: string }> = {
@@ -49,7 +49,7 @@ export default function BoardRenderer({
   teamId,
   selectedUuid,
   onSpaceClick,
-  onVellymonClick,
+  onCinderlingClick,
 }: BoardRendererProps) {
   // Build a grid lookup
   const spaceMap = new Map<string, (typeof board.spaces)[0]>();
@@ -57,19 +57,19 @@ export default function BoardRenderer({
     spaceMap.set(`${space.x},${space.y}`, space);
   }
 
-  // Build vellymon position lookup
-  const vellymonMap = new Map<
+  // Build cinderling position lookup
+  const cinderlingMap = new Map<
     string,
-    { mon: VellymonPayload | OpponentVellymonPayload; isYours: boolean }
+    { mon: CinderlingPayload | OpponentCinderlingPayload; isYours: boolean }
   >();
   for (const mon of yourActive) {
     if (!mon.isKO) {
-      vellymonMap.set(`${mon.x},${mon.y}`, { mon, isYours: true });
+      cinderlingMap.set(`${mon.x},${mon.y}`, { mon, isYours: true });
     }
   }
   for (const mon of opponentActive) {
     if (!mon.isKO) {
-      vellymonMap.set(`${mon.x},${mon.y}`, { mon, isYours: false });
+      cinderlingMap.set(`${mon.x},${mon.y}`, { mon, isYours: false });
     }
   }
 
@@ -86,7 +86,7 @@ export default function BoardRenderer({
           Array.from({ length: board.width }, (_, x) => {
             const key = `${x},${y}`;
             const space = spaceMap.get(key);
-            const vellymon = vellymonMap.get(key);
+            const cinderling = cinderlingMap.get(key);
             const spaceType = space?.type ?? "void";
             const colors = SPACE_COLORS[spaceType] ?? SPACE_COLORS.void;
 
@@ -108,8 +108,8 @@ export default function BoardRenderer({
               <button
                 key={key}
                 onClick={() => {
-                  if (vellymon?.isYours && onVellymonClick) {
-                    onVellymonClick(vellymon.mon.uuid);
+                  if (cinderling?.isYours && onCinderlingClick) {
+                    onCinderlingClick(cinderling.mon.uuid);
                   } else if (onSpaceClick) {
                     onSpaceClick(x, y);
                   }
@@ -126,24 +126,24 @@ export default function BoardRenderer({
                 `}
               >
                 {/* Space label */}
-                {!vellymon && spaceType === "occupation" && (
+                {!cinderling && spaceType === "occupation" && (
                   <span className="text-amber-600 text-sm">⭐</span>
                 )}
-                {!vellymon &&
+                {!cinderling &&
                   spaceType === "harvestable" && (
                     <span className="text-green-300 text-[10px]">·</span>
                   )}
 
-                {/* Vellymon token */}
-                {vellymon && (
-                  <VellymonToken
-                    name={vellymon.mon.name}
-                    hp={vellymon.mon.hp}
-                    maxHp={vellymon.mon.maxHp}
-                    isYours={vellymon.isYours}
+                {/* Cinderling token */}
+                {cinderling && (
+                  <CinderlingToken
+                    name={cinderling.mon.name}
+                    hp={cinderling.mon.hp}
+                    maxHp={cinderling.mon.maxHp}
+                    isYours={cinderling.isYours}
                     isSelected={
-                      vellymon.isYours &&
-                      vellymon.mon.uuid === selectedUuid
+                      cinderling.isYours &&
+                      cinderling.mon.uuid === selectedUuid
                     }
                   />
                 )}
@@ -161,9 +161,9 @@ export default function BoardRenderer({
   );
 }
 
-// ─── Vellymon Token ──────────────────────────────────────────────────────────
+// ─── Cinderling Token ──────────────────────────────────────────────────────────
 
-function VellymonToken({
+function CinderlingToken({
   name,
   hp,
   maxHp,

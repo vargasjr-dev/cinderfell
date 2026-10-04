@@ -20,7 +20,7 @@ import "./powers";
 import type {
   GameState,
   TeamState,
-  VellymonState,
+  CinderlingState,
   WinResult,
   Position,
 } from "./types";
@@ -52,11 +52,11 @@ import {
 export type TeamSetup = {
   userId: string;
   teamName: string;
-  active: VellymonSetup[];
-  bench: VellymonSetup[];
+  active: CinderlingSetup[];
+  bench: CinderlingSetup[];
 };
 
-export type VellymonSetup = {
+export type CinderlingSetup = {
   uuid: string;
   name: string;
   maxHp: number;
@@ -123,13 +123,13 @@ function createTeamState(id: 1 | 2, setup: TeamSetup): TeamState {
     userId: setup.userId,
     name: setup.teamName,
     energy: 0, // initialized by initializeEnergy
-    active: setup.active.map((v) => createVellymonState(v)),
-    bench: setup.bench.map((v) => createVellymonState(v)),
+    active: setup.active.map((v) => createCinderlingState(v)),
+    bench: setup.bench.map((v) => createCinderlingState(v)),
     knocked: [],
   };
 }
 
-function createVellymonState(setup: VellymonSetup): VellymonState {
+function createCinderlingState(setup: CinderlingSetup): CinderlingState {
   return {
     uuid: setup.uuid,
     name: setup.name,
@@ -150,13 +150,13 @@ function createVellymonState(setup: VellymonSetup): VellymonState {
 // ─── Turn Loop ───────────────────────────────────────────────────────────────
 
 export type TurnStartEvent = {
-  /** The vellymon whose power fired */
+  /** The cinderling whose power fired */
   casterUuid: string;
   casterName: string;
   team: 1 | 2;
   /** Display name of the special power */
   powerName: string;
-  /** UUID of the vellymon that received the effect */
+  /** UUID of the cinderling that received the effect */
   targetUuid: string;
   targetName: string;
   /** Positive = healed. Set for heal effects. */
@@ -205,8 +205,8 @@ function getPhasePriority(command: Command): number {
  */
 function getAttackBaseDamage(command: Command, team: TeamState): number {
   if (command.type !== "attack") return 0;
-  const vellymon = team.active.find((v) => v.uuid === command.vellymonUuid);
-  return vellymon?.attacks[command.attackIndex]?.damage ?? 0;
+  const cinderling = team.active.find((v) => v.uuid === command.cinderlingUuid);
+  return cinderling?.attacks[command.attackIndex]?.damage ?? 0;
 }
 
 /**
@@ -306,7 +306,7 @@ export function resolveTurn(
         ).map((v) => [v.uuid, v.name])
       );
       // Find caster name for each heal (match by scanning team mons)
-      // We collect (caster vellymon, effects) pairs per-vellymon instead
+      // We collect (caster cinderling, effects) pairs per-cinderling instead
       // by re-running hooks individually for event attribution.
       for (const v of team.active) {
         if (!v.isKO && v.specialPowerId) {
@@ -372,7 +372,7 @@ export function resolveTurn(
       return {
         command: cmd,
         team,
-        speed: getVellymonSpeed(team, cmd.vellymonUuid),
+        speed: getCinderlingSpeed(team, cmd.cinderlingUuid),
         phase: getPhasePriority(cmd),
         baseDamage: getAttackBaseDamage(cmd, team),
         validationError: validateCommand(cmd, team, state),
@@ -398,7 +398,7 @@ export function resolveTurn(
   // Break remaining ties using the possession arrow (mutates state.possessionArrow).
   resolveArrowTies(allCommands, state);
 
-  // Snapshot all vellymon positions BEFORE any commands execute.
+  // Snapshot all cinderling positions BEFORE any commands execute.
   // This snapshot is passed to resolveAttack via resolveCommand so that
   // scanForTarget can use "was-there-and-still-there" targeting: a mon is only
   // a valid hit at a tile if it was there at turn start AND hasn't since moved.
@@ -419,7 +419,7 @@ export function resolveTurn(
     // A mon can be KO'd before the loop starts (e.g. Blood Rush onTurnStart self-damage)
     // or by an earlier command this same turn.  In either case we emit no entry in
     // commandResults so the animation and turn history stay clean.
-    const commandMon = team.active.find((v) => v.uuid === command.vellymonUuid);
+    const commandMon = team.active.find((v) => v.uuid === command.cinderlingUuid);
     if (commandMon?.isKO) continue;
 
     if (validationError) {
@@ -437,7 +437,7 @@ export function resolveTurn(
     // Fire after any successful command. Handles attack-triggered powers
     // (e.g. Voidclaw energy drain, Shrednova energy drain).
     if (result.success) {
-      const attacker = team.active.find((v) => v.uuid === command.vellymonUuid);
+      const attacker = team.active.find((v) => v.uuid === command.cinderlingUuid);
       if (attacker?.specialPowerId) {
         const ctx = {
           self: attacker,
@@ -446,7 +446,7 @@ export function resolveTurn(
           turn: state.turn,
           command: {
             type: command.type,
-            vellymonUuid: command.vellymonUuid,
+            cinderlingUuid: command.cinderlingUuid,
             vec: command.vec,
           },
           commandResult: {
@@ -496,7 +496,7 @@ export function resolveTurn(
     }
 
     // ── Special power: onDamaged ─────────────────────────────────────────────
-    // Fire on the DEFENDING vellymon after it takes damage from an attack.
+    // Fire on the DEFENDING cinderling after it takes damage from an attack.
     // Used by: Barrikade (Iron Curtain −2 SPD to attacker), Ferridon (rust aura), etc.
     if (
       result.success &&
@@ -505,11 +505,11 @@ export function resolveTurn(
       result.damageDealt &&
       result.damageDealt > 0
     ) {
-      const attackerVellymon = team.active.find((v) => v.uuid === command.vellymonUuid);
+      const attackerCinderling = team.active.find((v) => v.uuid === command.cinderlingUuid);
       const enemyTeamId = team.id === 1 ? 2 : 1;
       const enemyTeam = state.teams.find((t) => t.id === enemyTeamId);
       const defender = enemyTeam?.active.find((v) => v.uuid === result.targetUuid);
-      if (defender?.specialPowerId && attackerVellymon) {
+      if (defender?.specialPowerId && attackerCinderling) {
         // Snapshot names before effects apply (target could be KO'd by bite-back)
         const nameOf = (uuid: string) => {
           for (const t of state.teams) {
@@ -523,7 +523,7 @@ export function resolveTurn(
           team: enemyTeamId as 1 | 2,
           state,
           turn: state.turn,
-          attacker: attackerVellymon,
+          attacker: attackerCinderling,
           damage: result.damageDealt,
         };
         const damagedEffects = runHook("onDamaged", defender.specialPowerId, damagedCtx);
@@ -549,7 +549,7 @@ export function resolveTurn(
     commandResults.push(result);
   }
 
-  // Process bench entries for KO'd vellymons
+  // Process bench entries for KO'd cinderlings
   const benchEntries = processAllBenchEntries(state);
 
   // Update occupation counters
@@ -572,9 +572,9 @@ export function resolveTurn(
   };
 }
 
-function getVellymonSpeed(team: TeamState, uuid: string): number {
-  const vellymon = team.active.find((v) => v.uuid === uuid);
-  return vellymon?.speed ?? 0;
+function getCinderlingSpeed(team: TeamState, uuid: string): number {
+  const cinderling = team.active.find((v) => v.uuid === uuid);
+  return cinderling?.speed ?? 0;
 }
 
 // ─── Game Queries ────────────────────────────────────────────────────────────

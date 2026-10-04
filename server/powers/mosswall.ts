@@ -12,7 +12,7 @@
  * Max HP tied with Grumblix but much less aggressive. Regrowth
  * makes it nearly unkillable if left alone — 3 HP/turn regen
  * on a 100 HP pool means opponents need to commit serious
- * damage to bring it down. The slowest non-Grumblix vellymon
+ * damage to bring it down. The slowest non-Grumblix cinderling
  * at SPD 3, it anchors a position and refuses to die.
  */
 

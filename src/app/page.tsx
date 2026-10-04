@@ -216,7 +216,7 @@ export default async function HomePage() {
               {
                 icon: "💀",
                 title: "Elimination",
-                desc: "KO all 8 of your opponent's vellymons. Every mon you knock out is one fewer threat on the board.",
+                desc: "KO all 8 of your opponent's cinderlings. Every mon you knock out is one fewer threat on the board.",
               },
               {
                 icon: "🏴",
@@ -276,7 +276,7 @@ export default async function HomePage() {
                     >
                       {cell && (
                         <img
-                          src={`/vellymon/${cell.sprite}.png`}
+                          src={`/cinderling/${cell.sprite}.png`}
                           alt={cell.name}
                           className="w-full h-full object-contain p-1"
                         />
@@ -301,7 +301,7 @@ export default async function HomePage() {
               Meet the Roster
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto">
-              64 vellymons. Each with a unique passive power. No two squads play
+              64 cinderlings. Each with a unique passive power. No two squads play
               alike.
             </p>
           </div>
@@ -314,7 +314,7 @@ export default async function HomePage() {
               >
                 <div className="w-20 h-20 mx-auto mb-4 relative">
                   <Image
-                    src={`/vellymon/${mon.name.toLowerCase()}.png`}
+                    src={`/cinderling/${mon.name.toLowerCase()}.png`}
                     alt={mon.name}
                     fill
                     className="object-contain"

@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getVellymonInstance } from "~/data/getVellymonInstance.server";
+import { getCinderlingInstance } from "~/data/getCinderlingInstance.server";
 
 
 
@@ -40,7 +40,7 @@ function StatBar({
   );
 }
 
-export default async function VellymonDetailPage({
+export default async function CinderlingDetailPage({
   params,
 }: {
   params: Promise<{ uuid: string }>;
@@ -49,12 +49,12 @@ export default async function VellymonDetailPage({
   const headersList = await headers();
   const session = (await auth.api.getSession({ headers: headersList }))!;
 
-  const vellymon = await getVellymonInstance(uuid, session.user.id);
+  const cinderling = await getCinderlingInstance(uuid, session.user.id);
 
-  if (!vellymon) notFound();
+  if (!cinderling) notFound();
 
   // Stat budget — same formula as guide
-  const statBudget = vellymon.health + vellymon.attack * 5 + vellymon.speed * 8;
+  const statBudget = cinderling.health + cinderling.attack * 5 + cinderling.speed * 8;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -69,10 +69,10 @@ export default async function VellymonDetailPage({
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden mt-4">
         {/* Hero image */}
         <div className="relative w-full aspect-square max-h-72 bg-gradient-to-br from-blue-50 to-purple-100">
-          {vellymon.imageUrl ? (
+          {cinderling.imageUrl ? (
             <Image
-              src={vellymon.imageUrl}
-              alt={vellymon.name}
+              src={cinderling.imageUrl}
+              alt={cinderling.name}
               fill
               className="object-contain p-8"
               sizes="(max-width: 768px) 100vw, 672px"
@@ -90,11 +90,11 @@ export default async function VellymonDetailPage({
           <div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                {vellymon.name}
+                {cinderling.name}
               </h1>
-              {vellymon.flavor && (
+              {cinderling.flavor && (
                 <p className="text-gray-500 italic mt-1 text-sm">
-                  &ldquo;{vellymon.flavor}&rdquo;
+                  &ldquo;{cinderling.flavor}&rdquo;
                 </p>
               )}
             </div>
@@ -106,9 +106,9 @@ export default async function VellymonDetailPage({
               Base Stats
             </h2>
             <div className="space-y-3">
-              <StatBar label="HP" value={vellymon.health} max={120} color="green" />
-              <StatBar label="ATK" value={vellymon.attack} max={20} color="red" />
-              <StatBar label="SPD" value={vellymon.speed} max={10} color="blue" />
+              <StatBar label="HP" value={cinderling.health} max={120} color="green" />
+              <StatBar label="ATK" value={cinderling.attack} max={20} color="red" />
+              <StatBar label="SPD" value={cinderling.speed} max={10} color="blue" />
             </div>
             <p className="text-xs text-gray-400 mt-3 text-right">
               Stat budget: {statBudget}
@@ -121,7 +121,7 @@ export default async function VellymonDetailPage({
               Attacks
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {vellymon.attacks.map((attack) => (
+              {cinderling.attacks.map((attack) => (
                 <div
                   key={attack.name}
                   className="bg-gray-50 border border-gray-200 rounded-xl p-4"
@@ -149,17 +149,17 @@ export default async function VellymonDetailPage({
           </section>
 
           {/* Special Power */}
-          {vellymon.powerName && (
+          {cinderling.powerName && (
             <section>
               <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wide mb-3">
                 Special Power
               </h2>
               <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
                 <p className="font-bold text-purple-900 mb-1">
-                  ✨ {vellymon.powerName}
+                  ✨ {cinderling.powerName}
                 </p>
                 <p className="text-sm text-purple-700">
-                  {vellymon.powerDescription}
+                  {cinderling.powerDescription}
                 </p>
               </div>
             </section>
@@ -168,10 +168,10 @@ export default async function VellymonDetailPage({
           {/* Guide link */}
           <div className="pt-2 border-t border-gray-100">
             <Link
-              href={`/guide/vellymon/${vellymon.name.toLowerCase()}`}
+              href={`/guide/cinderling/${cinderling.name.toLowerCase()}`}
               className="text-sm text-blue-600 hover:text-blue-800 font-medium"
             >
-              View in Vellymon Guide →
+              View in Cinderling Guide →
             </Link>
           </div>
         </div>

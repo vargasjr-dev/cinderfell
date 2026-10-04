@@ -22,7 +22,7 @@ registerPower({
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
       if (ctx.command.type !== "attack") return [];
-      return [{ type: "speed_mod", vellymonId: ctx.self.uuid, amount: 3 }];
+      return [{ type: "speed_mod", cinderlingId: ctx.self.uuid, amount: 3 }];
     },
   },
 });

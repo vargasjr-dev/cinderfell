@@ -36,7 +36,7 @@ registerPower({
     "Each consecutive attack deals +2 more bonus damage (up to +8). Moving or harvesting resets the chain.",
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
 
       // Move or harvest → reset the chain, no effect
       if (ctx.command.type === "move" || ctx.command.type === "harvest") {

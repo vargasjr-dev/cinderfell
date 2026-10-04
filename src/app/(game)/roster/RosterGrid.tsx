@@ -6,7 +6,7 @@ import Link from "next/link";
 
 type SortKey = "name" | "health" | "attack" | "speed";
 
-interface RosterVellymon {
+interface RosterCinderling {
   uuid: string;
   name: string;
   health: number;
@@ -28,12 +28,12 @@ const sortOptions: { key: SortKey; label: string }[] = [
 export default function RosterGrid({
   roster,
 }: {
-  roster: RosterVellymon[];
+  roster: RosterCinderling[];
 }) {
   const [sortBy, setSortBy] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<RosterVellymon | null>(null);
+  const [selected, setSelected] = useState<RosterCinderling | null>(null);
 
   const handleSort = (key: SortKey) => {
     if (sortBy === key) {
@@ -134,7 +134,7 @@ export default function RosterGrid({
           {filtered.length === 0 && (
             <div className="text-center py-12">
               <p className="text-5xl mb-4">🔍</p>
-              <p className="text-gray-500">No vellymons match your search.</p>
+              <p className="text-gray-500">No cinderlings match your search.</p>
             </div>
           )}
         </div>
@@ -190,7 +190,7 @@ export default function RosterGrid({
             <div className="bg-white rounded-xl shadow-sm p-8 text-center sticky top-4">
               <p className="text-4xl mb-3">👆</p>
               <p className="text-gray-500 text-sm">
-                Click a vellymon to see its details
+                Click a cinderling to see its details
               </p>
             </div>
           )}

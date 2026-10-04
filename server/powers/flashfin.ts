@@ -28,7 +28,7 @@ registerPower({
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
       // Only triggers on Flashfin's own attacks
       if (ctx.command.type !== "attack") return [];
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
 
       // Slow the target
       const targetId = (ctx.command as any).targetId;
@@ -37,7 +37,7 @@ registerPower({
       return [
         {
           type: "speed_mod",
-          vellymonId: targetId,
+          cinderlingId: targetId,
           amount: -2,
         },
       ];

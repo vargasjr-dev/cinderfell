@@ -64,7 +64,7 @@ function ParticipantPicker({
         }`}
       >
         <span className="font-medium">🎲 Random team</span>
-        <span className="text-gray-400 ml-2 text-xs">8 random vellymons</span>
+        <span className="text-gray-400 ml-2 text-xs">8 random cinderlings</span>
       </button>
 
       {/* Profile options */}

@@ -1,8 +1,8 @@
 /**
- * Win condition detection for vellymon matches.
+ * Win condition detection for cinderling matches.
  *
  * Three win conditions, checked after each priority resolution:
- * 1. Elimination — KO all opponent's vellymons (active + bench + knocked = all KO'd)
+ * 1. Elimination — KO all opponent's cinderlings (active + bench + knocked = all KO'd)
  * 2. Occupation — control all occupation points on the board
  * 3. Accumulation — reach energy threshold
  *
@@ -16,8 +16,8 @@ import type { GameState, TeamState, WinResult, BoardSpace } from "./types";
 // ─── Individual Checks ───────────────────────────────────────────────────────
 
 /**
- * Check if a team has eliminated all of the opponent's vellymons.
- * All 8 vellymons (active + bench + knocked) must be KO'd.
+ * Check if a team has eliminated all of the opponent's cinderlings.
+ * All 8 cinderlings (active + bench + knocked) must be KO'd.
  */
 export function checkElimination(
   opponent: TeamState,
@@ -141,12 +141,12 @@ export type OccupationEvent = {
 };
 
 /**
- * Update occupation counters based on which vellymons are standing on
+ * Update occupation counters based on which cinderlings are standing on
  * occupation points at the end of a turn.
  *
  * Rules:
- * - Team vellymon on point → tick counter toward that team
- * - Opponent vellymon on point → tick counter back (contest/decrement)
+ * - Team cinderling on point → tick counter toward that team
+ * - Opponent cinderling on point → tick counter back (contest/decrement)
  * - Both teams on same point → cancel out (no change)
  * - Nobody on point → no change
  *

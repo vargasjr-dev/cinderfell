@@ -9,7 +9,7 @@
  * Effect: heal self 2 HP (effectively -2 damage taken)
  *
  * Design: Shellmaw is THE ultimate tank (HP 108, ATK 10,
- * SPD 2). Highest HP in the entire game. Slowest vellymon
+ * SPD 2). Highest HP in the entire game. Slowest cinderling
  * at SPD 2. Iron Shell heals 2 on every hit — effectively
  * making that 108 HP pool even deeper. At ATK 10 it's not
  * a threat offensively, but good luck killing it. The

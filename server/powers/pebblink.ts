@@ -32,7 +32,7 @@ registerPower({
       return [
         {
           type: "speed_mod",
-          vellymonId: ctx.self.uuid,
+          cinderlingId: ctx.self.uuid,
           amount: 2,
         },
       ];

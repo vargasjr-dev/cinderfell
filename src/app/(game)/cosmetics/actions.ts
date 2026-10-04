@@ -12,7 +12,7 @@ import type { CosmeticType } from "../../../../lib/cosmetics";
 
 export type CosmeticItem = {
   id: string;
-  vellymonId: string | null;
+  cinderlingId: string | null;
   type: string;
   name: string;
   imageUrl: string | null;
@@ -23,7 +23,7 @@ export type CosmeticItem = {
 export type CosmeticsPageData = {
   cosmetics: CosmeticItem[];
   active: boolean;
-  loadouts: Record<string, string | null>; // vellymonId → equippedSkinId
+  loadouts: Record<string, string | null>; // cinderlingId → equippedSkinId
 };
 
 export async function getCosmeticsPageData(): Promise<CosmeticsPageData> {
@@ -35,17 +35,17 @@ export async function getCosmeticsPageData(): Promise<CosmeticsPageData> {
     areCosmeticsActive(session.user.id),
   ]);
 
-  // Build loadout map for all unique vellymonIds
-  const vellymonIds = [
+  // Build loadout map for all unique cinderlingIds
+  const cinderlingIds = [
     ...new Set(
       cosmetics
-        .map((c) => c.vellymonId)
+        .map((c) => c.cinderlingId)
         .filter((id): id is string => id !== null),
     ),
   ];
 
   const loadoutEntries = await Promise.all(
-    vellymonIds.map(async (vid) => {
+    cinderlingIds.map(async (vid) => {
       const loadout = await getLoadout(session.user.id, vid);
       return [vid, loadout?.equippedSkinId ?? null] as const;
     }),
@@ -59,7 +59,7 @@ export async function getCosmeticsPageData(): Promise<CosmeticsPageData> {
 }
 
 export async function equipCosmeticAction(
-  vellymonId: string,
+  cinderlingId: string,
   cosmeticId: string | null,
 ): Promise<{ success: boolean; error?: string }> {
   const headersList = await headers();
@@ -71,7 +71,7 @@ export async function equipCosmeticAction(
       return { success: false, error: "Subscription required to equip cosmetics" };
     }
 
-    await equipSkin(session.user.id, vellymonId, cosmeticId);
+    await equipSkin(session.user.id, cinderlingId, cosmeticId);
     return { success: true };
   } catch (err) {
     return {

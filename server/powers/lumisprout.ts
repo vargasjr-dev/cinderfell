@@ -11,7 +11,7 @@
  * Design: Lumisprout is a support (HP 85, ATK 9, SPD 6).
  * Tanky for a support with the highest HP in its class.
  * Bioluminescence is subtle but powerful — 1 HP per ally
- * per turn adds up fast with 4 active vellymons (4 HP/turn
+ * per turn adds up fast with 4 active cinderlings (4 HP/turn
  * total team healing). The longer the game goes, the more
  * value Lumisprout provides. Kill it early or get outsustained.
  */

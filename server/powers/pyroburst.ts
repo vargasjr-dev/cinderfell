@@ -31,13 +31,13 @@ registerPower({
     "Attacks cost 1 less energy but deal 2 self-damage.",
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
       if (ctx.command.type !== "attack") return [];
 
       return [
         {
           type: "cost_mod",
-          vellymonId: ctx.self.uuid,
+          cinderlingId: ctx.self.uuid,
           amount: -1,
         },
         {

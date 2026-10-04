@@ -1,8 +1,8 @@
 /**
- * Board system for vellymon matches.
+ * Board system for cinderling matches.
  *
  * Grid-based board with configurable dimensions and four space types:
- * - Spawn — where vellymons start and bench replacements enter (one-way)
+ * - Spawn — where cinderlings start and bench replacements enter (one-way)
  * - Occupation — 3 tug-of-war control points (near team 1, center, near team 2)
  * - Harvestable — generates energy when harvested (every non-spawn, non-occ, non-void space)
  * - Void — impassable (for shaping maps)

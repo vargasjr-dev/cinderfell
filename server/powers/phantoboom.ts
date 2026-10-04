@@ -2,7 +2,7 @@
  * Phantoboom — "Detonation"
  *
  * When Phantoboom is knocked out, it detonates — dealing 8
- * bonus damage to the first active enemy vellymon. The
+ * bonus damage to the first active enemy cinderling. The
  * phantom materializes one final time to explode.
  *
  * Hook: onKnockout
@@ -27,13 +27,13 @@ registerPower({
   id: "detonation",
   name: "Detonation",
   description:
-    "On knockout, deals 8 damage to the first active enemy vellymon.",
+    "On knockout, deals 8 damage to the first active enemy cinderling.",
   hooks: {
     onKnockout: (ctx: KnockoutHookContext): PowerEffect[] => {
       // Only trigger when Phantoboom itself is knocked out
       if (ctx.target.uuid !== ctx.self.uuid) return [];
 
-      // Find enemy team and first active vellymon
+      // Find enemy team and first active cinderling
       const enemyTeamIdx = ctx.team === 1 ? 1 : 0;
       const enemyTeam = ctx.state.teams[enemyTeamIdx];
       const firstAlive = enemyTeam.active.find((v) => !v.isKO);

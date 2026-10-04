@@ -18,7 +18,7 @@ import { isSubscriber } from "../../../../../lib/subscription";
 import { db } from "../../../../../data/db";
 import { aiProfile, matchSnapshot } from "../../../../../data/schema";
 import { eq, and, gte, sql } from "drizzle-orm";
-import { VELLYMON_LIBRARY } from "../../../../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../../../../server/cinderlings";
 import { buildTeamSetup } from "../../../../../server/matchSetup";
 import { getMapById, parseBoardFromMap } from "../../../../../server/maps";
 import "../../../../../server/powers";
@@ -131,10 +131,10 @@ export async function POST(req: Request) {
   // ── Build team setups ─────────────────────────────────────────────────────
   function resolveTemplates(names: string[]) {
     return names.map((name) => {
-      const t = VELLYMON_LIBRARY.find(
+      const t = CINDERLING_LIBRARY.find(
         (v) => v.name.toLowerCase() === name.toLowerCase(),
       );
-      if (!t) throw new Error(`Unknown vellymon: "${name}"`);
+      if (!t) throw new Error(`Unknown cinderling: "${name}"`);
       return t;
     });
   }

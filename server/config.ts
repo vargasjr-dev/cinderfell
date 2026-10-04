@@ -1,5 +1,5 @@
 /**
- * GAME_CONFIG — Playtest-tunable parameters for vellymon matches.
+ * GAME_CONFIG — Playtest-tunable parameters for cinderling matches.
  *
  * All game balance values live here. Change any value to adjust gameplay
  * without touching engine code. See .internal/RULES.md for full context.
@@ -36,7 +36,7 @@ export type GameConfig = {
 
   /** Team composition */
   teams: {
-    /** Total vellymons per team (active + bench) */
+    /** Total cinderlings per team (active + bench) */
     rosterSize: number;
     /** Number of active starters per match */
     activeSlots: number;
@@ -74,7 +74,7 @@ export type GameConfig = {
     moveCost: number;
     /** Energy cost of Harvest command */
     harvestCost: number;
-    /** Attack costs are per-vellymon, not global — see attack definitions */
+    /** Attack costs are per-cinderling, not global — see attack definitions */
   };
 };
 

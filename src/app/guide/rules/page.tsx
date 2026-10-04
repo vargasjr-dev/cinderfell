@@ -6,7 +6,7 @@ export default function RulesPage() {
       <nav className="border-b border-blue-200 bg-white/60 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-gray-900">
-            vellymon
+            cinderling
           </Link>
           <div className="flex gap-4">
             <Link href="/guide" className="text-blue-600 font-medium">
@@ -32,15 +32,15 @@ export default function RulesPage() {
 
         <h1 className="text-4xl font-bold mb-2 text-gray-900">📖 Game Rules</h1>
         <p className="text-gray-600 mb-10 text-lg">
-          Everything you need to know about vellymon matches — from setup to
+          Everything you need to know about cinderling matches — from setup to
           victory.
         </p>
 
         {/* Overview */}
         <Section title="Overview">
           <p>
-            Vellymon is a <strong>simultaneous-action tactical RPG</strong>.
-            Two players each command a team of vellymons on an 8×5 grid. Every
+            Cinderling is a <strong>simultaneous-action tactical RPG</strong>.
+            Two players each command a team of cinderlings on an 8×5 grid. Every
             turn, both players issue commands at the same time — no waiting for
             your opponent. Matches last until one of three win conditions is
             met.
@@ -50,11 +50,11 @@ export default function RulesPage() {
         {/* Match Setup */}
         <Section title="Match Setup">
           <p>
-            Each player brings a <strong>roster of 8 vellymons</strong> — 4
+            Each player brings a <strong>roster of 8 cinderlings</strong> — 4
             start on the field as your <strong>active lineup</strong>, and 4
-            sit on the <strong>bench</strong>. When an active vellymon is
+            sit on the <strong>bench</strong>. When an active cinderling is
             knocked out, a bench replacement automatically enters at that
-            vellymon&apos;s spawn point.
+            cinderling&apos;s spawn point.
           </p>
           <InfoBox>
             <p>
@@ -75,7 +75,7 @@ export default function RulesPage() {
             <SpaceCard
               emoji="🏁"
               name="Spawn Points"
-              desc="4 per team on opposite sides. KO'd bench vellymons re-enter here."
+              desc="4 per team on opposite sides. KO'd bench cinderlings re-enter here."
             />
             <SpaceCard
               emoji="🏴"
@@ -99,13 +99,13 @@ export default function RulesPage() {
             emoji="💀"
             name="Elimination"
             color="red"
-            desc="Knock out all 8 of your opponent's vellymons — active and bench. Last team standing wins."
+            desc="Knock out all 8 of your opponent's cinderlings — active and bench. Last team standing wins."
           />
           <WinCondition
             emoji="🏴"
             name="Occupation"
             color="purple"
-            desc="Control all 3 Occupation Points simultaneously. A point is controlled when your vellymon stands on it for 2 consecutive ticks unchallenged."
+            desc="Control all 3 Occupation Points simultaneously. A point is controlled when your cinderling stands on it for 2 consecutive ticks unchallenged."
           />
           <WinCondition
             emoji="⚡"
@@ -118,7 +118,7 @@ export default function RulesPage() {
         {/* Commands */}
         <Section title="Commands">
           <p className="mb-4">
-            Each vellymon gets <strong>one command per turn</strong>. There are
+            Each cinderling gets <strong>one command per turn</strong>. There are
             three types:
           </p>
           <CommandCard
@@ -129,7 +129,7 @@ export default function RulesPage() {
           <CommandCard
             name="Attack"
             cost="Varies (1–3 energy)"
-            desc="Use one of your vellymon's two attacks on a target position. Each attack has different damage, range, and energy cost."
+            desc="Use one of your cinderling's two attacks on a target position. Each attack has different damage, range, and energy cost."
           />
           <CommandCard
             name="Harvest"
@@ -147,7 +147,7 @@ export default function RulesPage() {
         {/* Attacks */}
         <Section title="Attack Reference">
           <p className="mb-4">
-            Every vellymon knows exactly two attacks. Here are all the attack
+            Every cinderling knows exactly two attacks. Here are all the attack
             types in the game:
           </p>
           <div className="overflow-x-auto">
@@ -180,11 +180,11 @@ export default function RulesPage() {
         </Section>
 
         {/* Stats */}
-        <Section title="Vellymon Stats">
-          <p className="mb-4">Every vellymon has three stats:</p>
+        <Section title="Cinderling Stats">
+          <p className="mb-4">Every cinderling has three stats:</p>
           <StatCard
             name="HP (Health)"
-            desc="How much damage the vellymon can take before being knocked out. Ranges from 40 to 120."
+            desc="How much damage the cinderling can take before being knocked out. Ranges from 40 to 120."
           />
           <StatCard
             name="ATK (Attack)"
@@ -192,11 +192,11 @@ export default function RulesPage() {
           />
           <StatCard
             name="SPD (Speed)"
-            desc="Determines turn order — faster vellymons act first. Ranges from 1 to 10."
+            desc="Determines turn order — faster cinderlings act first. Ranges from 1 to 10."
           />
           <InfoBox>
             <p>
-              Stats follow a <strong>budget constraint</strong> — no vellymon
+              Stats follow a <strong>budget constraint</strong> — no cinderling
               is best at everything. A tank with massive HP will be slow. A
               speedster that acts first will be fragile. Choose your team
               wisely.
@@ -210,19 +210,19 @@ export default function RulesPage() {
           <ol className="list-decimal list-inside space-y-2 mt-3 text-gray-700">
             <li>
               <strong>Command Phase</strong> (30 seconds) — Both players issue
-              commands to each of their active vellymons simultaneously.
+              commands to each of their active cinderlings simultaneously.
             </li>
             <li>
               <strong>Resolution Phase</strong> — All commands execute in
               Speed order (fastest first). Ties are broken randomly.
             </li>
             <li>
-              <strong>Special Powers</strong> — Vellymon abilities trigger at
+              <strong>Special Powers</strong> — Cinderling abilities trigger at
               their designated moments (start of turn, after commands, on
               damage, etc.).
             </li>
             <li>
-              <strong>Cleanup</strong> — Knocked-out vellymons are removed,
+              <strong>Cleanup</strong> — Knocked-out cinderlings are removed,
               bench replacements spawn, win conditions are checked.
             </li>
           </ol>
@@ -231,17 +231,17 @@ export default function RulesPage() {
         {/* Special Powers */}
         <Section title="Special Powers">
           <p>
-            Every vellymon has a <strong>unique special power</strong> that
+            Every cinderling has a <strong>unique special power</strong> that
             activates automatically during specific moments in the turn.
             Powers can heal, boost stats, drain energy, create terrain effects,
-            and more. You won&apos;t see a vellymon&apos;s power listed
+            and more. You won&apos;t see a cinderling&apos;s power listed
             upfront — discovering what each creature does is part of the
             game.
           </p>
           <InfoBox>
             <p>
               <strong>Tip:</strong> Pay attention to what happens during
-              matches. If your opponent&apos;s vellymon keeps gaining health
+              matches. If your opponent&apos;s cinderling keeps gaining health
               or dealing extra damage, they have a special power at work.
               Learning the library is how you get better.
             </p>
@@ -255,10 +255,10 @@ export default function RulesPage() {
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
-              href="/guide/vellymon"
+              href="/guide/cinderling"
               className="inline-block bg-white text-blue-600 border-2 border-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
             >
-              Browse Vellymons →
+              Browse Cinderlings →
             </Link>
             <Link
               href="/signup"

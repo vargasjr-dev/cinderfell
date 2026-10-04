@@ -1,5 +1,5 @@
 import { db } from "../../data/db";
-import { user, matchStats, vellymonInstance } from "../../data/schema";
+import { user, matchStats, cinderlingInstance } from "../../data/schema";
 import { eq, and, count, sql } from "drizzle-orm";
 import { getActiveRank, type Rank } from "../../lib/ranked";
 
@@ -61,8 +61,8 @@ const getPlayerProfile = async (
     // Roster size
     const [rosterRow] = await db
       .select({ count: count() })
-      .from(vellymonInstance)
-      .where(eq(vellymonInstance.userId, userId));
+      .from(cinderlingInstance)
+      .where(eq(cinderlingInstance.userId, userId));
     const rosterSize = rosterRow?.count ?? 0;
 
     // Active rank

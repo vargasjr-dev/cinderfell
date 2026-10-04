@@ -17,7 +17,7 @@ export default async function PlayerHubPage() {
   return (
     // Full-height canvas. Layout's bg gradient shows through.
     <div className="relative flex items-center justify-center h-[calc(100dvh-56px)] overflow-hidden">
-      {/* ── Decorative floating vellymon emojis ──────────────────────────── */}
+      {/* ── Decorative floating cinderling emojis ──────────────────────────── */}
       <FloatingEmojis />
 
       {/* ── Centre card ─────────────────────────────────────────────────── */}
@@ -26,7 +26,7 @@ export default async function PlayerHubPage() {
         <div className="text-center mb-2">
           <p className="text-4xl mb-1">⚡️</p>
           <h1 className="text-2xl font-black text-white drop-shadow-lg tracking-tight">
-            Vellymon
+            Cinderling
           </h1>
           <p className="text-xs text-white/70 font-medium tracking-widest uppercase mt-0.5">
             Trainer Hub
@@ -45,7 +45,7 @@ export default async function PlayerHubPage() {
           href="/market"
           emoji="🛒"
           label="Market"
-          sublabel="Collect vellymons"
+          sublabel="Collect cinderlings"
         />
 
         {/* Practice — locked unless subscribed */}

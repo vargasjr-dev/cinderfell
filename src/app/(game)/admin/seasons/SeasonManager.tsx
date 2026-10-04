@@ -15,7 +15,7 @@ type SeasonRow = {
   status: string;
   startDate: Date;
   endDate: Date;
-  newVellymonId: number | null;
+  newCinderlingId: number | null;
 };
 
 interface SeasonManagerProps {
@@ -31,7 +31,7 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [vellymonId, setVellymonId] = useState("");
+  const [cinderlingId, setCinderlingId] = useState("");
 
   async function handleCreate() {
     if (!name || !startDate || !endDate) return;
@@ -42,7 +42,7 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
       name,
       startDate,
       endDate,
-      newVellymonId: vellymonId ? Number(vellymonId) : undefined,
+      newCinderlingId: cinderlingId ? Number(cinderlingId) : undefined,
       tiers,
     });
 
@@ -55,13 +55,13 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
           status: "upcoming",
           startDate: new Date(startDate),
           endDate: new Date(endDate),
-          newVellymonId: vellymonId ? Number(vellymonId) : null,
+          newCinderlingId: cinderlingId ? Number(cinderlingId) : null,
         },
       ]);
       setName("");
       setStartDate("");
       setEndDate("");
-      setVellymonId("");
+      setCinderlingId("");
     }
 
     setCreating(false);
@@ -129,12 +129,12 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              New Vellymon ID (optional)
+              New Cinderling ID (optional)
             </label>
             <input
               type="number"
-              value={vellymonId}
-              onChange={(e) => setVellymonId(e.target.value)}
+              value={cinderlingId}
+              onChange={(e) => setCinderlingId(e.target.value)}
               placeholder="Library ID"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
@@ -163,7 +163,7 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
           </div>
         </div>
         <p className="text-xs text-gray-400 mb-3">
-          Creates season with default 25-tier track (credits + cosmetics + vellymon at tier 5 + premium skin at tier 15).
+          Creates season with default 25-tier track (credits + cosmetics + cinderling at tier 5 + premium skin at tier 15).
         </p>
         <button
           onClick={handleCreate}
@@ -194,7 +194,7 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
                   <p className="text-xs text-gray-400 mt-0.5">
                     {new Date(s.startDate).toLocaleDateString()} —{" "}
                     {new Date(s.endDate).toLocaleDateString()}
-                    {s.newVellymonId && ` · New Vellymon: #${s.newVellymonId}`}
+                    {s.newCinderlingId && ` · New Cinderling: #${s.newCinderlingId}`}
                   </p>
                 </div>
                 <div className="flex gap-2">

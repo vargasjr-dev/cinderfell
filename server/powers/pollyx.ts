@@ -2,7 +2,7 @@
  * Pollyx — "Pollen Cloud"
  *
  * At the end of each turn, Pollyx spreads pollen that slows
- * all active enemy vellymons by -1 SPD. Annoyingly persistent
+ * all active enemy cinderlings by -1 SPD. Annoyingly persistent
  * debuff that blankets the entire enemy team.
  *
  * Hook: onTurnEnd
@@ -37,7 +37,7 @@ registerPower({
 
       return alive.map((v) => ({
         type: "speed_mod" as const,
-        vellymonId: v.uuid,
+        cinderlingId: v.uuid,
         amount: -1,
       }));
     },

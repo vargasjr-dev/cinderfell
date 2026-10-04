@@ -99,7 +99,7 @@ export default function GameNav({
             href="/player"
             className="text-lg font-bold tracking-wide text-white"
           >
-            ⚡ Vellymon
+            ⚡ Cinderling
           </Link>
 
           {/* Desktop Links */}

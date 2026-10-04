@@ -1,23 +1,23 @@
 #!/usr/bin/env bun
 /**
- * vellymon CLI — play and QA matches from the terminal.
+ * cinderfell CLI — play and QA matches from the terminal.
  *
  * Runs the engine in-memory (no DB needed). Match state stored as
  * local JSON files in .vellymon/ directory.
  *
  * Usage:
- *   vellymon match create              Create a new admin match
- *   vellymon match list                List local matches
- *   vellymon board <matchId>           Show the board
- *   vellymon status <matchId>          One-line match summary
- *   vellymon cmd <matchId> <teamId> <vellymonId> <action> [direction]
- *   vellymon submit <matchId> <teamId> Submit team's turn (auto-resolves when both submit)
- *   vellymon report <matchId>          Generate JSON match report
+ *   cinderfell match create              Create a new admin match
+ *   cinderfell match list                List local matches
+ *   cinderfell board <matchId>           Show the board
+ *   cinderfell status <matchId>          One-line match summary
+ *   cinderfell cmd <matchId> <teamId> <cinderlingId> <action> [direction]
+ *   cinderfell submit <matchId> <teamId> Submit team's turn (auto-resolves when both submit)
+ *   cinderfell report <matchId>          Generate JSON match report
  */
 
 import { resolve, join } from "path";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
-import { VELLYMON_LIBRARY } from "../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../server/cinderlings";
 
 import { buildTeamSetup } from "../server/matchSetup";
 import {
@@ -39,7 +39,7 @@ import {
 import { GAME_CONFIG } from "../server/config";
 import { getMapById, parseBoardFromMap } from "../server/maps";
 
-import type { GameState, VellymonState, TeamState } from "../server/types";
+import type { GameState, CinderlingState, TeamState } from "../server/types";
 import type { Command } from "../server/commands";
 
 // ─── State Storage ───────────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ type MatchFile = {
   timer: TurnTimerState | null;
   pendingCommands: Record<string, Command[]>;
   turnLogs: TurnLog[];
-  /** Per-vellymon cumulative stats for the report */
+  /** Per-cinderling cumulative stats for the report */
   stats: Record<string, { damageDealt: number; damageTaken: number; harvests: number; kos: number; moves: number }>;
 };
 
@@ -72,7 +72,7 @@ function loadMatch(id: string): MatchFile {
   const path = savePath(id);
   if (!existsSync(path)) {
     console.error(`Match not found: ${id}`);
-    console.error(`Run 'vellymon match list' to see available matches.`);
+    console.error(`Run 'cinderfell match list' to see available matches.`);
     process.exit(1);
   }
   return JSON.parse(readFileSync(path, "utf-8"));
@@ -100,8 +100,8 @@ function renderBoard(state: GameState): string {
   const W = GAME_CONFIG.board.width;
   const H = GAME_CONFIG.board.height;
 
-  // Build position → vellymon lookup
-  const posMap = new Map<string, { vm: VellymonState; teamId: 1 | 2 }>();
+  // Build position → cinderling lookup
+  const posMap = new Map<string, { vm: CinderlingState; teamId: 1 | 2 }>();
   for (const t of teams) {
     for (const vm of t.active) {
       if (vm.position && !vm.isKO) {
@@ -131,7 +131,7 @@ function renderBoard(state: GameState): string {
   lines.push("  ┌" + "────┬".repeat(W - 1) + "────┐");
 
   for (let y = 0; y < H; y++) {
-    let line1 = "  │"; // space type + vellymon name
+    let line1 = "  │"; // space type + cinderling name
     let line2 = `${y} │`; // HP or occupation info
     for (let x = 0; x < W; x++) {
       const key = `${x},${y}`;
@@ -199,7 +199,7 @@ function renderBoard(state: GameState): string {
 
 function cmdMatchCreate() {
   const id = shortId();
-  const shuffled = shuffle(VELLYMON_LIBRARY);
+  const shuffled = shuffle(CINDERLING_LIBRARY);
   const picked = shuffled.slice(0, 16);
 
   const map = getMapById("standard");
@@ -223,7 +223,7 @@ function cmdMatchCreate() {
     stats: {},
   };
 
-  // Initialize stats for all vellymons
+  // Initialize stats for all cinderlings
   for (const t of gameState.teams) {
     for (const vm of [...t.active, ...t.bench]) {
       match.stats[vm.uuid] = { damageDealt: 0, damageTaken: 0, harvests: 0, kos: 0, moves: 0 };
@@ -240,7 +240,7 @@ function cmdMatchList() {
   ensureDir();
   const files = readdirSync(STATE_DIR).filter((f) => f.endsWith(".json"));
   if (files.length === 0) {
-    console.log("No matches. Run 'vellymon match create' to start one.");
+    console.log("No matches. Run 'cinderling match create' to start one.");
     return;
   }
   console.log("\nLocal matches:");
@@ -265,7 +265,7 @@ function cmdBoard(matchId: string) {
       console.log(`  Team ${teamId}: ${pending[teamId].length} commands`);
       for (const cmd of pending[teamId]) {
         const dir = "direction" in cmd ? ` ${cmd.direction}` : "";
-        console.log(`    ${cmd.vellymonUuid} → ${cmd.type}${dir}`);
+        console.log(`    ${cmd.cinderlingUuid} → ${cmd.type}${dir}`);
       }
     }
   }
@@ -276,7 +276,7 @@ function cmdStatus(matchId: string) {
   console.log(getGameSummary(match.gameState));
 }
 
-function cmdCmd(matchId: string, teamIdStr: string, vellymonId: string, action: string, direction?: string) {
+function cmdCmd(matchId: string, teamIdStr: string, cinderlingId: string, action: string, direction?: string) {
   const match = loadMatch(matchId);
   const teamId = parseInt(teamIdStr) as 1 | 2;
 
@@ -285,12 +285,12 @@ function cmdCmd(matchId: string, teamIdStr: string, vellymonId: string, action: 
     process.exit(1);
   }
 
-  // Find the vellymon
+  // Find the cinderling
   const team = match.gameState.teams[teamId - 1];
-  const vm = team.active.find((v) => v.uuid === vellymonId || v.name.toLowerCase() === vellymonId.toLowerCase());
+  const vm = team.active.find((v) => v.uuid === cinderlingId || v.name.toLowerCase() === cinderlingId.toLowerCase());
   if (!vm) {
-    console.error(`Vellymon '${vellymonId}' not found on Team ${teamId}.`);
-    console.error("Active vellymons:");
+    console.error(`Cinderling '${cinderlingId}' not found on Team ${teamId}.`);
+    console.error("Active cinderlings:");
     for (const v of team.active) {
       console.error(`  ${v.uuid}  ${v.name}  ${v.isKO ? "[KO]" : `HP ${v.hp}/${v.maxHp}`}`);
     }
@@ -316,7 +316,7 @@ function cmdCmd(matchId: string, teamIdStr: string, vellymonId: string, action: 
         console.error("Move requires a direction: up, down, left, right");
         process.exit(1);
       }
-      cmd = { type: "move", vellymonUuid: vm.uuid, vec: dirToVec(direction) };
+      cmd = { type: "move", cinderlingUuid: vm.uuid, vec: dirToVec(direction) };
       break;
     }
     case "attack": {
@@ -327,7 +327,7 @@ function cmdCmd(matchId: string, teamIdStr: string, vellymonId: string, action: 
       // Use attack index 0 (primary attack) — directional scan finds target
       cmd = {
         type: "attack",
-        vellymonUuid: vm.uuid,
+        cinderlingUuid: vm.uuid,
         attackIndex: 0,
         vec: dirToVec(direction),
       };
@@ -338,7 +338,7 @@ function cmdCmd(matchId: string, teamIdStr: string, vellymonId: string, action: 
         console.error("Harvest requires a direction: up, down, left, right");
         process.exit(1);
       }
-      cmd = { type: "harvest", vellymonUuid: vm.uuid, vec: dirToVec(direction) };
+      cmd = { type: "harvest", cinderlingUuid: vm.uuid, vec: dirToVec(direction) };
       break;
     }
     default: {
@@ -351,8 +351,8 @@ function cmdCmd(matchId: string, teamIdStr: string, vellymonId: string, action: 
   const key = String(teamId);
   if (!match.pendingCommands[key]) match.pendingCommands[key] = [];
 
-  // Replace existing command for this vellymon
-  match.pendingCommands[key] = match.pendingCommands[key].filter((c) => c.vellymonUuid !== vm.uuid);
+  // Replace existing command for this cinderling
+  match.pendingCommands[key] = match.pendingCommands[key].filter((c) => c.cinderlingUuid !== vm.uuid);
   match.pendingCommands[key].push(cmd);
 
   saveMatch(match);
@@ -404,7 +404,7 @@ function cmdSubmit(matchId: string, teamIdStr: string) {
           const ko = result.targetKO ? " [KO!]" : "";
           const reason = result.reason ? ` — ${result.reason}` : "";
           const dir = cmd.direction ? ` ${cmd.direction}` : "";
-          console.log(`  ${success} ${cmd.vellymonUuid} ${cmd.type}${dir}${dmg}${ko}${reason}`);
+          console.log(`  ${success} ${cmd.cinderlingUuid} ${cmd.type}${dir}${dmg}${ko}${reason}`);
         }
       }
     }
@@ -468,16 +468,16 @@ function cmdReport(matchId: string) {
 // ─── Upload ──────────────────────────────────────────────────────────────────
 
 /**
- * Upload a local match to the vellymon.game server so the spectate view
+ * Upload a local match to the cinderling.game server so the spectate view
  * works from the deployed site.
  *
  * Usage:
- *   vellymon upload <matchId> [--url <baseUrl>] [--key <apiKey>]
+ *   cinderfell upload <matchId> [--url <baseUrl>] [--key <apiKey>]
  *
  * Config (in priority order):
  *   1. CLI flags: --url, --key
- *   2. Env vars: VELLYMON_URL, VELLYMON_UPLOAD_API_KEY
- *   3. .vellymon/config.json: { "url": "...", "apiKey": "..." }
+ *   2. Env vars: CINDERLING_URL, CINDERLING_UPLOAD_API_KEY
+ *   3. .cinderling/config.json: { "url": "...", "apiKey": "..." }
  */
 async function cmdUpload(matchId: string, cliUrl?: string, cliKey?: string) {
   // ── Load config ──────────────────────────────────────────────────────────
@@ -492,14 +492,14 @@ async function cmdUpload(matchId: string, cliUrl?: string, cliKey?: string) {
     } catch { /* ignore malformed config */ }
   }
 
-  const baseUrl = (cliUrl ?? process.env.VELLYMON_URL ?? fileUrl ?? "https://vellymon.game").replace(/\/$/, "");
-  const apiKey  = cliKey ?? process.env.VELLYMON_UPLOAD_API_KEY ?? fileKey;
+  const baseUrl = (cliUrl ?? process.env.CINDERLING_URL ?? fileUrl ?? "https://cinderling.game").replace(/\/$/, "");
+  const apiKey  = cliKey ?? process.env.CINDERLING_UPLOAD_API_KEY ?? fileKey;
 
   if (!apiKey) {
     console.error("❌  No API key found. Provide one via:");
     console.error("    --key <apiKey>");
-    console.error("    VELLYMON_UPLOAD_API_KEY=<key> in env");
-    console.error("    .vellymon/config.json → { \"apiKey\": \"...\" }");
+    console.error("    CINDERLING_UPLOAD_API_KEY=<key> in env");
+    console.error("    .cinderling/config.json → { \"apiKey\": \"...\" }");
     process.exit(1);
   }
 
@@ -550,25 +550,25 @@ switch (cmd) {
   case "match":
     if (sub === "create") cmdMatchCreate();
     else if (sub === "list") cmdMatchList();
-    else { console.error("Usage: vellymon match <create|list>"); process.exit(1); }
+    else { console.error("Usage: cinderling match <create|list>"); process.exit(1); }
     break;
 
   case "board":
-    if (!sub) { console.error("Usage: vellymon board <matchId>"); process.exit(1); }
+    if (!sub) { console.error("Usage: cinderling board <matchId>"); process.exit(1); }
     cmdBoard(sub);
     break;
 
   case "status":
-    if (!sub) { console.error("Usage: vellymon status <matchId>"); process.exit(1); }
+    if (!sub) { console.error("Usage: cinderling status <matchId>"); process.exit(1); }
     cmdStatus(sub);
     break;
 
   case "cmd":
     if (args.length < 5) {
-      console.error("Usage: vellymon cmd <matchId> <teamId> <vellymonId> <action> [direction]");
+      console.error("Usage: cinderling cmd <matchId> <teamId> <cinderlingId> <action> [direction]");
       console.error("  action: move, attack, harvest");
       console.error("  direction: up, down, left, right (required for move/attack)");
-      console.error("  vellymonId: uuid (e.g. '1-0') or name (e.g. 'aerobolt')");
+      console.error("  cinderlingId: uuid (e.g. '1-0') or name (e.g. 'aerobolt')");
       process.exit(1);
     }
     cmdCmd(args[1], args[2], args[3], args[4], args[5]);
@@ -576,18 +576,18 @@ switch (cmd) {
 
   case "submit":
     if (args.length < 3) {
-      console.error("Usage: vellymon submit <matchId> <teamId>"); process.exit(1);
+      console.error("Usage: cinderling submit <matchId> <teamId>"); process.exit(1);
     }
     cmdSubmit(args[1], args[2]);
     break;
 
   case "report":
-    if (!sub) { console.error("Usage: vellymon report <matchId>"); process.exit(1); }
+    if (!sub) { console.error("Usage: cinderling report <matchId>"); process.exit(1); }
     cmdReport(sub);
     break;
 
   case "upload": {
-    if (!sub) { console.error("Usage: vellymon upload <matchId> [--url <baseUrl>] [--key <apiKey>]"); process.exit(1); }
+    if (!sub) { console.error("Usage: cinderling upload <matchId> [--url <baseUrl>] [--key <apiKey>]"); process.exit(1); }
     // Parse optional --url and --key flags
     const uploadArgs = args.slice(2);
     let uploadUrl: string | undefined;
@@ -602,24 +602,24 @@ switch (cmd) {
 
   default:
     console.log(`
-vellymon CLI — playtest matches from the terminal
+cinderfell CLI — playtest matches from the terminal
 
 Commands:
-  vellymon match create                              Create a new match
-  vellymon match list                                List local matches
-  vellymon board <matchId>                           Show the board
-  vellymon status <matchId>                          One-line summary
-  vellymon cmd <id> <team> <vellymon> <action> [dir] Issue a command
-  vellymon submit <matchId> <teamId>                 Submit team's turn
-  vellymon report <matchId>                          Generate match report
-  vellymon upload <matchId> [--url <url>] [--key <key>]
+  cinderling match create                              Create a new match
+  cinderling match list                                List local matches
+  cinderling board <matchId>                           Show the board
+  cinderling status <matchId>                          One-line summary
+  cinderling cmd <id> <team> <cinderling> <action> [dir] Issue a command
+  cinderling submit <matchId> <teamId>                 Submit team's turn
+  cinderling report <matchId>                          Generate match report
+  cinderling upload <matchId> [--url <url>] [--key <key>]
                                                      Upload match to server for spectating
 
 Examples:
-  vellymon match create
-  vellymon cmd abc123 1 aerobolt move right
-  vellymon cmd abc123 1 1-0 attack down
-  vellymon submit abc123 1
-  vellymon upload abc123 --key myapikey
+  cinderling match create
+  cinderling cmd abc123 1 aerobolt move right
+  cinderling cmd abc123 1 1-0 attack down
+  cinderling submit abc123 1
+  cinderling upload abc123 --key myapikey
 `);
 }

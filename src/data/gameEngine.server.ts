@@ -12,7 +12,7 @@ import {
   gamePlayer,
   teamSlot,
   team,
-  vellymonInstance,
+  cinderlingInstance,
   matchStats,
 } from "../../data/schema";
 import {
@@ -21,9 +21,9 @@ import {
 } from "../../lib/matchProgression";
 import { eq, asc } from "drizzle-orm";
 import {
-  VELLYMON_LIBRARY,
-  type VellymonTemplate,
-} from "../../server/vellymonLibrary";
+  CINDERLING_LIBRARY,
+  type CinderlingTemplate,
+} from "../../server/cinderlings";
 
 import {
   initializeGame,
@@ -31,7 +31,7 @@ import {
   resolveTurn,
   isGameActive,
   type TeamSetup,
-  type VellymonSetup,
+  type CinderlingSetup,
   type TurnLog,
 } from "../../server/engine";
 import {
@@ -51,25 +51,25 @@ import type { Command } from "../../server/commands";
 import type { MatchSettings } from "../lib/matchSettings";
 import { generateAIPlayerCommands } from "../../server/ai-player";
 
-// ─── Vellymon lookup ─────────────────────────────────────────────────────────
+// ─── Cinderling lookup ─────────────────────────────────────────────────────────
 
-/** Map from model UUID → VellymonTemplate for fast lookup */
-const templateByModelUuid = new Map<string, VellymonTemplate>();
+/** Map from model UUID → CinderlingTemplate for fast lookup */
+const templateByModelUuid = new Map<string, CinderlingTemplate>();
 
-// Build UUID → template map (same UUID format as enums/vellymons.ts)
+// Build UUID → template map (same UUID format as enums/cinderlings.ts)
 function idToUuid(id: number): string {
   const hex = id.toString(16).padStart(4, "0");
   const padded = id.toString(16).padStart(12, "0");
   return `00be1100-${hex}-4000-8000-${padded}`;
 }
 
-for (const v of VELLYMON_LIBRARY) {
+for (const v of CINDERLING_LIBRARY) {
   templateByModelUuid.set(idToUuid(v.id), v);
 }
 
-function getTemplate(modelUuid: string): VellymonTemplate {
+function getTemplate(modelUuid: string): CinderlingTemplate {
   const t = templateByModelUuid.get(modelUuid);
-  if (!t) throw new Error(`Unknown vellymon model: ${modelUuid}`);
+  if (!t) throw new Error(`Unknown cinderling model: ${modelUuid}`);
   return t;
 }
 
@@ -217,7 +217,7 @@ export async function initializeMatchGame(matchUuid: string): Promise<void> {
  * Called the first time a sparring match's game state is requested.
  * Unlike initializeMatchGame, sparring matches:
  *   - Have only one human gamePlayer row in the DB
- *   - Use a randomly selected AI team from VELLYMON_LIBRARY
+ *   - Use a randomly selected AI team from CINDERLING_LIBRARY
  *   - Store aiTeamId in metadata for auto-turn resolution
  *
  * AI team is always team 2. Human is always team 1.
@@ -288,7 +288,7 @@ export async function initializeSparringGame(matchUuid: string): Promise<void> {
 }
 
 /**
- * Build an AI team setup by randomly selecting vellymons from the library.
+ * Build an AI team setup by randomly selecting cinderlings from the library.
  * 4 active + 2 bench, using map spawn positions.
  */
 function buildAITeamSetup(
@@ -296,16 +296,16 @@ function buildAITeamSetup(
   map: import("../../server/maps").MapConfig,
 ): TeamSetup {
   // Shuffle the library and pick 6 (or fewer if library is small)
-  const shuffled = [...VELLYMON_LIBRARY].sort(() => Math.random() - 0.5);
+  const shuffled = [...CINDERLING_LIBRARY].sort(() => Math.random() - 0.5);
   const selected = shuffled.slice(0, 6);
 
   const spawns = getMapSpawnPositions(map, teamId);
 
-  const active: VellymonSetup[] = [];
-  const bench: VellymonSetup[] = [];
+  const active: CinderlingSetup[] = [];
+  const bench: CinderlingSetup[] = [];
 
   selected.forEach((template, index) => {
-    const setup: VellymonSetup = {
+    const setup: CinderlingSetup = {
       uuid: `ai-${teamId}-${index}`,
       name: template.name,
       maxHp: template.hp,
@@ -339,7 +339,7 @@ function buildAITeamSetup(
 }
 
 /**
- * Build a TeamSetup from a specific list of vellymon names (used for AI profile sparring).
+ * Build a TeamSetup from a specific list of cinderling names (used for AI profile sparring).
  * First 4 names → active; names 5-6 → bench.  Names 7-8 are reserved for future use.
  */
 function buildProfileTeamSetup(
@@ -353,15 +353,15 @@ function buildProfileTeamSetup(
   const templates = teamNames
     .slice(0, 6)
     .map((name) =>
-      VELLYMON_LIBRARY.find((v) => v.name.toLowerCase() === name.toLowerCase()),
+      CINDERLING_LIBRARY.find((v) => v.name.toLowerCase() === name.toLowerCase()),
     )
-    .filter((v): v is (typeof VELLYMON_LIBRARY)[0] => v !== undefined);
+    .filter((v): v is (typeof CINDERLING_LIBRARY)[0] => v !== undefined);
 
-  const active: VellymonSetup[] = [];
-  const bench: VellymonSetup[] = [];
+  const active: CinderlingSetup[] = [];
+  const bench: CinderlingSetup[] = [];
 
   templates.forEach((template, index) => {
-    const setup: VellymonSetup = {
+    const setup: CinderlingSetup = {
       uuid: `ai-${teamId}-${index}`,
       name: template.name,
       maxHp: template.hp,
@@ -400,17 +400,17 @@ async function buildTeamSetup(
   teamId: 1 | 2,
   map: import("../../server/maps").MapConfig,
 ): Promise<TeamSetup> {
-  // Load team slots with vellymon instances
+  // Load team slots with cinderling instances
   const slots = await db
     .select({
       slotIndex: teamSlot.slotIndex,
       isActive: teamSlot.isActive,
-      modelUuid: vellymonInstance.modelUuid,
+      modelUuid: cinderlingInstance.modelUuid,
     })
     .from(teamSlot)
     .innerJoin(
-      vellymonInstance,
-      eq(teamSlot.vellymonInstanceUuid, vellymonInstance.uuid),
+      cinderlingInstance,
+      eq(teamSlot.cinderlingInstanceUuid, cinderlingInstance.uuid),
     )
     .where(eq(teamSlot.teamUuid, teamUuid))
     .orderBy(asc(teamSlot.slotIndex));
@@ -418,12 +418,12 @@ async function buildTeamSetup(
   const spawns = getMapSpawnPositions(map, teamId);
 
   // First 4 slots = active, rest = bench
-  const active: VellymonSetup[] = [];
-  const bench: VellymonSetup[] = [];
+  const active: CinderlingSetup[] = [];
+  const bench: CinderlingSetup[] = [];
 
   for (const slot of slots) {
     const template = getTemplate(slot.modelUuid);
-    const setup: VellymonSetup = {
+    const setup: CinderlingSetup = {
       uuid: `${teamId}-${slot.slotIndex}`,
       name: template.name,
       maxHp: template.hp,
@@ -515,8 +515,8 @@ export async function getMatchGameState(matchUuid: string) {
  * Stats captured:
  *   result       — "win" | "loss"
  *   turns        — total turns played
- *   enemyKOs     — opponent vellymons knocked out by this player's team
- *   ownKOs       — own vellymons knocked out
+ *   enemyKOs     — opponent cinderlings knocked out by this player's team
+ *   ownKOs       — own cinderlings knocked out
  *   winCondition — engine win condition string (or "concession")
  *   isSparring   — true for AI practice matches
  *   sparring — true if this is a practice match

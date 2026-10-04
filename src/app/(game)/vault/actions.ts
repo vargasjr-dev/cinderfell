@@ -32,7 +32,7 @@ const VAULT_COSTS: Record<string, number> = {
   cosmetic: 75,
   title: 30,
   credits: 0, // Credit rewards aren't purchasable — they were the reward
-  vellymon: 150,
+  cinderling: 150,
 };
 
 function getVaultCost(rewardType: string): number {

@@ -22,7 +22,7 @@ registerPower({
   hooks: {
     onTurnStart: (ctx: HookContext): PowerEffect[] => {
       if (ctx.turn < 5) return [];
-      return [{ type: "speed_mod", vellymonId: ctx.self.uuid, amount: 2 }];
+      return [{ type: "speed_mod", cinderlingId: ctx.self.uuid, amount: 2 }];
     },
   },
 });

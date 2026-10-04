@@ -15,7 +15,7 @@ const PERKS = [
   {
     emoji: "⚡️",
     title: "Early Access",
-    desc: "Day-1 Vellymon unlock each season",
+    desc: "Day-1 Cinderling unlock each season",
   },
   {
     emoji: "🎨",
@@ -54,7 +54,7 @@ export default async function SubscribePage() {
         <div className="bg-gradient-to-br from-yellow-400 to-orange-500 px-6 pt-6 pb-5 text-center">
           <p className="text-4xl mb-1">⭐</p>
           <h1 className="text-2xl font-black text-white tracking-tight">
-            Vellymon Premium
+            Cinderling Premium
           </h1>
           <p className="text-yellow-100 text-sm mt-0.5">
             Unlock the full experience

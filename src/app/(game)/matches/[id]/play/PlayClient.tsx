@@ -48,13 +48,13 @@ export default function PlayClient({
 
   // ─── Handlers ────────────────────────────────────────────────────────────
 
-  const handleVellymonClick = useCallback((uuid: string) => {
+  const handleCinderlingClick = useCallback((uuid: string) => {
     setSelectedUuid((prev) => (prev === uuid ? null : uuid));
   }, []);
 
   const handleSpaceClick = useCallback(
     (x: number, y: number) => {
-      // If we're in attack-target mode and have a selected vellymon with a pending attack
+      // If we're in attack-target mode and have a selected cinderling with a pending attack
       // This will be expanded when CommandInput signals target mode
       setSelectedUuid(null);
     },
@@ -63,9 +63,9 @@ export default function PlayClient({
 
   const handleSubmitCommand = useCallback((command: CommandPayload) => {
     setPendingCommands((prev) => {
-      // Replace if same vellymon already has a command
+      // Replace if same cinderling already has a command
       const filtered = prev.filter(
-        (c) => c.vellymonUuid !== command.vellymonUuid,
+        (c) => c.cinderlingUuid !== command.cinderlingUuid,
       );
       return [...filtered, command];
     });
@@ -148,7 +148,7 @@ export default function PlayClient({
             {isWinner ? "Victory!" : "Defeat"}
           </h1>
           <p className="text-gray-400 mb-1">
-            {gameOver.condition === "elimination" && "All opposing vellymons eliminated!"}
+            {gameOver.condition === "elimination" && "All opposing cinderlings eliminated!"}
             {gameOver.condition === "occupation" && "Occupation points secured!"}
             {gameOver.condition === "accumulation" && "Energy threshold reached!"}
           </p>
@@ -168,7 +168,7 @@ export default function PlayClient({
 
   // ─── Main Game Layout ────────────────────────────────────────────────────
 
-  const selectedVellymon = selectedUuid
+  const selectedCinderling = selectedUuid
     ? gameState.yourTeam.active.find((v) => v.uuid === selectedUuid) ?? null
     : null;
 
@@ -258,16 +258,16 @@ export default function PlayClient({
                 opponentActive={gameState.opponentTeam.active}
                 teamId={teamId}
                 selectedUuid={selectedUuid}
-                onVellymonClick={handleVellymonClick}
+                onCinderlingClick={handleCinderlingClick}
                 onSpaceClick={handleSpaceClick}
               />
             </div>
 
             {/* Command Input (below board) */}
-            {selectedVellymon && (
+            {selectedCinderling && (
               <div className="mt-2 flex justify-center">
                 <CommandInput
-                  vellymon={selectedVellymon}
+                  cinderling={selectedCinderling}
                   teamEnergy={gameState.yourTeam.energy}
                   board={gameState.board}
                   pendingCommands={pendingCommands}

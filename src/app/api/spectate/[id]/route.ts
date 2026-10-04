@@ -2,7 +2,7 @@
  * Spectate API route — serves match state for the read-only spectator view.
  *
  * Reads from two sources in order:
- *  1. `.vellymon/[id].json` on the filesystem — for CLI-created local matches
+ *  1. `.cinderling/[id].json` on the filesystem — for CLI-created local matches
  *  2. Database — for uploaded matches (matchSnapshot table)
  *
  * No auth required — spectating is public.
@@ -26,7 +26,7 @@ export async function GET(
     return NextResponse.json({ error: "Invalid match ID" }, { status: 400 });
   }
 
-  // ── 1. Try local .vellymon file (CLI / dev mode) ──────────────────────────
+  // ── 1. Try local .cinderling file (CLI / dev mode) ──────────────────────────
   try {
     const filePath = join(process.cwd(), ".vellymon", `${id}.json`);
     const raw = await readFile(filePath, "utf-8");
@@ -134,20 +134,20 @@ export async function GET(
       // Reconstruct turn snapshots for replay if we have both gameState and history
       if (finalState && history.length > 0) {
         // Build uuid → static stats lookup from the full final gameState
-        type VellymonStats = {
+        type CinderlingStats = {
           speed: number;
           attack: number;
           attacks?: unknown[];
           imageUrl?: string;
         };
-        const statsLookup = new Map<string, VellymonStats>();
+        const statsLookup = new Map<string, CinderlingStats>();
         for (const team of finalState.teams) {
-          const allVellymons = [
+          const allCinderlings = [
             ...team.active,
             ...(team.bench as typeof team.active),
             ...(team.knocked as typeof team.active),
           ];
-          for (const v of allVellymons) {
+          for (const v of allCinderlings) {
             statsLookup.set(v.uuid, {
               speed: v.speed,
               attack: v.attack,

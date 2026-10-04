@@ -3,22 +3,22 @@
 import { useState } from "react";
 import type {
   CommandPayload,
-  VellymonPayload,
+  CinderlingPayload,
   BoardPayload,
 } from "~/hooks/useGameSocket";
 
 type CommandInputProps = {
-  /** The vellymon currently selected for command input */
-  vellymon: VellymonPayload;
+  /** The cinderling currently selected for command input */
+  cinderling: CinderlingPayload;
   /** Team energy available */
   teamEnergy: number;
   /** Board data for range/target validation */
   board: BoardPayload;
-  /** Already-submitted commands this turn (for other vellymons) */
+  /** Already-submitted commands this turn (for other cinderlings) */
   pendingCommands: CommandPayload[];
-  /** Callback when a command is confirmed for this vellymon */
+  /** Callback when a command is confirmed for this cinderling */
   onSubmitCommand: (command: CommandPayload) => void;
-  /** Callback to deselect this vellymon */
+  /** Callback to deselect this cinderling */
   onCancel: () => void;
 };
 
@@ -34,7 +34,7 @@ const DIRECTION_LABELS: Array<{ label: string; vec: Vec2; arrow: string }> = [
 ];
 
 export default function CommandInput({
-  vellymon,
+  cinderling,
   teamEnergy,
   board,
   pendingCommands,
@@ -44,20 +44,20 @@ export default function CommandInput({
   const [mode, setMode] = useState<CommandMode>("select");
   const [selectedAttackIndex, setSelectedAttackIndex] = useState<number | null>(null);
 
-  // Check if this vellymon already has a pending command
+  // Check if this cinderling already has a pending command
   const alreadyHasCommand = pendingCommands.some(
-    (c) => c.vellymonUuid === vellymon.uuid,
+    (c) => c.cinderlingUuid === cinderling.uuid,
   );
 
-  // Check if vellymon is on a harvestable space
+  // Check if cinderling is on a harvestable space
   const currentSpace = board.spaces.find(
-    (s) => s.x === vellymon.x && s.y === vellymon.y,
+    (s) => s.x === cinderling.x && s.y === cinderling.y,
   );
   const canHarvest = currentSpace?.type === "harvestable";
   const harvestYield = currentSpace?.harvestYield ?? 1;
 
   // Check if any attack is affordable
-  const canAffordAnyAttack = vellymon.attacks.some(
+  const canAffordAnyAttack = cinderling.attacks.some(
     (a) => a.energyCost <= teamEnergy,
   );
 
@@ -65,19 +65,19 @@ export default function CommandInput({
     return (
       <div className="bg-gray-800 text-white rounded-lg p-3 shadow-lg">
         <div className="text-sm text-gray-400">
-          Command queued for <span className="font-bold text-blue-300">{vellymon.name}</span>
+          Command queued for <span className="font-bold text-blue-300">{cinderling.name}</span>
         </div>
         <div className="mt-1 text-xs text-gray-500">
-          {pendingCommands.find((c) => c.vellymonUuid === vellymon.uuid)?.type.toUpperCase()}
+          {pendingCommands.find((c) => c.cinderlingUuid === cinderling.uuid)?.type.toUpperCase()}
         </div>
       </div>
     );
   }
 
-  if (vellymon.isKO) {
+  if (cinderling.isKO) {
     return (
       <div className="bg-gray-800 text-white rounded-lg p-3 shadow-lg">
-        <div className="text-sm text-red-400 font-bold">{vellymon.name} is KO&apos;d</div>
+        <div className="text-sm text-red-400 font-bold">{cinderling.name} is KO&apos;d</div>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function CommandInput({
     <div className="bg-gray-800 text-white rounded-lg p-3 shadow-lg min-w-[200px]">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <div className="font-bold text-sm text-blue-300">{vellymon.name}</div>
+        <div className="font-bold text-sm text-blue-300">{cinderling.name}</div>
         <button
           onClick={onCancel}
           className="text-gray-400 hover:text-white text-xs"
@@ -101,17 +101,17 @@ export default function CommandInput({
         <div className="flex-1 h-1.5 bg-gray-600 rounded-full">
           <div
             className={`h-full rounded-full transition-all ${
-              vellymon.hp / vellymon.maxHp > 0.5
+              cinderling.hp / cinderling.maxHp > 0.5
                 ? "bg-green-500"
-                : vellymon.hp / vellymon.maxHp > 0.25
+                : cinderling.hp / cinderling.maxHp > 0.25
                   ? "bg-yellow-500"
                   : "bg-red-500"
             }`}
-            style={{ width: `${(vellymon.hp / vellymon.maxHp) * 100}%` }}
+            style={{ width: `${(cinderling.hp / cinderling.maxHp) * 100}%` }}
           />
         </div>
         <span className="text-gray-300 tabular-nums">
-          {vellymon.hp}/{vellymon.maxHp}
+          {cinderling.hp}/{cinderling.maxHp}
         </span>
       </div>
 
@@ -137,7 +137,7 @@ export default function CommandInput({
             onClick={() => {
               onSubmitCommand({
                 type: "harvest",
-                vellymonUuid: vellymon.uuid,
+                cinderlingUuid: cinderling.uuid,
                 vec: { dx: 0, dy: 1 }, // default: harvest tile below
               });
             }}
@@ -156,35 +156,35 @@ export default function CommandInput({
             <DirectionButton
               vec={{ dx: 0, dy: -1 }}
               label="↑ Up"
-              vellymon={vellymon}
+              cinderling={cinderling}
               board={board}
-              onSelect={(v) => onSubmitCommand({ type: "move", vellymonUuid: vellymon.uuid, vec: v })}
+              onSelect={(v) => onSubmitCommand({ type: "move", cinderlingUuid: cinderling.uuid, vec: v })}
             />
             <div /> {/* empty top-right */}
             <DirectionButton
               vec={{ dx: -1, dy: 0 }}
               label="← Left"
-              vellymon={vellymon}
+              cinderling={cinderling}
               board={board}
-              onSelect={(v) => onSubmitCommand({ type: "move", vellymonUuid: vellymon.uuid, vec: v })}
+              onSelect={(v) => onSubmitCommand({ type: "move", cinderlingUuid: cinderling.uuid, vec: v })}
             />
             <div className="flex items-center justify-center text-gray-500 text-[10px]">
-              {vellymon.x},{vellymon.y}
+              {cinderling.x},{cinderling.y}
             </div>
             <DirectionButton
               vec={{ dx: 1, dy: 0 }}
               label="→ Right"
-              vellymon={vellymon}
+              cinderling={cinderling}
               board={board}
-              onSelect={(v) => onSubmitCommand({ type: "move", vellymonUuid: vellymon.uuid, vec: v })}
+              onSelect={(v) => onSubmitCommand({ type: "move", cinderlingUuid: cinderling.uuid, vec: v })}
             />
             <div /> {/* empty bottom-left */}
             <DirectionButton
               vec={{ dx: 0, dy: 1 }}
               label="↓ Down"
-              vellymon={vellymon}
+              cinderling={cinderling}
               board={board}
-              onSelect={(v) => onSubmitCommand({ type: "move", vellymonUuid: vellymon.uuid, vec: v })}
+              onSelect={(v) => onSubmitCommand({ type: "move", cinderlingUuid: cinderling.uuid, vec: v })}
             />
             <div /> {/* empty bottom-right */}
           </div>
@@ -201,7 +201,7 @@ export default function CommandInput({
       {mode === "attack" && selectedAttackIndex === null && (
         <div className="flex flex-col gap-1">
           <div className="text-xs text-gray-400 mb-1">Choose attack:</div>
-          {vellymon.attacks.map((attack, i) => {
+          {cinderling.attacks.map((attack, i) => {
             const canAfford = attack.energyCost <= teamEnergy;
             return (
               <button
@@ -240,8 +240,8 @@ export default function CommandInput({
             Click a target space on the board
           </div>
           <div className="text-xs text-red-300">
-            {vellymon.attacks[selectedAttackIndex].name} — range{" "}
-            {vellymon.attacks[selectedAttackIndex].range}
+            {cinderling.attacks[selectedAttackIndex].name} — range{" "}
+            {cinderling.attacks[selectedAttackIndex].range}
           </div>
           <button
             onClick={() => setSelectedAttackIndex(null)}
@@ -293,18 +293,18 @@ function CommandButton({
 function DirectionButton({
   vec,
   label,
-  vellymon,
+  cinderling,
   board,
   onSelect,
 }: {
   vec: Vec2;
   label: string;
-  vellymon: VellymonPayload;
+  cinderling: CinderlingPayload;
   board: BoardPayload;
   onSelect: (vec: Vec2) => void;
 }) {
-  const targetX = vellymon.x + vec.dx;
-  const targetY = vellymon.y + vec.dy;
+  const targetX = cinderling.x + vec.dx;
+  const targetY = cinderling.y + vec.dy;
 
   // Check bounds
   const inBounds = targetX >= 0 && targetX < board.width && targetY >= 0 && targetY < board.height;

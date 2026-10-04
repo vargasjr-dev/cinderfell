@@ -1,4 +1,4 @@
-import all from "../enums/vellymons";
+import all from "../enums/cinderlings";
 
 const listMarket = () => {
   return all;

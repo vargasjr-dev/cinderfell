@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createProfileSparringMatchAction, createProfileFromPracticeAction } from "./actions";
 import { MAP_OPTIONS } from "~/lib/matchSettings";
-import VellymonPremiumLogo from "~/components/VellymonPremiumLogo";
-import MonTeamSelector, { type VellymonData } from "../admin/profiles/MonTeamSelector";
+import CinderfellPremiumLogo from "~/components/CinderfellPremiumLogo";
+import MonTeamSelector, { type CinderlingData } from "../admin/profiles/MonTeamSelector";
 
 type TeamOption = { uuid: string; name: string };
 type ProfileOption = { id: string; name: string; description: string };
@@ -15,7 +15,7 @@ interface PracticeSetupProps {
   teams: TeamOption[];
   subscribed: boolean;
   profiles: ProfileOption[];
-  vellymons: VellymonData[];
+  cinderlings: CinderlingData[];
 }
 
 // ── Paywall ───────────────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ function PremiumGate() {
   return (
     <div className="text-center py-12">
       <div className="flex justify-center mb-5">
-        <VellymonPremiumLogo />
+        <CinderfellPremiumLogo />
       </div>
       <h2 className="text-xl font-bold text-gray-900 mb-2">Premium Required</h2>
       <p className="text-gray-600 mb-4">
@@ -352,10 +352,10 @@ function WatchTab({ profiles }: { profiles: ProfileOption[] }) {
 // ── Profiles tab ──────────────────────────────────────────────────────────────
 function ProfilesTab({
   profiles,
-  vellymons,
+  cinderlings,
 }: {
   profiles: ProfileOption[];
-  vellymons: VellymonData[];
+  cinderlings: CinderlingData[];
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -447,7 +447,7 @@ function ProfilesTab({
                 required
                 rows={3}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="You are an aggressive vellymon player. Always push forward and attack the nearest enemy…"
+                placeholder="You are an aggressive cinderling player. Always push forward and attack the nearest enemy…"
               />
             </div>
 
@@ -470,7 +470,7 @@ function ProfilesTab({
             </div>
 
             {/* Mon selector */}
-            <MonTeamSelector vellymons={vellymons} slots={slots} onChange={setSlots} />
+            <MonTeamSelector cinderlings={cinderlings} slots={slots} onChange={setSlots} />
             {slots.filter(Boolean).length === 0 && (
               <p className="text-xs text-gray-400">
                 ✨ Leave empty and a team will be auto-picked based on your prompt.
@@ -501,7 +501,7 @@ function ProfilesTab({
 }
 
 // ── Root ──────────────────────────────────────────────────────────────────────
-export default function PracticeSetup({ teams, subscribed, profiles, vellymons }: PracticeSetupProps) {
+export default function PracticeSetup({ teams, subscribed, profiles, cinderlings }: PracticeSetupProps) {
   const [tab, setTab] = useState<"play" | "watch" | "profiles">("play");
 
   if (!subscribed) return <PremiumGate />;
@@ -548,7 +548,7 @@ export default function PracticeSetup({ teams, subscribed, profiles, vellymons }
       ) : tab === "watch" ? (
         <WatchTab profiles={profiles} />
       ) : (
-        <ProfilesTab profiles={profiles} vellymons={vellymons} />
+        <ProfilesTab profiles={profiles} cinderlings={cinderlings} />
       )}
     </div>
   );

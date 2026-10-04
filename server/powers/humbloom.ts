@@ -28,7 +28,7 @@ registerPower({
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
       if (ctx.command.type !== "harvest") return [];
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
 
       // Find the lowest-HP active ally (including self)
       const myTeam = ctx.state.teams[ctx.team === 1 ? 0 : 1];

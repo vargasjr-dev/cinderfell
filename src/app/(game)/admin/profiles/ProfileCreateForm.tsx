@@ -2,12 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { createProfileAction } from "./actions";
-import MonTeamSelector, { type VellymonData } from "./MonTeamSelector";
+import MonTeamSelector, { type CinderlingData } from "./MonTeamSelector";
 
 export default function ProfileCreateForm({
-  vellymons,
+  cinderlings,
 }: {
-  vellymons: VellymonData[];
+  cinderlings: CinderlingData[];
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -70,7 +70,7 @@ export default function ProfileCreateForm({
           required
           rows={4}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="Describe this AI player's personality and strategy. This becomes the user message prefix for every turn.&#10;&#10;Example: You are an aggressive vellymon player. Always push forward and attack the nearest enemy. Prioritize targeting low-HP mons to finish them off quickly. Don't retreat unless you have no other option."
+          placeholder="Describe this AI player's personality and strategy. This becomes the user message prefix for every turn.&#10;&#10;Example: You are an aggressive cinderling player. Always push forward and attack the nearest enemy. Prioritize targeting low-HP mons to finish them off quickly. Don't retreat unless you have no other option."
         />
         <p className="text-xs text-gray-400 mt-0.5">
           This is the AI player's identity — it shapes every decision it makes.
@@ -91,7 +91,7 @@ export default function ProfileCreateForm({
           <option value="jev">Jev (TypeSafe System One) — typed decisions</option>
         </select>
         <p className="text-xs text-gray-400 mt-0.5">
-          Jev picks from each vellymon&apos;s legal actions via Choice questions; Claude writes the full command list. Randomness applies to Claude only.
+          Jev picks from each cinderling&apos;s legal actions via Choice questions; Claude writes the full command list. Randomness applies to Claude only.
         </p>
       </div>
 
@@ -126,7 +126,7 @@ export default function ProfileCreateForm({
       {/* Mon selector */}
       <div>
         <MonTeamSelector
-          vellymons={vellymons}
+          cinderlings={cinderlings}
           slots={slots}
           onChange={setSlots}
         />

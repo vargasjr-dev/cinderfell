@@ -3,9 +3,9 @@
  * for playtesting. Admin can then play as either side.
  *
  * Flow:
- * 1. Shuffle the 64-vellymon library, pick 16 (no repeats)
+ * 1. Shuffle the 64-cinderling library, pick 16 (no repeats)
  * 2. Split into two groups of 8
- * 3. Create vellymonInstances for the admin user
+ * 3. Create cinderlingInstances for the admin user
  * 4. Create two teams (4 active + 4 bench each)
  * 5. Create a gameSession with both gamePlayers set to admin
  * 6. Return the match UUID
@@ -13,13 +13,13 @@
 
 import { db } from "../../data/db";
 import {
-  vellymonInstance,
+  cinderlingInstance,
   team,
   teamSlot,
   gameSession,
   gamePlayer,
 } from "../../data/schema";
-import { VELLYMON_LIBRARY } from "../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../server/cinderlings";
 
 function idToUuid(id: number): string {
   const hex4 = id.toString(16).padStart(4, "0");
@@ -46,18 +46,18 @@ const createAdminMatch = async (
   settings?: MatchSettingsInput,
 ) => {
   try {
-    // 1. Pick 16 random vellymons (no repeats)
-    const shuffled = shuffle(VELLYMON_LIBRARY);
+    // 1. Pick 16 random cinderlings (no repeats)
+    const shuffled = shuffle(CINDERLING_LIBRARY);
     const picked = shuffled.slice(0, 16);
     const teamA = picked.slice(0, 8);
     const teamB = picked.slice(8, 16);
 
-    // 2. Create vellymon instances for admin
+    // 2. Create cinderling instances for admin
     const createInstances = async (models: typeof teamA) => {
       const instances = [];
       for (const v of models) {
         const [inst] = await db
-          .insert(vellymonInstance)
+          .insert(cinderlingInstance)
           .values({
             modelUuid: idToUuid(v.id),
             userId: adminUserId,
@@ -96,7 +96,7 @@ const createAdminMatch = async (
       await db.insert(teamSlot).values(
         instances.map((inst, i) => ({
           teamUuid,
-          vellymonInstanceUuid: inst.instanceUuid,
+          cinderlingInstanceUuid: inst.instanceUuid,
           slotIndex: i,
           isActive: i < 4,
         })),

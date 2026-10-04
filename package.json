@@ -1,9 +1,9 @@
 {
-  "name": "vellymon.game",
+  "name": "cinderfell",
   "description": "A multiplayer RPG game built with Next.js",
   "version": "0.0.1",
   "license": "MIT",
-  "repository": "vargasjr-dev/vellymon.game",
+  "repository": "vargasjr-dev/cinderfell",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -43,6 +43,7 @@
     "eslint-config-next": "^15.0.0"
   },
   "bin": {
-    "vellymon": "cli/vellymon.ts"
+    "cinderfell": "cli/cinderfell.ts",
+    "vellymon": "cli/cinderfell.ts"
   }
 }

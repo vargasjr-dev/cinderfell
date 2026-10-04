@@ -3,14 +3,14 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export interface VellymonAttack {
+export interface CinderlingAttack {
   name: string;
   damage: number;
   energyCost: number;
   range: number;
 }
 
-export interface VellymonData {
+export interface CinderlingData {
   name: string;
   hp: number;
   attack: number;
@@ -19,11 +19,11 @@ export interface VellymonData {
   imageUrl?: string;
   powerName?: string;
   powerDescription?: string;
-  attacks?: VellymonAttack[];
+  attacks?: CinderlingAttack[];
 }
 
 interface MonTeamSelectorProps {
-  vellymons: VellymonData[];
+  cinderlings: CinderlingData[];
   /** 8-slot array of mon names (empty string = empty/auto-fill). */
   slots: string[];
   onChange: (slots: string[]) => void;
@@ -68,7 +68,7 @@ function MonDetailPanel({
   onClose,
   onBack,
 }: {
-  mon: VellymonData;
+  mon: CinderlingData;
   isInTeam: boolean;
   onPick: (name: string) => void;
   onClose: () => void;
@@ -142,22 +142,22 @@ function MonDetailPanel({
 }
 
 function MonPickerModal({
-  vellymons,
+  cinderlings,
   selectedNames,
   onPick,
   onClose,
 }: {
-  vellymons: VellymonData[];
+  cinderlings: CinderlingData[];
   selectedNames: string[];
   onPick: (name: string) => void;
   onClose: () => void;
 }) {
   const [search, setSearch] = useState("");
-  const [focused, setFocused] = useState<VellymonData | null>(null);
+  const [focused, setFocused] = useState<CinderlingData | null>(null);
   // Mobile: tracks which mon is showing the detail bottom-sheet
-  const [mobileFocused, setMobileFocused] = useState<VellymonData | null>(null);
+  const [mobileFocused, setMobileFocused] = useState<CinderlingData | null>(null);
 
-  const filtered = vellymons.filter(
+  const filtered = cinderlings.filter(
     (v) => !search || v.name.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -175,7 +175,7 @@ function MonPickerModal({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
           <h3 className="font-semibold text-gray-900">
-            {mobileFocused ? mobileFocused.name : "Pick a Vellymon"}
+            {mobileFocused ? mobileFocused.name : "Pick a Cinderling"}
           </h3>
           <button
             type="button"
@@ -206,7 +206,7 @@ function MonPickerModal({
                 autoFocus
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search vellymons…"
+                placeholder="Search cinderlings…"
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
@@ -283,7 +283,7 @@ function MonPickerModal({
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full p-4 text-center">
                     <p className="text-3xl mb-2">👆</p>
-                    <p className="text-xs text-gray-400">Hover a vellymon to preview</p>
+                    <p className="text-xs text-gray-400">Hover a cinderling to preview</p>
                   </div>
                 )}
               </div>
@@ -296,7 +296,7 @@ function MonPickerModal({
 }
 
 export default function MonTeamSelector({
-  vellymons,
+  cinderlings,
   slots,
   onChange,
 }: MonTeamSelectorProps) {
@@ -337,7 +337,7 @@ export default function MonTeamSelector({
       {/* 8 slots */}
       <div className="grid grid-cols-4 gap-2">
         {slots.map((name, i) => {
-          const mon = name ? vellymons.find((v) => v.name === name) : null;
+          const mon = name ? cinderlings.find((v) => v.name === name) : null;
           return (
             <button
               key={i}
@@ -391,13 +391,13 @@ export default function MonTeamSelector({
       </div>
 
       <p className="text-xs text-gray-400 mt-2">
-        Click any slot to pick a vellymon. Starters vs. bench are chosen at pregame.
+        Click any slot to pick a cinderling. Starters vs. bench are chosen at pregame.
       </p>
 
       {/* Picker modal */}
       {openSlot !== null && (
         <MonPickerModal
-          vellymons={vellymons}
+          cinderlings={cinderlings}
           selectedNames={selectedNames}
           onPick={handlePick}
           onClose={() => setOpenSlot(null)}

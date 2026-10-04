@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "~/lib/auth.server";
 import buyFromMarket from "~/data/buyFromMarket.server";
 
-export async function purchaseVellymon(modelUuid: string) {
+export async function purchaseCinderling(modelUuid: string) {
   const headersList = await headers();
   // Session guaranteed by (game)/layout.tsx auth gate
   const session = (await auth.api.getSession({ headers: headersList }))!;

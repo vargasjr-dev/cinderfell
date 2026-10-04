@@ -12,7 +12,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-export const vellymonInstance = pgTable("vellymonInstance", {
+export const cinderlingInstance = pgTable("vellymonInstance", {
   uuid: uuid("uuid").primaryKey().defaultRandom(),
   address: varchar("address", { length: 64 }).notNull().unique(),
   network: integer("network").notNull().unique(),
@@ -64,7 +64,7 @@ export const gamePlayer = pgTable(
   ],
 );
 
-// Team system — 8 vellymons per team, 4 active in match lineup
+// Team system — 8 cinderlings per team, 4 active in match lineup
 export const team = pgTable(
   "team",
   {
@@ -89,15 +89,15 @@ export const teamSlot = pgTable(
     teamUuid: uuid("teamUuid")
       .notNull()
       .references(() => team.uuid, { onDelete: "cascade" }),
-    vellymonInstanceUuid: uuid("vellymonInstanceUuid")
+    cinderlingInstanceUuid: uuid("vellymonInstanceUuid")
       .notNull()
-      .references(() => vellymonInstance.uuid, { onDelete: "cascade" }),
+      .references(() => cinderlingInstance.uuid, { onDelete: "cascade" }),
     slotIndex: integer("slotIndex").notNull(), // 0-7 position in roster
     isActive: boolean("isActive").default(false).notNull(), // true = in the 4-slot match lineup
   },
   (table) => [
     index("teamSlot_teamUuid_idx").on(table.teamUuid),
-    index("teamSlot_vellymonInstanceUuid_idx").on(table.vellymonInstanceUuid),
+    index("teamSlot_vellymonInstanceUuid_idx").on(table.cinderlingInstanceUuid),
   ],
 );
 
@@ -216,9 +216,9 @@ export const teamSlotRelations = relations(teamSlot, ({ one }) => ({
     fields: [teamSlot.teamUuid],
     references: [team.uuid],
   }),
-  vellymonInstance: one(vellymonInstance, {
-    fields: [teamSlot.vellymonInstanceUuid],
-    references: [vellymonInstance.uuid],
+  cinderlingInstance: one(cinderlingInstance, {
+    fields: [teamSlot.cinderlingInstanceUuid],
+    references: [cinderlingInstance.uuid],
   }),
 }));
 
@@ -281,7 +281,7 @@ export const cosmetic = pgTable(
     userId: text("userId")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    vellymonId: uuid("vellymonId"), // nullable — global cosmetics (board themes, profile borders)
+    cinderlingId: uuid("vellymonId"), // nullable — global cosmetics (board themes, profile borders)
     type: text("type").notNull(), // skin | vfx_harvest | vfx_attack | vfx_ko | board_theme | profile_border | title
     name: text("name").notNull(),
     imageUrl: text("imageUrl"), // URL to generated/stored asset
@@ -292,7 +292,7 @@ export const cosmetic = pgTable(
   },
   (table) => [
     index("cosmetic_userId_idx").on(table.userId),
-    index("cosmetic_vellymonId_idx").on(table.vellymonId),
+    index("cosmetic_vellymonId_idx").on(table.cinderlingId),
     index("cosmetic_type_idx").on(table.type),
   ],
 );
@@ -304,7 +304,7 @@ export const cosmeticLoadout = pgTable(
     userId: text("userId")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    vellymonId: uuid("vellymonId").notNull(), // which vellymon this loadout applies to
+    cinderlingId: uuid("vellymonId").notNull(), // which cinderling this loadout applies to
     equippedSkinId: uuid("equippedSkinId").references(() => cosmetic.id, {
       onDelete: "set null",
     }),
@@ -316,7 +316,7 @@ export const cosmeticLoadout = pgTable(
   },
   (table) => [
     index("cosmeticLoadout_userId_idx").on(table.userId),
-    index("cosmeticLoadout_vellymonId_idx").on(table.vellymonId),
+    index("cosmeticLoadout_vellymonId_idx").on(table.cinderlingId),
   ],
 );
 
@@ -349,7 +349,7 @@ export const season = pgTable("season", {
   startDate: timestamp("startDate").notNull(),
   endDate: timestamp("endDate").notNull(),
   status: text("status").default("upcoming").notNull(), // upcoming | active | archived
-  newVellymonId: integer("newVellymonId"), // ID in vellymon library for this season's new vellymon
+  newCinderlingId: integer("newVellymonId"), // ID in cinderling library for this season's new cinderling
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -478,7 +478,7 @@ export const userRankRelations = relations(userRank, ({ one }) => ({
 export const aiProfile = pgTable("aiProfile", {
   id: text("id").primaryKey(), // auto-generated slug from name, e.g. "aggro-hard"
   name: varchar("name", { length: 64 }).notNull(),
-  /** Ordered list of vellymon names from VELLYMON_LIBRARY (6 total: 4 active + 2 bench) */
+  /** Ordered list of cinderling names from CINDERLING_LIBRARY (6 total: 4 active + 2 bench) */
   teamNames: json("teamNames").$type<string[]>().notNull(),
   /**
    * LLM temperature proxy (0.0 = deterministic, 1.0 = very random).
@@ -559,9 +559,9 @@ export const matchStats = pgTable(
     result: varchar("result", { length: 16 }).notNull(),
     /** Number of turns the match lasted */
     turns: integer("turns").notNull().default(0),
-    /** Enemy vellymons KO'd by this player's team */
+    /** Enemy cinderlings KO'd by this player's team */
     enemyKOs: integer("enemyKOs").notNull().default(0),
-    /** Own vellymons KO'd */
+    /** Own cinderlings KO'd */
     ownKOs: integer("ownKOs").notNull().default(0),
     /** Win condition: "elimination" | "occupation" | "accumulation" | "concession" */
     winCondition: varchar("winCondition", { length: 32 }),

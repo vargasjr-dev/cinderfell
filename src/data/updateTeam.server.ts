@@ -59,7 +59,7 @@ const updateTeam = async ({
         await db.insert(teamSlot).values(
           slots.map((s) => ({
             teamUuid,
-            vellymonInstanceUuid: s.vellymonInstanceUuid,
+            cinderlingInstanceUuid: s.cinderlingInstanceUuid,
             slotIndex: s.slotIndex,
             isActive: s.isActive,
           })),

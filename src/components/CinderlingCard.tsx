@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-interface VellymonCardProps {
+interface CinderlingCardProps {
   name: string;
   health: number;
   attack: number;
@@ -23,7 +23,7 @@ function StatBadge({ label, value }: { label: string; value: number }) {
   );
 }
 
-function VellymonAvatar({
+function CinderlingAvatar({
   name,
   imageUrl,
   size = "sm",
@@ -75,7 +75,7 @@ function CompactContent({
   return (
     <>
       <div className="flex items-center gap-2 mb-1">
-        <VellymonAvatar name={name} imageUrl={imageUrl} size="sm" />
+        <CinderlingAvatar name={name} imageUrl={imageUrl} size="sm" />
         <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition truncate">
           {name}
         </h3>
@@ -95,7 +95,7 @@ function CompactContent({
   );
 }
 
-export default function VellymonCard({
+export default function CinderlingCard({
   name,
   health,
   attack,
@@ -105,7 +105,7 @@ export default function VellymonCard({
   flavor,
   imageUrl,
   children,
-}: VellymonCardProps) {
+}: CinderlingCardProps) {
   if (variant === "compact") {
     const content = (
       <CompactContent
@@ -139,7 +139,7 @@ export default function VellymonCard({
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center gap-4 mb-4">
-        <VellymonAvatar name={name} imageUrl={imageUrl} size="lg" />
+        <CinderlingAvatar name={name} imageUrl={imageUrl} size="lg" />
         <div>
           <h3 className="text-2xl font-bold">{name}</h3>
           {flavor && (

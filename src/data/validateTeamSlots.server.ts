@@ -1,5 +1,5 @@
 import { db } from "../../data/db";
-import { vellymonInstance } from "../../data/schema";
+import { cinderlingInstance } from "../../data/schema";
 import { inArray, eq, and } from "drizzle-orm";
 import type { SlotInput } from "./createTeam.server";
 
@@ -18,7 +18,7 @@ const validateTeamSlots = async (
   if (slots.length > MAX_SLOTS) {
     return {
       valid: false,
-      message: `A team can have at most ${MAX_SLOTS} vellymons (got ${slots.length})`,
+      message: `A team can have at most ${MAX_SLOTS} cinderlings (got ${slots.length})`,
     };
   }
 
@@ -27,7 +27,7 @@ const validateTeamSlots = async (
   if (activeCount > MAX_ACTIVE) {
     return {
       valid: false,
-      message: `A team can have at most ${MAX_ACTIVE} active vellymons (got ${activeCount})`,
+      message: `A team can have at most ${MAX_ACTIVE} active cinderlings (got ${activeCount})`,
     };
   }
 
@@ -49,21 +49,21 @@ const validateTeamSlots = async (
   }
 
   // Fetch the actual instances to verify ownership and check types
-  const instanceUuids = slots.map((s) => s.vellymonInstanceUuid);
+  const instanceUuids = slots.map((s) => s.cinderlingInstanceUuid);
   const instances = await db
     .select({
-      uuid: vellymonInstance.uuid,
-      userId: vellymonInstance.userId,
-      modelUuid: vellymonInstance.modelUuid,
+      uuid: cinderlingInstance.uuid,
+      userId: cinderlingInstance.userId,
+      modelUuid: cinderlingInstance.modelUuid,
     })
-    .from(vellymonInstance)
-    .where(inArray(vellymonInstance.uuid, instanceUuids));
+    .from(cinderlingInstance)
+    .where(inArray(cinderlingInstance.uuid, instanceUuids));
 
   // Rule 4: all instances must exist
   if (instances.length !== instanceUuids.length) {
     return {
       valid: false,
-      message: "One or more vellymons not found",
+      message: "One or more cinderlings not found",
     };
   }
 
@@ -72,7 +72,7 @@ const validateTeamSlots = async (
   if (notOwned.length > 0) {
     return {
       valid: false,
-      message: "You can only add your own vellymons to a team",
+      message: "You can only add your own cinderlings to a team",
     };
   }
 
@@ -82,7 +82,7 @@ const validateTeamSlots = async (
   if (uniqueModels.size !== modelUuids.length) {
     return {
       valid: false,
-      message: "A team cannot have duplicate vellymon types",
+      message: "A team cannot have duplicate cinderling types",
     };
   }
 

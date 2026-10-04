@@ -1,7 +1,7 @@
 import { db } from "../../data/db";
-import { team, teamSlot, vellymonInstance } from "../../data/schema";
+import { team, teamSlot, cinderlingInstance } from "../../data/schema";
 import { eq } from "drizzle-orm";
-import getVellymonModel from "./getVellymonModel.server";
+import getCinderlingModel from "./getCinderlingModel.server";
 
 const getTeams = async (userId: string) => {
   const teams = await db
@@ -17,24 +17,24 @@ const getTeams = async (userId: string) => {
           uuid: teamSlot.uuid,
           slotIndex: teamSlot.slotIndex,
           isActive: teamSlot.isActive,
-          vellymonInstanceUuid: teamSlot.vellymonInstanceUuid,
-          instanceUuid: vellymonInstance.uuid,
-          modelUuid: vellymonInstance.modelUuid,
+          cinderlingInstanceUuid: teamSlot.cinderlingInstanceUuid,
+          instanceUuid: cinderlingInstance.uuid,
+          modelUuid: cinderlingInstance.modelUuid,
         })
         .from(teamSlot)
         .innerJoin(
-          vellymonInstance,
-          eq(teamSlot.vellymonInstanceUuid, vellymonInstance.uuid),
+          cinderlingInstance,
+          eq(teamSlot.cinderlingInstanceUuid, cinderlingInstance.uuid),
         )
         .where(eq(teamSlot.teamUuid, t.uuid))
         .orderBy(teamSlot.slotIndex);
 
       const populatedSlots = await Promise.all(
         slots.map(async (s) => {
-          const model = await getVellymonModel(s.modelUuid);
+          const model = await getCinderlingModel(s.modelUuid);
           return {
             ...s,
-            vellymon: model,
+            cinderling: model,
           };
         }),
       );

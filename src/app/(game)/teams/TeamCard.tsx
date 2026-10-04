@@ -10,7 +10,7 @@ type TeamSlot = {
   uuid: string;
   slotIndex: number;
   isActive: boolean;
-  vellymon: {
+  cinderling: {
     name: string;
     health: number;
     attack: number;
@@ -49,7 +49,7 @@ export default function TeamCard({ team }: { team: Team }) {
         <div>
           <h2 className="text-xl font-bold text-gray-900">{team.name}</h2>
           <p className="text-sm text-gray-500">
-            {team.slots.length}/8 vellymons
+            {team.slots.length}/8 cinderlings
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -68,31 +68,31 @@ export default function TeamCard({ team }: { team: Team }) {
         </div>
       </div>
 
-      {/* Vellymon Avatar Grid */}
+      {/* Cinderling Avatar Grid */}
       {team.slots.length > 0 ? (
         <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
           {team.slots.map((slot) => (
             <div
               key={slot.uuid}
               className="aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200 relative group"
-              title={slot.vellymon?.name ?? "Unknown"}
+              title={slot.cinderling?.name ?? "Unknown"}
             >
-              {slot.vellymon?.imageUrl ? (
+              {slot.cinderling?.imageUrl ? (
                 <Image
-                  src={slot.vellymon.imageUrl}
-                  alt={slot.vellymon.name}
+                  src={slot.cinderling.imageUrl}
+                  alt={slot.cinderling.name}
                   fill
                   sizes="64px"
                   className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs font-bold">
-                  {slot.vellymon?.name?.slice(0, 3) ?? "?"}
+                  {slot.cinderling?.name?.slice(0, 3) ?? "?"}
                 </div>
               )}
               {/* Name tooltip on hover */}
               <div className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[9px] text-center py-0.5 opacity-0 group-hover:opacity-100 transition truncate px-0.5">
-                {slot.vellymon?.name ?? "?"}
+                {slot.cinderling?.name ?? "?"}
               </div>
             </div>
           ))}
@@ -100,7 +100,7 @@ export default function TeamCard({ team }: { team: Team }) {
       ) : (
         <div className="text-center py-4">
           <p className="text-gray-400 text-sm">
-            No vellymons assigned.{" "}
+            No cinderlings assigned.{" "}
             <Link
               href={`/roster/teams/${team.uuid}/edit`}
               className="text-blue-600 hover:text-blue-800 font-medium"

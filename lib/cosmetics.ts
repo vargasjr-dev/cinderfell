@@ -29,29 +29,29 @@ export async function getUserCosmetics(userId: string) {
 }
 
 /**
- * Get cosmetics for a specific vellymon (includes global cosmetics with null vellymonId).
+ * Get cosmetics for a specific cinderling (includes global cosmetics with null cinderlingId).
  */
-export async function getVellymonCosmetics(
+export async function getCinderlingCosmetics(
   userId: string,
-  vellymonId: string,
+  cinderlingId: string,
 ) {
   const all = await getUserCosmetics(userId);
   return all.filter(
-    (c) => c.vellymonId === vellymonId || c.vellymonId === null,
+    (c) => c.cinderlingId === cinderlingId || c.cinderlingId === null,
   );
 }
 
 /**
- * Get the equipped loadout for a vellymon.
+ * Get the equipped loadout for a cinderling.
  */
-export async function getLoadout(userId: string, vellymonId: string) {
+export async function getLoadout(userId: string, cinderlingId: string) {
   const [loadout] = await db
     .select()
     .from(cosmeticLoadout)
     .where(
       and(
         eq(cosmeticLoadout.userId, userId),
-        eq(cosmeticLoadout.vellymonId, vellymonId),
+        eq(cosmeticLoadout.cinderlingId, cinderlingId),
       ),
     )
     .limit(1);
@@ -60,14 +60,14 @@ export async function getLoadout(userId: string, vellymonId: string) {
 }
 
 /**
- * Equip a cosmetic skin on a vellymon. Creates loadout if it doesn't exist.
+ * Equip a cosmetic skin on a cinderling. Creates loadout if it doesn't exist.
  */
 export async function equipSkin(
   userId: string,
-  vellymonId: string,
+  cinderlingId: string,
   cosmeticId: string | null,
 ) {
-  const existing = await getLoadout(userId, vellymonId);
+  const existing = await getLoadout(userId, cinderlingId);
 
   if (existing) {
     await db
@@ -77,7 +77,7 @@ export async function equipSkin(
   } else {
     await db.insert(cosmeticLoadout).values({
       userId,
-      vellymonId,
+      cinderlingId,
       equippedSkinId: cosmeticId,
       equippedVfxIds: [],
     });
@@ -99,17 +99,17 @@ export async function areCosmeticsActive(userId: string): Promise<boolean> {
 }
 
 /**
- * Get the effective skin URL for a vellymon, respecting dormancy.
+ * Get the effective skin URL for a cinderling, respecting dormancy.
  * Returns null if no custom skin or cosmetics are dormant.
  */
 export async function getEffectiveSkin(
   userId: string,
-  vellymonId: string,
+  cinderlingId: string,
 ): Promise<string | null> {
   const active = await areCosmeticsActive(userId);
   if (!active) return null;
 
-  const loadout = await getLoadout(userId, vellymonId);
+  const loadout = await getLoadout(userId, cinderlingId);
   if (!loadout?.equippedSkinId) return null;
 
   const [skin] = await db

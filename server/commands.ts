@@ -1,7 +1,7 @@
 /**
- * Command set for vellymon matches.
+ * Command set for cinderling matches.
  *
- * Four action slots per vellymon per turn (Pokémon-style):
+ * Four action slots per cinderling per turn (Pokémon-style):
  * - Move — move one space in a cardinal direction (free)
  * - Attack 1 — use first attack in a direction (costs energy)
  * - Attack 2 — use second attack in a direction (costs energy)
@@ -12,7 +12,7 @@
  * orientation-agnostic. Clients translate screen directions to Vec2 before
  * sending; TurnHistory labels them based on the viewer's orientation.
  *
- * One command per vellymon per turn.
+ * One command per cinderling per turn.
  * At 0 team energy, Attacks are unavailable.
  */
 
@@ -21,7 +21,7 @@ import { spendEnergy, harvestEnergy, hasEnergy } from "./energy";
 import type {
   GameState,
   TeamState,
-  VellymonState,
+  CinderlingState,
   BoardSpace,
   Position,
   Vec2,
@@ -31,14 +31,14 @@ import type {
 
 export type MoveCommand = {
   type: "move";
-  vellymonUuid: string;
+  cinderlingUuid: string;
   /** Cardinal unit vector in game space: {dx:1,dy:0} = right, {dx:0,dy:-1} = up, etc. */
   vec: Vec2;
 };
 
 export type AttackCommand = {
   type: "attack";
-  vellymonUuid: string;
+  cinderlingUuid: string;
   attackIndex: number;
   /** Cardinal unit vector in game space. */
   vec: Vec2;
@@ -46,7 +46,7 @@ export type AttackCommand = {
 
 export type HarvestCommand = {
   type: "harvest";
-  vellymonUuid: string;
+  cinderlingUuid: string;
   /** Cardinal unit vector in game space. */
   vec: Vec2;
 };
@@ -63,7 +63,7 @@ export type CommandResult = {
   damageDealt?: number;
   /** Target KO'd (attack only) */
   targetKO?: boolean;
-  /** UUID of the vellymon that was hit (attack only, absent on whiff) */
+  /** UUID of the cinderling that was hit (attack only, absent on whiff) */
   targetUuid?: string;
   /** Name of the attack used (attack only, e.g. "Snipe", "Strike") */
   attackName?: string;
@@ -107,10 +107,10 @@ function getSpace(
   );
 }
 
-function getVellymonAtPosition(
+function getCinderlingAtPosition(
   state: GameState,
   pos: Position,
-): VellymonState | undefined {
+): CinderlingState | undefined {
   for (const team of state.teams) {
     const found = team.active.find(
       (v) =>
@@ -124,17 +124,17 @@ function getVellymonAtPosition(
 }
 
 /**
- * Snapshot-aware variant: find the vellymon that occupied `pos` at the START
- * of the turn (before any moves resolved).  Returns the LIVE VellymonState
+ * Snapshot-aware variant: find the cinderling that occupied `pos` at the START
+ * of the turn (before any moves resolved).  Returns the LIVE CinderlingState
  * object so that damage can still be applied to the correct entity, but only
  * matches against pre-turn positions to prevent movers from being hit when
  * they stepped into the attacker's line of fire mid-turn.
  */
-function getVellymonAtPositionFromSnapshot(
+function getCinderlingAtPositionFromSnapshot(
   state: GameState,
   pos: Position,
   snapshot: Map<string, Position | null>,
-): VellymonState | undefined {
+): CinderlingState | undefined {
   for (const team of state.teams) {
     for (const v of team.active) {
       if (v.isKO) continue;
@@ -168,7 +168,7 @@ function scanForTarget(
   ownTeam: TeamState,
   positionSnapshot?: Map<string, Position | null>,
   arcOver?: boolean,
-): { position: Position; target: VellymonState } | null {
+): { position: Position; target: CinderlingState } | null {
   for (let dist = 1; dist <= range; dist++) {
     const pos: Position = {
       x: from.x + vec.dx * dist,
@@ -194,16 +194,16 @@ function scanForTarget(
     // both the start-of-turn snapshot and the current live state.  If the snapshot
     // mon moved away, liveOccupant will be null or a different uuid → tile is empty.
     // If a different mon moved in, the snapshot shows no one → tile is empty.
-    let occupant: VellymonState | undefined;
+    let occupant: CinderlingState | undefined;
     if (positionSnapshot) {
-      const snapOccupant = getVellymonAtPositionFromSnapshot(state, pos, positionSnapshot);
-      const liveOccupant = getVellymonAtPosition(state, pos);
+      const snapOccupant = getCinderlingAtPositionFromSnapshot(state, pos, positionSnapshot);
+      const liveOccupant = getCinderlingAtPosition(state, pos);
       if (snapOccupant && liveOccupant?.uuid === snapOccupant.uuid) {
         occupant = snapOccupant;
       }
       // else: mon moved away or moved in — treat tile as empty, keep scanning
     } else {
-      occupant = getVellymonAtPosition(state, pos);
+      occupant = getCinderlingAtPosition(state, pos);
     }
 
     if (occupant) {
@@ -230,23 +230,23 @@ export function validateCommand(
   team: TeamState,
   state: GameState,
 ): string | null {
-  const vellymon = team.active.find(
-    (v) => v.uuid === command.vellymonUuid && !v.isKO,
+  const cinderling = team.active.find(
+    (v) => v.uuid === command.cinderlingUuid && !v.isKO,
   );
 
-  if (!vellymon) {
-    return "Vellymon not found or KO'd";
+  if (!cinderling) {
+    return "Cinderling not found or KO'd";
   }
 
-  if (!vellymon.position) {
-    return "Vellymon has no position";
+  if (!cinderling.position) {
+    return "Cinderling has no position";
   }
 
   switch (command.type) {
     case "move": {
       const target: Position = {
-        x: vellymon.position.x + command.vec.dx,
-        y: vellymon.position.y + command.vec.dy,
+        x: cinderling.position.x + command.vec.dx,
+        y: cinderling.position.y + command.vec.dy,
       };
 
       // Bounds check
@@ -273,7 +273,7 @@ export function validateCommand(
         return "No energy — cannot attack";
       }
 
-      const attack = vellymon.attacks[command.attackIndex];
+      const attack = cinderling.attacks[command.attackIndex];
       if (!attack) {
         return "Invalid attack index";
       }
@@ -289,8 +289,8 @@ export function validateCommand(
 
     case "harvest": {
       const targetPos: Position = {
-        x: vellymon.position.x + command.vec.dx,
-        y: vellymon.position.y + command.vec.dy,
+        x: cinderling.position.x + command.vec.dx,
+        y: cinderling.position.y + command.vec.dy,
       };
 
       // Bounds check
@@ -309,7 +309,7 @@ export function validateCommand(
       }
 
       // Check for enemy blocking
-      const blocker = getVellymonAtPosition(state, targetPos);
+      const blocker = getCinderlingAtPosition(state, targetPos);
       if (blocker) {
         const isOwnTeam = team.active.some((v) => v.uuid === blocker.uuid);
         if (!isOwnTeam) {
@@ -323,14 +323,14 @@ export function validateCommand(
 }
 
 /**
- * Get available commands for a vellymon (for UI).
+ * Get available commands for a cinderling (for UI).
  */
 export function getAvailableCommands(
-  vellymon: VellymonState,
+  cinderling: CinderlingState,
   team: TeamState,
   state: GameState,
 ): ("move" | "attack" | "harvest")[] {
-  if (vellymon.isKO || !vellymon.position) return [];
+  if (cinderling.isKO || !cinderling.position) return [];
 
   const available: ("move" | "attack" | "harvest")[] = [];
 
@@ -358,16 +358,16 @@ export function resolveMove(
   team: TeamState,
   state: GameState,
 ): CommandResult {
-  const vellymon = team.active.find(
-    (v) => v.uuid === command.vellymonUuid && !v.isKO,
+  const cinderling = team.active.find(
+    (v) => v.uuid === command.cinderlingUuid && !v.isKO,
   );
-  if (!vellymon?.position) {
-    return { command, success: false, reason: "Vellymon not found" };
+  if (!cinderling?.position) {
+    return { command, success: false, reason: "Cinderling not found" };
   }
 
   const target: Position = {
-    x: vellymon.position.x + command.vec.dx,
-    y: vellymon.position.y + command.vec.dy,
+    x: cinderling.position.x + command.vec.dx,
+    y: cinderling.position.y + command.vec.dy,
   };
 
   const space = getSpace(state.board, target);
@@ -382,13 +382,13 @@ export function resolveMove(
     return { command, success: false, reason: "Invalid move target" };
   }
 
-  // Check for collision (another vellymon already at target that isn't moving away)
-  const occupant = getVellymonAtPosition(state, target);
+  // Check for collision (another cinderling already at target that isn't moving away)
+  const occupant = getCinderlingAtPosition(state, target);
   if (occupant) {
     return { command, success: false, reason: "Space occupied" };
   }
 
-  vellymon.position = target;
+  cinderling.position = target;
   return { command, success: true };
 }
 
@@ -402,14 +402,14 @@ export function resolveAttack(
   state: GameState,
   positionSnapshot?: Map<string, Position | null>,
 ): CommandResult {
-  const vellymon = team.active.find(
-    (v) => v.uuid === command.vellymonUuid && !v.isKO,
+  const cinderling = team.active.find(
+    (v) => v.uuid === command.cinderlingUuid && !v.isKO,
   );
-  if (!vellymon?.position) {
-    return { command, success: false, reason: "Vellymon not found" };
+  if (!cinderling?.position) {
+    return { command, success: false, reason: "Cinderling not found" };
   }
 
-  const attack = vellymon.attacks[command.attackIndex];
+  const attack = cinderling.attacks[command.attackIndex];
   if (!attack) {
     return { command, success: false, reason: "Invalid attack" };
   }
@@ -428,7 +428,7 @@ export function resolveAttack(
   // there now to count as a valid hit.  Mons that moved are treated as having dodged.
   const hit = scanForTarget(
     state,
-    vellymon.position,
+    cinderling.position,
     command.vec,
     attack.range,
     team,
@@ -448,7 +448,7 @@ export function resolveAttack(
   }
 
   // Deal damage
-  const damage = attack.damage + vellymon.attack;
+  const damage = attack.damage + cinderling.attack;
   hit.target.hp = Math.max(0, hit.target.hp - damage);
   const ko = hit.target.hp === 0;
 
@@ -478,16 +478,16 @@ export function resolveHarvest(
   team: TeamState,
   state: GameState,
 ): CommandResult {
-  const vellymon = team.active.find(
-    (v) => v.uuid === command.vellymonUuid && !v.isKO,
+  const cinderling = team.active.find(
+    (v) => v.uuid === command.cinderlingUuid && !v.isKO,
   );
-  if (!vellymon?.position) {
-    return { command, success: false, reason: "Vellymon not found" };
+  if (!cinderling?.position) {
+    return { command, success: false, reason: "Cinderling not found" };
   }
 
   const targetPos: Position = {
-    x: vellymon.position.x + command.vec.dx,
-    y: vellymon.position.y + command.vec.dy,
+    x: cinderling.position.x + command.vec.dx,
+    y: cinderling.position.y + command.vec.dy,
   };
 
   const space = getSpace(state.board, targetPos);
@@ -499,9 +499,9 @@ export function resolveHarvest(
     };
   }
 
-  // A space occupied by any vellymon (ally or enemy) cannot be harvested —
+  // A space occupied by any cinderling (ally or enemy) cannot be harvested —
   // only uninhabited harvestable spaces yield energy.
-  const blocker = getVellymonAtPosition(state, targetPos);
+  const blocker = getCinderlingAtPosition(state, targetPos);
   if (blocker) {
     return {
       command,

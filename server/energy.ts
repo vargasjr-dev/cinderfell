@@ -1,7 +1,7 @@
 /**
- * Unified energy system for vellymon matches.
+ * Unified energy system for cinderling matches.
  *
- * Energy is a team-wide pool — shared across all vellymons.
+ * Energy is a team-wide pool — shared across all cinderlings.
  * - Attacks spend energy from the pool (cost varies per attack)
  * - Harvesting generates energy (+1 base rate per action, some spaces give more)
  * - At 0 energy, only Move and Harvest are available (no attacks)

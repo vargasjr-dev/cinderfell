@@ -1,8 +1,8 @@
 /**
- * Turn timer for vellymon matches.
+ * Turn timer for cinderling matches.
  *
  * Each turn has a configurable time limit (default 30 seconds) for both
- * players to submit their commands. When the timer expires, any vellymons
+ * players to submit their commands. When the timer expires, any cinderlings
  * without submitted commands automatically Harvest (if on a harvestable space)
  * or stand idle (no-op).
  *
@@ -143,19 +143,19 @@ export function elapsedSeconds(timer: TurnTimerState): number {
 /**
  * Generate default commands for a team that didn't submit in time.
  *
- * Default behavior: each vellymon with no command does Harvest if on
+ * Default behavior: each cinderling with no command does Harvest if on
  * a harvestable space, otherwise stands idle (no command).
  *
  * This is called when the timer expires and a team hasn't submitted.
  */
 export function generateDefaultCommands(
-  vellymonUuids: string[],
+  cinderlingUuids: string[],
 ): Command[] {
-  // Default: all vellymons harvest downward (dy+1 = game down).
+  // Default: all cinderlings harvest downward (dy+1 = game down).
   // If the adjacent space isn't harvestable or is blocked, the command fails gracefully.
-  return vellymonUuids.map((uuid) => ({
+  return cinderlingUuids.map((uuid) => ({
     type: "harvest" as const,
-    vellymonUuid: uuid,
+    cinderlingUuid: uuid,
     vec: { dx: 0, dy: 1 } as const,
   }));
 }

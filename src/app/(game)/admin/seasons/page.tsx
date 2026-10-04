@@ -40,7 +40,7 @@ export default async function AdminSeasonsPage() {
           status: s.status,
           startDate: s.startDate,
           endDate: s.endDate,
-          newVellymonId: s.newVellymonId,
+          newCinderlingId: s.newCinderlingId,
         }))}
       />
     </div>

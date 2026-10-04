@@ -1,5 +1,5 @@
 import { db } from "../../data/db";
-import { vellymonInstance } from "../../data/schema";
+import { cinderlingInstance } from "../../data/schema";
 
 const buyFromMarket = async ({
   model,
@@ -10,7 +10,7 @@ const buyFromMarket = async ({
 }) => {
   try {
     const [instance] = await db
-      .insert(vellymonInstance)
+      .insert(cinderlingInstance)
       .values({
         modelUuid: model,
         userId,
@@ -23,14 +23,14 @@ const buyFromMarket = async ({
 
     return {
       success: true,
-      message: "Successfully bought vellymon!",
+      message: "Successfully bought cinderling!",
       instanceUuid: instance.uuid,
     };
   } catch (error) {
     console.error("Failed to buy from market:", error);
     return {
       success: false,
-      message: "Failed to purchase vellymon",
+      message: "Failed to purchase cinderling",
     };
   }
 };

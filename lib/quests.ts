@@ -1,5 +1,5 @@
 /**
- * Daily Quest catalog for vellymon.game.
+ * Daily Quest catalog for cinderfell.
  *
  * 10 quest templates across 3 categories. Each day, 3 are randomly assigned
  * per player (seeded by userId + date for stability). Progress tracking and
@@ -109,7 +109,7 @@ export const DAILY_QUESTS: DailyQuest[] = [
   {
     id: "perfect_win",
     name: "Flawless",
-    description: "Win a match without losing any of your vellymon.",
+    description: "Win a match without losing any of your cinderling.",
     icon: "✨",
     category: "performance",
     target: 1,

@@ -5,7 +5,7 @@ import {
   VOID_SPACE_ID,
 } from "../enums/spaces";
 
-export interface VellymonStats {
+export interface CinderlingStats {
   speed: number;
   health: number;
   attack: number;

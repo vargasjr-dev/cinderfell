@@ -163,7 +163,7 @@ export default async function PlayerProfilePage({
         />
         <StatCard label="Ranked" value={profile.gamesPlayed} sub="PvP games" />
         <StatCard
-          label="Vellymons"
+          label="Cinderlings"
           value={profile.rosterSize}
           sub="collected"
         />

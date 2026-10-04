@@ -11,7 +11,7 @@ type AttackDisplay = {
   range: number;
 };
 
-type VellymonData = {
+type CinderlingData = {
   uuid: string;
   name: string;
   hp: number;
@@ -26,21 +26,21 @@ type VellymonData = {
 
 type PendingCmd = {
   type: "move" | "attack" | "harvest";
-  vellymonUuid: string;
+  cinderlingUuid: string;
   /** Cardinal unit vector in game space */
   vec?: Vec2;
   attackIndex?: number;
 };
 
-type VellymonInfo = {
+type CinderlingInfo = {
   flavor: string;
   powerName: string;
   powerDesc: string;
 };
 
 type Props = {
-  vellymon: VellymonData;
-  info?: VellymonInfo;
+  cinderling: CinderlingData;
+  info?: CinderlingInfo;
   teamEnergy: number;
   pendingCommand: PendingCmd | null;
   /**
@@ -68,11 +68,11 @@ type Props = {
  * Screen 2 — Direction select:
  *   [↑] [↓] [←] [→]
  *
- * Both screens show vellymon stats. Picking a direction dispatches the command.
+ * Both screens show cinderling stats. Picking a direction dispatches the command.
  * Directions are emitted as screen-space Vec2s — PlayPollingClient converts to game space.
  */
-export default function VellymonDrawer({
-  vellymon,
+export default function CinderlingDrawer({
+  cinderling,
   info,
   teamEnergy,
   pendingCommand,
@@ -88,11 +88,11 @@ export default function VellymonDrawer({
     label: string;
   } | null>(null);
 
-  const hpPct = vellymon.maxHp > 0 ? (vellymon.hp / vellymon.maxHp) * 100 : 0;
+  const hpPct = cinderling.maxHp > 0 ? (cinderling.hp / cinderling.maxHp) * 100 : 0;
   const hpColor = hpPct > 50 ? "bg-green-500" : hpPct > 25 ? "bg-yellow-500" : "bg-red-500";
 
-  const attack1 = vellymon.attacks[0];
-  const attack2 = vellymon.attacks[1];
+  const attack1 = cinderling.attacks[0];
+  const attack2 = cinderling.attacks[1];
   const canAfford1 = attack1 ? teamEnergy >= attack1.energyCost : false;
   const canAfford2 = attack2 ? teamEnergy >= attack2.energyCost : false;
 
@@ -125,12 +125,12 @@ export default function VellymonDrawer({
         </div>
 
         <div className="px-4 pb-4">
-          {/* ─── Vellymon info header (always visible) ─── */}
+          {/* ─── Cinderling info header (always visible) ─── */}
           <div className="flex items-center gap-3 mb-3">
             {/* Avatar */}
             <div className="w-12 h-12 rounded-lg bg-gray-800 border border-gray-600 flex items-center justify-center overflow-hidden shrink-0">
-              {vellymon.imageUrl ? (
-                <img src={vellymon.imageUrl} alt={vellymon.name} className="w-full h-full object-cover" />
+              {cinderling.imageUrl ? (
+                <img src={cinderling.imageUrl} alt={cinderling.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-blue-600" />
               )}
@@ -138,7 +138,7 @@ export default function VellymonDrawer({
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-base truncate">{vellymon.name}</h3>
+                <h3 className="font-bold text-base truncate">{cinderling.name}</h3>
               </div>
 
               {/* HP bar */}
@@ -147,7 +147,7 @@ export default function VellymonDrawer({
                   <div className={`h-full ${hpColor} transition-all`} style={{ width: `${hpPct}%` }} />
                 </div>
                 <span className="text-xs text-gray-400 tabular-nums">
-                  {vellymon.hp}/{vellymon.maxHp}
+                  {cinderling.hp}/{cinderling.maxHp}
                 </span>
               </div>
             </div>
@@ -155,16 +155,16 @@ export default function VellymonDrawer({
 
           {/* Stats row */}
           <div className="flex gap-3 text-xs mb-3">
-            <span className="text-red-400">⚔️ ATK {vellymon.attack}</span>
-            {vellymon.speed < vellymon.baseSpeed ? (
+            <span className="text-red-400">⚔️ ATK {cinderling.attack}</span>
+            {cinderling.speed < cinderling.baseSpeed ? (
               <span className="text-red-400">
-                💨 SPD {vellymon.speed}{" "}
+                💨 SPD {cinderling.speed}{" "}
                 <span className="text-xs opacity-80">
-                  (-{vellymon.baseSpeed - vellymon.speed})
+                  (-{cinderling.baseSpeed - cinderling.speed})
                 </span>
               </span>
             ) : (
-              <span className="text-yellow-400">💨 SPD {vellymon.speed}</span>
+              <span className="text-yellow-400">💨 SPD {cinderling.speed}</span>
             )}
             <span className="text-blue-400">⚡ NRG {teamEnergy}</span>
           </div>
@@ -185,7 +185,7 @@ export default function VellymonDrawer({
                 {pendingCommand.type}
                 {pendingCommand.vec ? ` ${vecToArrow(pendingCommand.vec)}` : ""}
                 {pendingCommand.type === "attack" && pendingCommand.attackIndex !== undefined
-                  ? ` (${vellymon.attacks[pendingCommand.attackIndex]?.name ?? "?"})`
+                  ? ` (${cinderling.attacks[pendingCommand.attackIndex]?.name ?? "?"})`
                   : ""}
               </span>
             </div>
@@ -199,9 +199,9 @@ export default function VellymonDrawer({
                   👁 Scouting
                 </span>
               </div>
-              {vellymon.attacks.length > 0 && (
+              {cinderling.attacks.length > 0 && (
                 <div className="space-y-1">
-                  {vellymon.attacks.map((atk, i) => (
+                  {cinderling.attacks.map((atk, i) => (
                     <div
                       key={i}
                       className="flex items-center justify-between bg-gray-800/50 border border-gray-700/30 rounded-xl px-3 py-2"

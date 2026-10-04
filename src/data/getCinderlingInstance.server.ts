@@ -1,33 +1,33 @@
 /**
- * getVellymonInstance — fetch a single vellymon instance by UUID.
+ * getCinderlingInstance — fetch a single cinderling instance by UUID.
  *
  * Returns the merged model + instance data enriched with archetype info and
  * special power details. Returns null if the instance doesn't exist or belongs
  * to a different user (caller enforces ownership).
  *
  * Data sources:
- *   - vellymonInstance table: ownership, address, network, version
- *   - getVellymonModel: resolves modelUuid → VellymonStats (name, stats, attacks)
- *   - VELLYMON_LIBRARY: archetype info (not exposed via VellymonStats bridge)
+ *   - cinderlingInstance table: ownership, address, network, version
+ *   - getCinderlingModel: resolves modelUuid → CinderlingStats (name, stats, attacks)
+ *   - CINDERLING_LIBRARY: archetype info (not exposed via CinderlingStats bridge)
  *   - getPower: special power description
  */
 
 import { db } from "../../data/db";
-import { vellymonInstance } from "../../data/schema";
+import { cinderlingInstance } from "../../data/schema";
 import { eq, and } from "drizzle-orm";
-import getVellymonModel from "./getVellymonModel.server";
-import { VELLYMON_LIBRARY } from "../../server/vellymonLibrary";
+import getCinderlingModel from "./getCinderlingModel.server";
+import { CINDERLING_LIBRARY } from "../../server/cinderlings";
 import { getPower } from "../../server/specialPowers";
 import "../../server/powers"; // trigger power registration
 
-export type VellymonInstanceDetail = {
+export type CinderlingInstanceDetail = {
   uuid: string;
   address: string;
   network: number;
   version: string;
   userId: string;
   modelUuid: string;
-  // From VellymonStats
+  // From CinderlingStats
   name: string;
   health: number;
   attack: number;
@@ -41,32 +41,32 @@ export type VellymonInstanceDetail = {
     energyCost: number;
     range: number;
   }>;
-  // From VellymonTemplate (via VELLYMON_LIBRARY lookup by name)
+  // From CinderlingTemplate (via CINDERLING_LIBRARY lookup by name)
   archetype: string;
   // Enriched from power registry
   powerName?: string;
   powerDescription?: string;
 };
 
-export async function getVellymonInstance(
+export async function getCinderlingInstance(
   uuid: string,
   userId: string,
-): Promise<VellymonInstanceDetail | null> {
+): Promise<CinderlingInstanceDetail | null> {
   const rows = await db
     .select()
-    .from(vellymonInstance)
+    .from(cinderlingInstance)
     .where(
-      and(eq(vellymonInstance.uuid, uuid), eq(vellymonInstance.userId, userId)),
+      and(eq(cinderlingInstance.uuid, uuid), eq(cinderlingInstance.userId, userId)),
     )
     .limit(1);
 
   if (rows.length === 0) return null;
 
   const instance = rows[0];
-  const model = getVellymonModel(instance.modelUuid);
+  const model = getCinderlingModel(instance.modelUuid);
 
-  // Look up the template for archetype info (VellymonStats doesn't expose it)
-  const template = VELLYMON_LIBRARY.find(
+  // Look up the template for archetype info (CinderlingStats doesn't expose it)
+  const template = CINDERLING_LIBRARY.find(
     (t) => t.name.toLowerCase() === model.name.toLowerCase(),
   );
 

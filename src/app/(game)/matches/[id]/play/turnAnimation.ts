@@ -5,7 +5,7 @@
  * No React dependencies — all pure data transformation.
  */
 
-import type { VellymonDisplay as CanvasVellymon, Overlays } from "./BattleCanvas";
+import type { CinderlingDisplay as CanvasCinderling, Overlays } from "./BattleCanvas";
 
 // ─── Raw game-state types (wire format from server) ───────────────────────────
 
@@ -59,7 +59,7 @@ export type Vec2 = { dx: number; dy: number };
 export type RawCommandResult = {
   command: {
     type: "move" | "attack" | "harvest";
-    vellymonUuid: string;
+    cinderlingUuid: string;
     /** Game-space cardinal unit vector. */
     vec?: Vec2;
     attackIndex?: number;
@@ -88,8 +88,8 @@ export type RawCommandResult = {
 };
 
 export type RawBenchEntry = {
-  vellymonUuid: string;
-  vellymonName: string;
+  cinderlingUuid: string;
+  cinderlingName: string;
   status: "entered" | "blocked";
 };
 
@@ -134,11 +134,11 @@ export type UnifiedStep = {
   previewOverlay: Overlays | null;
   previewMs: number;
   // Primary tween (move to new pos, or lunge toward target for attacks)
-  tweenFrom: CanvasVellymon[];
-  tweenTo: CanvasVellymon[];
+  tweenFrom: CanvasCinderling[];
+  tweenTo: CanvasCinderling[];
   tweenMs: number;
   // Recoil tween (attacks only — snap attacker back to original pos)
-  recoilTo?: CanvasVellymon[];
+  recoilTo?: CanvasCinderling[];
   recoilMs?: number;
   // Impact label after execute
   impactOverlay: Overlays | null;
@@ -147,9 +147,9 @@ export type UnifiedStep = {
 
 // ─── Utility functions ────────────────────────────────────────────────────────
 
-/** Extract vellymons suitable for BattleCanvas from a RawGameState snapshot. */
-export function snapshotToVellymons(snap: RawGameState): CanvasVellymon[] {
-  const result: CanvasVellymon[] = [];
+/** Extract cinderlings suitable for BattleCanvas from a RawGameState snapshot. */
+export function snapshotToCinderlings(snap: RawGameState): CanvasCinderling[] {
+  const result: CanvasCinderling[] = [];
   for (const t of snap.teams) {
     for (const v of t.active) {
       if (!v.position) continue;
@@ -185,7 +185,7 @@ export function findAttackTargetTile(
   const offset = vec;
   let range = 1;
   for (const t of fromSnap.teams) {
-    const v = t.active.find((av) => av.uuid === cmd.command.vellymonUuid);
+    const v = t.active.find((av) => av.uuid === cmd.command.cinderlingUuid);
     if (v) {
       const atk = v.attacks?.[cmd.command.attackIndex ?? 0];
       if (atk) range = atk.range;
@@ -193,7 +193,7 @@ export function findAttackTargetTile(
     }
   }
   const attackerTeamId = fromSnap.teams.find((t) =>
-    t.active.some((v) => v.uuid === cmd.command.vellymonUuid),
+    t.active.some((v) => v.uuid === cmd.command.cinderlingUuid),
   )?.id;
   for (let d = 1; d <= range; d++) {
     const pos = {
@@ -219,7 +219,7 @@ export function findAttackTargetTile(
 }
 
 /** Build a uuid → {name, teamId} lookup from a RawGameState. */
-export function buildVellymonLookup(
+export function buildCinderlingLookup(
   gs: RawGameState,
 ): Map<string, { name: string; teamId: 1 | 2 }> {
   const map = new Map<string, { name: string; teamId: 1 | 2 }>();
@@ -253,14 +253,14 @@ export function buildUnifiedSteps(
   const workingPos = new Map<string, { x: number; y: number }>();
   const workingHp = new Map<string, number>();
   const workingKo = new Set<string>();
-  const baseVms = snapshotToVellymons(fromSnap);
+  const baseVms = snapshotToCinderlings(fromSnap);
   baseVms.forEach((v) => {
     workingPos.set(v.uuid, { x: v.x, y: v.y });
     workingHp.set(v.uuid, v.hp);
     if (v.isKO) workingKo.add(v.uuid);
   });
 
-  function snapshot(): CanvasVellymon[] {
+  function snapshot(): CanvasCinderling[] {
     return baseVms
       .filter((v) => !workingKo.has(v.uuid))
       .map((v) => {
@@ -339,7 +339,7 @@ export function buildUnifiedSteps(
   for (const cmd of sortedCmds) {
     // Failed attacks — preview + fizzle label
       if (!cmd.success && cmd.command.type === "attack") {
-        const uuid = cmd.command.vellymonUuid;
+        const uuid = cmd.command.cinderlingUuid;
         const cur = workingPos.get(uuid);
         const offset = cmd.command.vec;
         if (cur && offset) {
@@ -366,7 +366,7 @@ export function buildUnifiedSteps(
 
     // Failed harvests — preview + blocked label
       if (!cmd.success && cmd.command.type === "harvest") {
-        const uuid = cmd.command.vellymonUuid;
+        const uuid = cmd.command.cinderlingUuid;
         const cur = workingPos.get(uuid);
         const offset = cmd.command.vec;
       if (cur && offset) {
@@ -393,7 +393,7 @@ export function buildUnifiedSteps(
 
     // Failed moves — preview arrow + bump-and-return tween + "Blocked" label
       if (!cmd.success && cmd.command.type === "move") {
-        const uuid = cmd.command.vellymonUuid;
+        const uuid = cmd.command.cinderlingUuid;
         const cur = workingPos.get(uuid);
         const offset = cmd.command.vec;
       if (cur && offset) {
@@ -439,7 +439,7 @@ export function buildUnifiedSteps(
 
     if (!cmd.success) continue;
 
-    const uuid = cmd.command.vellymonUuid;
+    const uuid = cmd.command.cinderlingUuid;
     const info = lookup.get(uuid);
     const teamId = info?.teamId ?? 1;
     const teamColor = teamId === 1 ? 0x3b82f6 : 0xef4444;
@@ -596,7 +596,7 @@ export function buildUnifiedSteps(
     previewOverlay: {},
     previewMs: 0,
     tweenFrom: snapshot(),
-    tweenTo: snapshotToVellymons(toSnap),
+    tweenTo: snapshotToCinderlings(toSnap),
     tweenMs: 80,
     impactOverlay: null,
     impactMs: 0,
@@ -605,7 +605,7 @@ export function buildUnifiedSteps(
   // Occupation event steps — one label flash per changed point
   const occEvents = rawLog?.occupationEvents ?? [];
   if (occEvents.length > 0) {
-    const finalPos = snapshotToVellymons(toSnap);
+    const finalPos = snapshotToCinderlings(toSnap);
     const THRESHOLD = 2; // matches GAME_CONFIG.occupation.ticksToControl
     const occLabels = occEvents.map((e) => {
       const owned = Math.abs(e.counterAfter) >= THRESHOLD;

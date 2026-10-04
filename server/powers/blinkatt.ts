@@ -35,7 +35,7 @@ registerPower({
         { type: "heal", targetId: ctx.self.uuid, amount: 1 },
         {
           type: "set_power_state",
-          vellymonId: ctx.self.uuid,
+          cinderlingId: ctx.self.uuid,
           key: "phaseDodgeUsed",
           value: 1,
         },

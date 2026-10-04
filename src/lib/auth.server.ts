@@ -43,19 +43,19 @@ export const auth = betterAuth({
 
       try {
         const result = await resend.emails.send({
-          from: process.env.EMAIL_FROM || "Vellymon <noreply@vellymon.game>",
+          from: process.env.EMAIL_FROM || "Cinderfell <noreply@vellymon.game>",
           to: user.email,
-          subject: "Reset your Vellymon password",
+          subject: "Reset your Cinderling password",
         html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
             <h2 style="color: #1d4ed8;">Reset Your Password</h2>
             <p>Hi ${user.name || "there"},</p>
-            <p>We received a request to reset your Vellymon password. Click the button below to choose a new one:</p>
+            <p>We received a request to reset your Cinderling password. Click the button below to choose a new one:</p>
             <a href="${url}" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
               Reset Password
             </a>
             <p style="color: #6b7280; font-size: 14px;">This link expires in 1 hour. If you didn't request this, you can safely ignore this email.</p>
-            <p style="color: #6b7280; font-size: 14px;">— Vellymon</p>
+            <p style="color: #6b7280; font-size: 14px;">— Cinderling</p>
           </div>
         `,
         });

@@ -41,10 +41,10 @@ const RANK_COLOR: Record<Rank, string> = {
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type VellymonSlot = {
+type CinderlingSlot = {
   uuid: string;
   slotIndex: number;
-  vellymon: {
+  cinderling: {
     name: string;
     health: number;
     attack: number;
@@ -56,7 +56,7 @@ type VellymonSlot = {
 type Team = {
   uuid: string;
   name: string;
-  slots: VellymonSlot[];
+  slots: CinderlingSlot[];
 };
 
 type Props = {
@@ -67,13 +67,13 @@ type Props = {
   starsPerRank: Record<Rank, number>;
 };
 
-// ─── VellymonAvatar ──────────────────────────────────────────────────────────
+// ─── CinderlingAvatar ──────────────────────────────────────────────────────────
 
-function VellymonAvatar({
+function CinderlingAvatar({
   slot,
   size = "sm",
 }: {
-  slot: VellymonSlot;
+  slot: CinderlingSlot;
   size?: "sm" | "md" | "lg";
 }) {
   const sizeClass =
@@ -84,12 +84,12 @@ function VellymonAvatar({
   return (
     <div
       className={`${sizeClass} rounded-md overflow-hidden bg-gray-100 border border-gray-200 relative flex-shrink-0`}
-      title={slot.vellymon?.name ?? "?"}
+      title={slot.cinderling?.name ?? "?"}
     >
-      {slot.vellymon?.imageUrl ? (
+      {slot.cinderling?.imageUrl ? (
         <Image
-          src={slot.vellymon.imageUrl}
-          alt={slot.vellymon.name}
+          src={slot.cinderling.imageUrl}
+          alt={slot.cinderling.name}
           fill
           sizes="56px"
           className="object-cover"
@@ -98,7 +98,7 @@ function VellymonAvatar({
         <div
           className={`w-full h-full flex items-center justify-center text-gray-500 font-bold ${textClass}`}
         >
-          {slot.vellymon?.name?.slice(0, 3) ?? "?"}
+          {slot.cinderling?.name?.slice(0, 3) ?? "?"}
         </div>
       )}
     </div>
@@ -322,10 +322,10 @@ export default function RankedPlayPage({
                   {team.name}
                 </p>
 
-                {/* All vellymons — 4 cols × up to 2 rows */}
+                {/* All cinderlings — 4 cols × up to 2 rows */}
                 <div className="grid grid-cols-4 gap-1">
                   {team.slots.slice(0, 8).map((slot) => (
-                    <VellymonAvatar key={slot.uuid} slot={slot} size="sm" />
+                    <CinderlingAvatar key={slot.uuid} slot={slot} size="sm" />
                   ))}
                   {/* Placeholders for empty slots */}
                   {Array.from({
@@ -449,22 +449,22 @@ export default function RankedPlayPage({
                     {selectedTeam.name}
                   </h2>
 
-                  {/* All vellymons — 4 col grid, 2 rows of 4 */}
+                  {/* All cinderlings — 4 col grid, 2 rows of 4 */}
                   <div className="grid grid-cols-4 gap-2 flex-1 content-start">
                     {selectedTeam.slots.map((slot) => (
                       <div
                         key={slot.uuid}
                         className="flex flex-col items-center gap-1 bg-gray-50 rounded-lg p-2 border border-gray-100"
                       >
-                        <VellymonAvatar slot={slot} size="md" />
+                        <CinderlingAvatar slot={slot} size="md" />
                         <p className="text-[9px] font-semibold text-gray-700 text-center leading-tight truncate w-full">
-                          {slot.vellymon?.name ?? "?"}
+                          {slot.cinderling?.name ?? "?"}
                         </p>
-                        {slot.vellymon && (
+                        {slot.cinderling && (
                           <div className="flex flex-col gap-0.5 text-[8px] text-gray-400 text-center">
-                            <span>❤️ {slot.vellymon.health}</span>
-                            <span>⚔️ {slot.vellymon.attack}</span>
-                            <span>⚡ {slot.vellymon.speed}</span>
+                            <span>❤️ {slot.cinderling.health}</span>
+                            <span>⚔️ {slot.cinderling.attack}</span>
+                            <span>⚡ {slot.cinderling.speed}</span>
                           </div>
                         )}
                       </div>

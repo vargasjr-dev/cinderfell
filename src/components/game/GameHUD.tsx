@@ -3,8 +3,8 @@
 import type {
   TeamPayload,
   OpponentTeamPayload,
-  VellymonPayload,
-  OpponentVellymonPayload,
+  CinderlingPayload,
+  OpponentCinderlingPayload,
   BoardPayload,
 } from "~/hooks/useGameSocket";
 
@@ -221,7 +221,7 @@ function TeamRoster({
   showHP,
 }: {
   label: string;
-  active: (VellymonPayload | OpponentVellymonPayload)[];
+  active: (CinderlingPayload | OpponentCinderlingPayload)[];
   benchCount: number;
   knockedCount: number;
   color: "blue" | "red";

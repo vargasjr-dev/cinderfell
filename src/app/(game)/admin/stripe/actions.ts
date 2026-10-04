@@ -8,7 +8,7 @@ import type Stripe from "stripe";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const PREMIUM_PRODUCT_NAME = "Vellymon Premium";
+const PREMIUM_PRODUCT_NAME = "Cinderling Premium";
 const PREMIUM_PRODUCT_DESCRIPTION =
   "Monthly subscription — AI cosmetic builder, season pass, and ranked play.";
 const PREMIUM_PRICE_AMOUNT = 800; // $8.00 in cents
@@ -57,7 +57,7 @@ export async function verifyStripeConfig(useTestMode = false): Promise<StripeCon
     const products = await stripe.products.list({ active: true, limit: 100 });
     result.connected = true;
 
-    // Check for Vellymon Premium product
+    // Check for Cinderling Premium product
     const product = products.data.find(
       (p: Stripe.Product) => p.name === PREMIUM_PRODUCT_NAME
     );

@@ -22,7 +22,7 @@ registerPower({
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
       if (ctx.command.type !== "move") return [];
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
       const pos = ctx.self.position;
       if (!pos) return [];
       return [{ type: "block", position: { x: pos.x, y: pos.y } }];

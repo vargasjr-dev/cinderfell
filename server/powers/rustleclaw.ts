@@ -13,7 +13,7 @@
  * By turn 3 it's at effective SPD 7, by turn 5 at SPD 9
  * (speedster territory). A late-game predator that rewards
  * patience — protect it early and it becomes unstoppable
- * in the endgame. Opposite of burst vellymons like Blastova.
+ * in the endgame. Opposite of burst cinderlings like Blastova.
  */
 
 import {
@@ -34,7 +34,7 @@ registerPower({
       return [
         {
           type: "speed_mod",
-          vellymonId: ctx.self.uuid,
+          cinderlingId: ctx.self.uuid,
           amount: 1,
         },
       ];

@@ -29,7 +29,7 @@ registerPower({
       // Only triggers on Embercub's own attacks
       if (!("command" in ctx)) return [];
       const cmd = (ctx as any).command;
-      if (cmd.type !== "attack" || cmd.vellymonUuid !== ctx.self.uuid) return [];
+      if (cmd.type !== "attack" || cmd.cinderlingUuid !== ctx.self.uuid) return [];
 
       // Check if below 50% HP
       const maxHp = ctx.self.maxHp ?? 72;

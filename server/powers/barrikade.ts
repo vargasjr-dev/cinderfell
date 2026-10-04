@@ -23,7 +23,7 @@ registerPower({
     onDamaged: (ctx: DamagedHookContext): PowerEffect[] => {
       if (ctx.damage <= 0 || !ctx.attacker) return [];
       return [
-        { type: "speed_mod", vellymonId: ctx.attacker.uuid, amount: -2 },
+        { type: "speed_mod", cinderlingId: ctx.attacker.uuid, amount: -2 },
       ];
     },
   },

@@ -272,7 +272,7 @@ export type RankMilestone = {
 export const RANK_MILESTONES: RankMilestone[] = [
   { rank: "bronze", rewards: { type: "profile_border", description: "Bronze Border", credits: 50 } },
   { rank: "silver", rewards: { type: "board_theme", description: "Silver Board Theme", credits: 100 } },
-  { rank: "gold", rewards: { type: "skin", description: "Common Vellymon Skin", credits: 150 } },
+  { rank: "gold", rewards: { type: "skin", description: "Common Cinderling Skin", credits: 150 } },
   { rank: "platinum", rewards: { type: "vfx_set", description: "Rare VFX Set", credits: 200 } },
   { rank: "diamond", rewards: { type: "skin", description: "Exclusive Diamond Skin", credits: 300 } },
   { rank: "legend", rewards: { type: "title", description: "Legend Title + Animated Border", credits: 500 } },

@@ -9,7 +9,7 @@
  *   blip     — command queued (short high blip)
  *   submit   — turn submitted (soft confirmation tone)
  *   resolve  — turn resolved (ascending two-tone chord)
- *   ko       — vellymon KO'd (descending sawtooth)
+ *   ko       — cinderling KO'd (descending sawtooth)
  *   victory  — match won (C-major arpeggio)
  *   defeat   — match lost (descending minor chord)
  */

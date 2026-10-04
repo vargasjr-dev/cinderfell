@@ -45,6 +45,6 @@ export async function getSubscriptionInfo(userId: string) {
 export async function requireSubscriber(userId: string): Promise<void> {
   const subscribed = await isSubscriber(userId);
   if (!subscribed) {
-    throw new Error("This feature requires a Vellymon Premium subscription.");
+    throw new Error("This feature requires a Cinderfell Premium subscription.");
   }
 }

@@ -1,7 +1,7 @@
 /**
  * Special Power Hook System
  *
- * Each vellymon can have an optional special power that triggers at specific
+ * Each cinderling can have an optional special power that triggers at specific
  * points during turn resolution. Powers are defined as hook functions that
  * receive game state and return modifications.
  *
@@ -9,31 +9,31 @@
  *   1. onTurnStart     — Before any commands resolve (e.g. passive regen)
  *   2. onBeforeCommand — Before a specific command resolves (e.g. cost reduction)
  *   3. onAfterCommand  — After a specific command resolves (e.g. bonus effects)
- *   4. onKnockout      — When this vellymon KOs an opponent (e.g. energy steal)
- *   5. onDamaged       — When this vellymon takes damage (e.g. thorns)
+ *   4. onKnockout      — When this cinderling KOs an opponent (e.g. energy steal)
+ *   5. onDamaged       — When this cinderling takes damage (e.g. thorns)
  *   6. onTurnEnd       — After all commands resolve (e.g. area effects)
  *
  * Design Philosophy:
  *   - Powers modify the game state through returned effect objects, not direct mutation
  *   - Each power is small and testable in isolation
  *   - The engine calls hooks at the right time — powers don't need to know about resolution order
- *   - Powers are optional — vellymons without one are still valid
+ *   - Powers are optional — cinderlings without one are still valid
  */
 
-import type { VellymonState, Position, GameState, Vec2 } from "./types";
+import type { CinderlingState, Position, GameState, Vec2 } from "./types";
 
 /** Minimal command reference for hooks */
 export type CommandRef = {
   type: "move" | "attack" | "harvest";
-  /** UUID of the vellymon executing this command (matches Command.vellymonUuid) */
-  vellymonUuid: string;
+  /** UUID of the cinderling executing this command (matches Command.cinderlingUuid) */
+  cinderlingUuid: string;
   /** Cardinal unit vector in game space. Absent for some legacy hook contexts. */
   vec?: Vec2;
 };
 
 // ─── Effect Types ────────────────────────────────────────────────────────────
 
-/** Heal a vellymon */
+/** Heal a cinderling */
 export type HealEffect = {
   type: "heal";
   targetId: string;
@@ -57,14 +57,14 @@ export type EnergyEffect = {
 /** Modify command cost */
 export type CostModEffect = {
   type: "cost_mod";
-  vellymonId: string;
+  cinderlingId: string;
   amount: number; // negative = cheaper
 };
 
 /** Modify speed for this turn */
 export type SpeedModEffect = {
   type: "speed_mod";
-  vellymonId: string;
+  cinderlingId: string;
   amount: number;
 };
 
@@ -82,10 +82,10 @@ export type BlockEffect = {
   position: Position;
 };
 
-/** Persist a numeric value to a vellymon's powerState record */
+/** Persist a numeric value to a cinderling's powerState record */
 export type SetPowerStateEffect = {
   type: "set_power_state";
-  vellymonId: string;
+  cinderlingId: string;
   key: string;
   value: number;
 };
@@ -103,9 +103,9 @@ export type PowerEffect =
 // ─── Hook Context ────────────────────────────────────────────────────────────
 
 export type HookContext = {
-  /** The vellymon with this power */
-  self: VellymonState;
-  /** Which team this vellymon is on */
+  /** The cinderling with this power */
+  self: CinderlingState;
+  /** Which team this cinderling is on */
   team: 1 | 2;
   /** Full game state (read-only for hooks) */
   state: Readonly<GameState>;
@@ -130,13 +130,13 @@ export type CommandHookContext = HookContext & {
 };
 
 export type KnockoutHookContext = HookContext & {
-  /** The vellymon that was knocked out */
-  target: VellymonState;
+  /** The cinderling that was knocked out */
+  target: CinderlingState;
 };
 
 export type DamagedHookContext = HookContext & {
   /** The attacker */
-  attacker: VellymonState;
+  attacker: CinderlingState;
   /** Damage amount before mitigation */
   damage: number;
 };
@@ -144,7 +144,7 @@ export type DamagedHookContext = HookContext & {
 // ─── Special Power Definition ────────────────────────────────────────────────
 
 export type SpecialPower = {
-  /** Unique identifier (matches vellymon template) */
+  /** Unique identifier (matches cinderling template) */
   id: string;
   /** Display name */
   name: string;
@@ -183,8 +183,8 @@ export function getAllPowers(): SpecialPower[] {
 // ─── Hook Runner ─────────────────────────────────────────────────────────────
 
 /**
- * Run a specific hook for a vellymon, collecting all effects.
- * Returns empty array if the vellymon has no power or no hook for this phase.
+ * Run a specific hook for a cinderling, collecting all effects.
+ * Returns empty array if the cinderling has no power or no hook for this phase.
  */
 export function runHook<T extends HookContext>(
   hookName: keyof SpecialPower["hooks"],
@@ -205,18 +205,18 @@ export function runHook<T extends HookContext>(
 }
 
 /**
- * Run a hook for ALL active vellymons on a team, collecting effects.
+ * Run a hook for ALL active cinderlings on a team, collecting effects.
  */
 export function runTeamHooks(
   hookName: keyof SpecialPower["hooks"],
-  vellymons: VellymonState[],
+  cinderlings: CinderlingState[],
   team: 1 | 2,
   state: Readonly<GameState>,
   turn: number
 ): PowerEffect[] {
   const effects: PowerEffect[] = [];
-  for (const v of vellymons) {
-    if (v.hp <= 0 || v.isKO) continue; // Dead vellymons don't trigger
+  for (const v of cinderlings) {
+    if (v.hp <= 0 || v.isKO) continue; // Dead cinderlings don't trigger
     const ctx: HookContext = { self: v, team, state, turn };
     effects.push(...runHook(hookName, v.specialPowerId, ctx));
   }
@@ -238,7 +238,7 @@ export function applyEffects(
   for (const effect of effects) {
     switch (effect.type) {
       case "heal": {
-        const target = findVellymon(state, effect.targetId);
+        const target = findCinderling(state, effect.targetId);
         if (target) {
           target.hp = Math.min(target.maxHp, target.hp + effect.amount);
           summary.healed.push(effect.targetId);
@@ -246,11 +246,11 @@ export function applyEffects(
         break;
       }
       case "bonus_damage": {
-        const target = findVellymon(state, effect.targetId);
+        const target = findCinderling(state, effect.targetId);
         if (target) {
           target.hp = Math.max(0, target.hp - effect.amount);
           summary.damaged.push(effect.targetId);
-          // KO check — must mirror resolveAttack so self-damage can knock out a vellymon
+          // KO check — must mirror resolveAttack so self-damage can knock out a cinderling
           if (target.hp === 0 && !target.isKO) {
             target.isKO = true;
             target.position = null;
@@ -267,14 +267,14 @@ export function applyEffects(
         break;
       }
       case "speed_mod": {
-        const target = findVellymon(state, effect.vellymonId);
+        const target = findCinderling(state, effect.cinderlingId);
         if (target) {
           target.speed = Math.max(1, target.speed + effect.amount);
         }
         break;
       }
       case "set_power_state": {
-        const target = findVellymon(state, effect.vellymonId);
+        const target = findCinderling(state, effect.cinderlingId);
         if (target) {
           if (!target.powerState) target.powerState = {};
           target.powerState[effect.key] = effect.value;
@@ -290,7 +290,7 @@ export function applyEffects(
   return summary;
 }
 
-function findVellymon(state: GameState, id: string): VellymonState | undefined {
+function findCinderling(state: GameState, id: string): CinderlingState | undefined {
   for (const team of state.teams) {
     const found =
       team.active.find((v) => v.uuid === id) ??

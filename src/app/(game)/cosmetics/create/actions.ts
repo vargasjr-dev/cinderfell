@@ -9,7 +9,7 @@ import {
   type GenerationResult,
 } from "../../../../../lib/cosmetic-generator";
 import type { CosmeticType } from "../../../../../lib/cosmetics";
-import getVellymonRoster from "~/data/getVellymonRoster.server";
+import getCinderlingRoster from "~/data/getCinderlingRoster.server";
 import { getBalance } from "../../../../../lib/currency";
 import { isSubscriber } from "../../../../../lib/subscription";
 
@@ -30,7 +30,7 @@ export async function getCreatePageData(): Promise<CreatePageData> {
   const session = (await auth.api.getSession({ headers: headersList }))!;
 
   const [roster, balance, subscribed] = await Promise.all([
-    getVellymonRoster(session.user.id),
+    getCinderlingRoster(session.user.id),
     getBalance(session.user.id),
     isSubscriber(session.user.id),
   ]);
@@ -47,7 +47,7 @@ export async function getCreatePageData(): Promise<CreatePageData> {
 }
 
 export async function generateCosmeticAction(
-  vellymonId: string | null,
+  cinderlingId: string | null,
   type: CosmeticType,
   prompt: string,
   styleParams?: {
@@ -61,7 +61,7 @@ export async function generateCosmeticAction(
 
   return generateCosmetic({
     userId: session.user.id,
-    vellymonId,
+    cinderlingId,
     type,
     prompt,
     styleParams,

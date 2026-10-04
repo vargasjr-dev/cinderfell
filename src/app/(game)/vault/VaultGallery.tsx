@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { purchaseVaultItemAction, type VaultItem } from "./actions";
-import VellymonPremiumLogo from "~/components/VellymonPremiumLogo";
+import CinderfellPremiumLogo from "~/components/CinderfellPremiumLogo";
 
 interface VaultGalleryProps {
   items: VaultItem[];
@@ -49,7 +49,7 @@ export default function VaultGallery({
     return (
       <div className="text-center py-12">
         <div className="flex justify-center mb-5">
-          <VellymonPremiumLogo />
+          <CinderfellPremiumLogo />
         </div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">
           Subscribers Only

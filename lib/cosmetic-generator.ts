@@ -24,7 +24,7 @@ export function getGenerationCost(type: string): number {
 
 export type GenerationRequest = {
   userId: string;
-  vellymonId: string | null; // null for global cosmetics
+  cinderlingId: string | null; // null for global cosmetics
   type: CosmeticType;
   prompt: string;
   styleParams?: {
@@ -55,7 +55,7 @@ export async function validateGeneration(
   if (!subscribed) {
     return {
       valid: false,
-      error: "Vellymon Premium subscription required to generate cosmetics.",
+      error: "Cinderfell Premium subscription required to generate cosmetics.",
       cost,
     };
   }
@@ -183,7 +183,7 @@ async function generateImage(
 export async function generateCosmetic(
   request: GenerationRequest,
 ): Promise<GenerationResult> {
-  const { userId, vellymonId, type, prompt, styleParams } = request;
+  const { userId, cinderlingId, type, prompt, styleParams } = request;
 
   // Step 1: Validate
   const validation = await validateGeneration(userId, type);
@@ -202,7 +202,7 @@ export async function generateCosmetic(
     .insert(cosmetic)
     .values({
       userId,
-      vellymonId,
+      cinderlingId,
       type,
       name: prompt.slice(0, 64), // Use prompt start as default name
       imageUrl: imageResult.imageUrl,

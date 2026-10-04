@@ -1,7 +1,7 @@
 import WebSocket, { WebSocketServer } from "ws";
 import { NULL_VEC } from "./map";
 import { commandsToEvents, Command, Game, storeCommands } from "./game";
-import getVellymon from "../src/data/getVellymon.server";
+import getCinderling from "../src/data/getCinderling.server";
 import getBoardById from "../src/data/getBoardById.server";
 
 const port = Number(process.argv[2]) || 12345;
@@ -9,7 +9,7 @@ const MAX_BATTERY = 256;
 const game: Game = {
   healthChecks: 0,
   gameSessionId: "",
-  nextVellymonId: 0,
+  nextCinderlingId: 0,
   turn: 0,
   history: {},
   board: {
@@ -36,11 +36,11 @@ const EndGame = () => {
 
 const onStartGame = (
   {
-    myVellymons,
+    myCinderlings,
     myName,
     boardId,
   }: {
-    myVellymons: string[];
+    myCinderlings: string[];
     myName: string;
     boardId?: string;
   },
@@ -51,7 +51,7 @@ const onStartGame = (
     "Client",
     myName,
     "Starting Game With Team",
-    JSON.stringify(myVellymons, null, 4)
+    JSON.stringify(myCinderlings, null, 4)
   );
 
   const isPrimary = !game.primary?.joined;
@@ -62,25 +62,25 @@ const onStartGame = (
     : Promise.resolve();
 
   return boardPromise
-    .then(() => Promise.all(myVellymons.map(getVellymon)))
-    .then((myVellymons) => {
-      const vellymons = myVellymons.map((v) => {
-        const vellymon = {
+    .then(() => Promise.all(myCinderlings.map(getCinderling)))
+    .then((myCinderlings) => {
+      const cinderlings = myCinderlings.map((v) => {
+        const cinderling = {
           ...v,
-          id: game.nextVellymonId++,
+          id: game.nextCinderlingId++,
           position: NULL_VEC,
           startingHealth: v.health,
           currentEnergy: v.energy,
         };
         // game.board add to dock
-        return vellymon;
+        return cinderling;
       });
       const player = {
         name: myName,
         joined: true,
         ready: false,
         ws,
-        team: vellymons,
+        team: cinderlings,
         battery: MAX_BATTERY,
       };
       if (isPrimary) {
@@ -142,7 +142,7 @@ const onJoinGame = (
   return onStartGame(
     {
       myName: playerName,
-      myVellymons: playerTeam,
+      myCinderlings: playerTeam,
       boardId,
     },
     ws,
@@ -219,7 +219,7 @@ const onSubmitCommands = (
   }
 };
 
-console.log(`Starting the vellymon game server at port: ${port}`);
+console.log(`Starting the cinderling game server at port: ${port}`);
 
 const MESSAGE_HANDLERS = {
   JOIN_GAME: onJoinGame,
@@ -228,7 +228,7 @@ const MESSAGE_HANDLERS = {
 } as const;
 
 const wss = new WebSocketServer({ port }, () => {
-  console.log("Vellymon game server started");
+  console.log("Cinderling game server started");
 });
 
 wss.on("connection", (ws) => {
@@ -269,7 +269,7 @@ wss.on("connection", (ws) => {
 });
 
 wss.on("listening", () => {
-  console.log(`Vellymon game server listening on port ${port}`);
+  console.log(`Cinderling game server listening on port ${port}`);
 });
 
 // Graceful shutdown

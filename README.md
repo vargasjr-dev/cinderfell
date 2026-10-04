@@ -1,4 +1,4 @@
-# vellymon.game
+# Cinderfell
 
 A multiplayer RPG game built with Next.js, deployed on Vercel.
 
@@ -40,8 +40,8 @@ Required GitHub secrets (for database sync workflow):
 
 ## Game Architecture
 
-### Vellymons
-Each player can collect and battle with vellymons. Vellymons have stats:
+### Cinderlings
+Each player can collect and battle with cinderlings. Cinderlings have stats:
 - Health
 - Attack
 - Speed

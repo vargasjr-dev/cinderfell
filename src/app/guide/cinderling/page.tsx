@@ -1,14 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
-import { VELLYMON_LIBRARY } from "../../../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../../../server/cinderlings";
 
-export default function VellymonDirectoryPage() {
+export default function CinderlingDirectoryPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-200">
       <nav className="border-b border-blue-200 bg-white/60 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-gray-900">
-            vellymon
+            cinderling
           </Link>
           <div className="flex gap-4">
             <Link href="/guide" className="text-blue-600 font-medium">
@@ -35,19 +35,19 @@ export default function VellymonDirectoryPage() {
         </div>
 
         <h1 className="text-4xl font-bold mb-2 text-gray-900">
-          📚 Vellymon Directory
+          📚 Cinderling Directory
         </h1>
         <p className="text-gray-600 mb-10 text-lg">
-          All {VELLYMON_LIBRARY.length} vellymons. Click any creature to see
+          All {CINDERLING_LIBRARY.length} cinderlings. Click any creature to see
           its stats, attacks, and lore.
         </p>
 
         {/* Avatar Grid */}
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-          {VELLYMON_LIBRARY.map((v) => (
+          {CINDERLING_LIBRARY.map((v) => (
             <Link
               key={v.id}
-              href={`/guide/vellymon/${v.name.toLowerCase()}`}
+              href={`/guide/cinderling/${v.name.toLowerCase()}`}
               className="group bg-white rounded-lg shadow-sm hover:shadow-md transition p-2 text-center"
             >
               {v.imageUrl ? (
