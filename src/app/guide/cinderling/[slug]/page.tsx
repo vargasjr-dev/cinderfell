@@ -2,47 +2,47 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
-  VELLYMON_LIBRARY,
-  type VellymonTemplate,
-} from "../../../../../server/vellymonLibrary";
+  CINDERLING_LIBRARY,
+  type CinderlingTemplate,
+} from "../../../../../server/cinderlings";
 
 
-/** Generate static params for all 64 vellymons */
+/** Generate static params for all 64 cinderlings */
 export function generateStaticParams() {
-  return VELLYMON_LIBRARY.map((v) => ({
+  return CINDERLING_LIBRARY.map((v) => ({
     slug: v.name.toLowerCase(),
   }));
 }
 
-export default async function VellymonDetailPage({
+export default async function CinderlingDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const vellymon = VELLYMON_LIBRARY.find(
+  const cinderling = CINDERLING_LIBRARY.find(
     (v) => v.name.toLowerCase() === slug.toLowerCase(),
   );
 
-  if (!vellymon) {
+  if (!cinderling) {
     notFound();
   }
 
   const statBudget =
-    vellymon.hp + vellymon.attack * 5 + vellymon.speed * 8;
+    cinderling.hp + cinderling.attack * 5 + cinderling.speed * 8;
 
   // Find neighbors for navigation
-  const idx = VELLYMON_LIBRARY.indexOf(vellymon);
-  const prev = idx > 0 ? VELLYMON_LIBRARY[idx - 1] : null;
+  const idx = CINDERLING_LIBRARY.indexOf(cinderling);
+  const prev = idx > 0 ? CINDERLING_LIBRARY[idx - 1] : null;
   const next =
-    idx < VELLYMON_LIBRARY.length - 1 ? VELLYMON_LIBRARY[idx + 1] : null;
+    idx < CINDERLING_LIBRARY.length - 1 ? CINDERLING_LIBRARY[idx + 1] : null;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-200">
       <nav className="border-b border-blue-200 bg-white/60 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-gray-900">
-            vellymon
+            cinderling
           </Link>
           <div className="flex gap-4">
             <Link href="/guide" className="text-blue-600 font-medium">
@@ -61,7 +61,7 @@ export default async function VellymonDetailPage({
       <div className="container mx-auto px-4 py-12 max-w-2xl">
         <div className="mb-8">
           <Link
-            href="/guide/vellymon"
+            href="/guide/cinderling"
             className="text-blue-600 hover:underline text-sm"
           >
             ← Back to Directory
@@ -71,11 +71,11 @@ export default async function VellymonDetailPage({
         {/* Hero Card */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
           {/* Avatar */}
-          {vellymon.imageUrl && (
+          {cinderling.imageUrl && (
             <div className="relative w-full aspect-square max-h-80 bg-gray-50">
               <Image
-                src={vellymon.imageUrl}
-                alt={vellymon.name}
+                src={cinderling.imageUrl}
+                alt={cinderling.name}
                 fill
                 className="object-contain"
                 sizes="(max-width: 640px) 100vw, 640px"
@@ -88,28 +88,28 @@ export default async function VellymonDetailPage({
           <div className="p-6">
             <div className="flex items-center justify-between mb-2">
               <h1 className="text-3xl font-bold text-gray-900">
-                {vellymon.name}
+                {cinderling.name}
               </h1>
               <span className="text-sm font-mono text-gray-400">
-                #{vellymon.id}
+                #{cinderling.id}
               </span>
             </div>
             <p className="text-gray-600 italic text-lg mb-6">
-              &ldquo;{vellymon.flavor}&rdquo;
+              &ldquo;{cinderling.flavor}&rdquo;
             </p>
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <StatBar label="HP" value={vellymon.hp} max={120} color="green" />
+              <StatBar label="HP" value={cinderling.hp} max={120} color="green" />
               <StatBar
                 label="ATK"
-                value={vellymon.attack}
+                value={cinderling.attack}
                 max={20}
                 color="red"
               />
               <StatBar
                 label="SPD"
-                value={vellymon.speed}
+                value={cinderling.speed}
                 max={10}
                 color="blue"
               />
@@ -122,8 +122,8 @@ export default async function VellymonDetailPage({
             {/* Attacks */}
             <h2 className="text-lg font-bold text-gray-900 mb-3">Attacks</h2>
             <div className="space-y-3">
-              {vellymon.attacks.map((atk, i) => {
-                const totalDamage = atk.damage + vellymon.attack;
+              {cinderling.attacks.map((atk, i) => {
+                const totalDamage = atk.damage + cinderling.attack;
                 return (
                   <div
                     key={i}
@@ -151,7 +151,7 @@ export default async function VellymonDetailPage({
             {/* Special Power hint */}
             <div className="mt-6 bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
               <p className="text-sm text-purple-700">
-                ✨ This vellymon has a <strong>unique special power</strong>{" "}
+                ✨ This cinderling has a <strong>unique special power</strong>{" "}
                 that activates during battle. Discover it in a match!
               </p>
             </div>
@@ -162,7 +162,7 @@ export default async function VellymonDetailPage({
         <div className="flex justify-between items-center">
           {prev ? (
             <Link
-              href={`/guide/vellymon/${prev.name.toLowerCase()}`}
+              href={`/guide/cinderling/${prev.name.toLowerCase()}`}
               className="text-blue-600 hover:underline text-sm"
             >
               ← {prev.name}
@@ -172,7 +172,7 @@ export default async function VellymonDetailPage({
           )}
           {next ? (
             <Link
-              href={`/guide/vellymon/${next.name.toLowerCase()}`}
+              href={`/guide/cinderling/${next.name.toLowerCase()}`}
               className="text-blue-600 hover:underline text-sm"
             >
               {next.name} →

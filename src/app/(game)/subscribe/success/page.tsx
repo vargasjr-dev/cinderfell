@@ -10,7 +10,7 @@ const UNLOCKED = [
   {
     emoji: "⚡️",
     title: "Early Access",
-    desc: "Day-1 Vellymon unlock each season",
+    desc: "Day-1 Cinderling unlock each season",
     href: "/player",
   },
   {
@@ -36,7 +36,7 @@ export default function SubscribeSuccessPage() {
           Welcome to Premium!
         </h1>
         <p className="text-gray-600 mb-8">
-          Your Vellymon Premium subscription is now active. Time to make some
+          Your Cinderling Premium subscription is now active. Time to make some
           legendary moves.
         </p>
 

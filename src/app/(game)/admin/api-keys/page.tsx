@@ -32,7 +32,7 @@ export default async function ApiKeysPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">🔑 API Keys</h1>
         <p className="text-gray-600 mt-1 text-sm">
-          Named bearer tokens for programmatic access to the Vellymon API.
+          Named bearer tokens for programmatic access to the Cinderling API.
           Each key is shown exactly once — store it somewhere safe.
         </p>
         <p className="text-gray-500 mt-2 text-xs font-mono bg-gray-50 border border-gray-200 rounded px-3 py-2">
@@ -43,7 +43,7 @@ export default async function ApiKeysPage() {
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-base font-semibold text-gray-800 mb-4">Available endpoints</h2>
         <div className="space-y-1 text-xs font-mono text-gray-600">
-          <p><span className="text-blue-600 font-semibold">GET</span>    /api/v1/users/:userId/vellymons</p>
+          <p><span className="text-blue-600 font-semibold">GET</span>    /api/v1/users/:userId/cinderlings</p>
           <p><span className="text-blue-600 font-semibold">GET</span>    /api/v1/users/:userId/teams</p>
           <p><span className="text-green-600 font-semibold">POST</span>   /api/v1/users/:userId/teams</p>
           <p><span className="text-blue-600 font-semibold">GET</span>    /api/v1/users/:userId/teams/:teamUuid</p>

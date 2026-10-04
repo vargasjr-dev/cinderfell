@@ -10,7 +10,7 @@
  * Effects: speed_mod -1, bonus_damage +2 to self
  *
  * Design: Terravex is balanced (HP 70, ATK 14, SPD 4).
- * Already the highest ATK among balanced vellymons. Each
+ * Already the highest ATK among balanced cinderlings. Each
  * hit trades mobility for raw power — a berserker that
  * roots itself deeper. After 2 hits: ATK effectively 18
  * (matching Pyroburst) but SPD 2. The opponent must
@@ -34,7 +34,7 @@ registerPower({
       return [
         {
           type: "speed_mod",
-          vellymonId: ctx.self.uuid,
+          cinderlingId: ctx.self.uuid,
           amount: -1,
         },
         {

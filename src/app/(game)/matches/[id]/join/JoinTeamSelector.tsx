@@ -9,7 +9,7 @@ type TeamSlot = {
   uuid: string;
   slotIndex: number;
   isActive: boolean;
-  vellymon: {
+  cinderling: {
     name: string;
     health: number;
     attack: number;
@@ -98,7 +98,7 @@ export default function JoinTeamSelector({
                     key={slot.uuid}
                     className="border border-green-200 bg-green-50 rounded px-2 py-1 text-xs font-medium text-gray-700"
                   >
-                    {slot.vellymon?.name ?? "Unknown"}
+                    {slot.cinderling?.name ?? "Unknown"}
                   </span>
                 ))}
               </div>

@@ -1,5 +1,5 @@
 /**
- * Core game state types for the vellymon engine.
+ * Core game state types for the cinderling engine.
  *
  * These types define the shape of game state that all engine modules
  * (win conditions, energy, commands, board) operate on.
@@ -31,7 +31,7 @@ export type BoardSpace = {
   harvestYield?: number;
 };
 
-// ─── Vellymon State ──────────────────────────────────────────────────────────
+// ─── Cinderling State ──────────────────────────────────────────────────────────
 
 export type Attack = {
   /** References the canonical key in ATTACK_TEMPLATES */
@@ -40,11 +40,11 @@ export type Attack = {
   damage: number;
   energyCost: number;
   range: number;
-  /** When true, scan skips over own-team vellymons (arcs over them). See AttackTemplate. */
+  /** When true, scan skips over own-team cinderlings (arcs over them). See AttackTemplate. */
   arcOver?: boolean;
 };
 
-export type VellymonState = {
+export type CinderlingState = {
   uuid: string;
   name: string;
   /** Current HP (0 = KO'd) */
@@ -52,19 +52,19 @@ export type VellymonState = {
   maxHp: number;
   /** Effective speed this turn (may be temporarily modified by powers) */
   speed: number;
-  /** Base speed from the vellymon template — never modified */
+  /** Base speed from the cinderling template — never modified */
   baseSpeed: number;
   attack: number;
   attacks: Attack[];
   /** Current board position (null if KO'd and not yet replaced, or on bench) */
   position: Position | null;
-  /** Whether this vellymon is KO'd */
+  /** Whether this cinderling is KO'd */
   isKO: boolean;
   /** Pre-assigned spawn position for bench entry */
   spawnPosition: Position;
   /** Optional special power ID — references the power registry */
   specialPowerId?: string;
-  /** Avatar image URL (e.g. /vellymon/aerobolt.png) */
+  /** Avatar image URL (e.g. /cinderling/aerobolt.png) */
   imageUrl?: string;
   /**
    * Persistent per-turn state for powers that need counters/accumulators.
@@ -84,12 +84,12 @@ export type TeamState = {
   name: string;
   /** Team energy pool */
   energy: number;
-  /** Active vellymons on the board */
-  active: VellymonState[];
-  /** Bench vellymons waiting to enter (ordered) */
-  bench: VellymonState[];
-  /** KO'd vellymons (no longer in play) */
-  knocked: VellymonState[];
+  /** Active cinderlings on the board */
+  active: CinderlingState[];
+  /** Bench cinderlings waiting to enter (ordered) */
+  bench: CinderlingState[];
+  /** KO'd cinderlings (no longer in play) */
+  knocked: CinderlingState[];
 };
 
 // ─── Game State ──────────────────────────────────────────────────────────────

@@ -9,7 +9,7 @@ type Vec2 = { dx: number; dy: number };
 type CommandResult = {
   command: {
     type: "move" | "attack" | "harvest";
-    vellymonUuid: string;
+    cinderlingUuid: string;
     /** Game-space cardinal unit vector. Old DB rows may still have direction string (compat handled at read time). */
     vec?: Vec2;
   };
@@ -37,8 +37,8 @@ type CommandResult = {
 };
 
 type BenchEntry = {
-  vellymonUuid: string;
-  vellymonName: string;
+  cinderlingUuid: string;
+  cinderlingName: string;
   status: "entered" | "blocked";
 };
 
@@ -122,7 +122,7 @@ function vecToScreenLabel(
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/** Find vellymon name from uuid across both team snapshots */
+/** Find cinderling name from uuid across both team snapshots */
 function findName(teams: TeamSnap[], uuid: string): string {
   for (const t of teams) {
     const vm = t.active.find((v) => v.uuid === uuid);
@@ -153,7 +153,7 @@ function computeTeamEnergyDeltas(
   const deltas: Partial<Record<1 | 2, number>> = {};
   for (const r of log.commandResults) {
     if (!r.success) continue;
-    const teamId: 1 | 2 = r.command.vellymonUuid.startsWith("1-") ? 1 : 2;
+    const teamId: 1 | 2 = r.command.cinderlingUuid.startsWith("1-") ? 1 : 2;
     if (r.energyDelta !== undefined) {
       deltas[teamId] = (deltas[teamId] ?? 0) + r.energyDelta;
     }
@@ -187,9 +187,9 @@ function formatResult(
   isPortrait: boolean,
   yourTeamId: 1 | 2,
 ): string {
-  const name = findName(teams, r.command.vellymonUuid);
+  const name = findName(teams, r.command.cinderlingUuid);
   // Determine which team this mon belongs to so we use their perspective
-  const monTeamId = teams.find((t) => t.active.some((v) => v.uuid === r.command.vellymonUuid))?.id ?? yourTeamId;
+  const monTeamId = teams.find((t) => t.active.some((v) => v.uuid === r.command.cinderlingUuid))?.id ?? yourTeamId;
     const dir = vecToScreenLabel(r.command.vec, isPortrait, monTeamId);
 
   if (!r.success) {
@@ -364,11 +364,11 @@ export default function TurnHistory({ history, isOpen, onToggle, isPortrait = fa
                       ))}
 
                       {/* Command results sorted by execution order.
-                          Skip "Vellymon not found" — it means a mon was KO'd
+                          Skip "Cinderling not found" — it means a mon was KO'd
                           earlier in the same turn and its queued command never ran. */}
-                      {snap.log.commandResults.filter((r) => r.reason !== "Vellymon not found").map((r, i) => {
+                      {snap.log.commandResults.filter((r) => r.reason !== "Cinderling not found").map((r, i) => {
                         const icon = resultIcon(r);
-                        const teamId = r.command.vellymonUuid.startsWith("1-") ? 1 : 2;
+                        const teamId = r.command.cinderlingUuid.startsWith("1-") ? 1 : 2;
                         const teamColor = teamId === 1 ? "text-blue-400" : "text-red-400";
                         return (
                           <div key={i}>
@@ -409,7 +409,7 @@ export default function TurnHistory({ history, isOpen, onToggle, isPortrait = fa
                         <div key={`bench-${i}`} className="flex items-start gap-1.5 text-xs">
                           <span className="shrink-0">📥</span>
                           <span className="text-green-400">
-                            {b.vellymonName} {b.status === "entered" ? "entered from bench" : "bench entry blocked"}
+                            {b.cinderlingName} {b.status === "entered" ? "entered from bench" : "bench entry blocked"}
                           </span>
                         </div>
                       ))}

@@ -24,7 +24,7 @@ export type CreateSeasonInput = {
   name: string;
   startDate: string; // ISO string
   endDate: string;
-  newVellymonId?: number;
+  newCinderlingId?: number;
   tiers: TierDef[];
 };
 
@@ -51,7 +51,7 @@ export async function createSeasonAction(
       startDate: new Date(input.startDate),
       endDate: new Date(input.endDate),
       status: "upcoming",
-      newVellymonId: input.newVellymonId ?? null,
+      newCinderlingId: input.newCinderlingId ?? null,
     })
     .returning();
 
@@ -153,7 +153,7 @@ export async function getSeasonDetailAction(seasonId: string) {
  * Distributes rewards across tiers:
  * - Credits at most tiers (25-100 per tier)
  * - Cosmetic slots at tiers 5, 10, 15, 20, 25
- * - New vellymon at free tier 5 (unlocked day 15 for free players)
+ * - New cinderling at free tier 5 (unlocked day 15 for free players)
  * - Premium launch skin at tier 15
  */
 export async function generateDefaultTrack(): Promise<TierDef[]> {
@@ -167,7 +167,7 @@ export async function generateDefaultTrack(): Promise<TierDef[]> {
     if (i === 5) {
       freeReward = {
         type: "vellymon",
-        description: "New Season Vellymon (unlocks day 15)",
+        description: "New Season Cinderling (unlocks day 15)",
       };
     } else if (i % 5 === 0) {
       freeReward = {
@@ -186,7 +186,7 @@ export async function generateDefaultTrack(): Promise<TierDef[]> {
     if (i === 15) {
       premiumReward = {
         type: "cosmetic",
-        description: "Exclusive launch skin for new vellymon",
+        description: "Exclusive launch skin for new cinderling",
       };
     } else if (i === 25) {
       premiumReward = {

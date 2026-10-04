@@ -10,7 +10,7 @@ function rewardLabel(reward: unknown): string {
   if (r.type === "credits") return `${r.amount} 💰`;
   if (r.type === "cosmetic") return `🎨 ${r.description ?? "Cosmetic"}`;
   if (r.type === "title") return `🏷️ ${r.description ?? "Title"}`;
-  if (r.type === "vellymon") return `🐉 ${r.description ?? "New Vellymon"}`;
+  if (r.type === "vellymon") return `🐉 ${r.description ?? "New Cinderling"}`;
   if (r.description) return String(r.description);
   return "🎁 Reward";
 }

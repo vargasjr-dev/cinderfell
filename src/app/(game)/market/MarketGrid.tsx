@@ -14,7 +14,7 @@ interface AttackInfo {
   range: number;
 }
 
-interface MarketVellymon {
+interface MarketCinderling {
   uuid: string;
   name: string;
   health: number;
@@ -60,15 +60,15 @@ const filters: { key: FilterKey; label: string }[] = [
 ];
 
 export default function MarketGrid({
-  vellymons,
+  cinderlings,
 }: {
-  vellymons: MarketVellymon[];
+  cinderlings: MarketCinderling[];
 }) {
   const [filter, setFilter] = useState<FilterKey>("all");
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<MarketVellymon | null>(null);
+  const [selected, setSelected] = useState<MarketCinderling | null>(null);
 
-  const filtered = vellymons.filter((v) => {
+  const filtered = cinderlings.filter((v) => {
     if (filter === "available" && v.isOwned) return false;
     if (filter === "owned" && !v.isOwned) return false;
     if (search && !v.name.toLowerCase().includes(search.toLowerCase()))
@@ -76,7 +76,7 @@ export default function MarketGrid({
     return true;
   });
 
-  const ownedCount = vellymons.filter((v) => v.isOwned).length;
+  const ownedCount = cinderlings.filter((v) => v.isOwned).length;
 
   return (
     <div>
@@ -96,7 +96,7 @@ export default function MarketGrid({
               {f.label}
               {f.key === "owned" && ` (${ownedCount})`}
               {f.key === "available" &&
-                ` (${vellymons.length - ownedCount})`}
+                ` (${cinderlings.length - ownedCount})`}
             </button>
           ))}
         </div>
@@ -114,7 +114,7 @@ export default function MarketGrid({
         <div className="flex-1">
           {(filter !== "all" || search) && (
             <p className="text-sm text-gray-500 mb-3">
-              Showing {filtered.length} of {vellymons.length}
+              Showing {filtered.length} of {cinderlings.length}
             </p>
           )}
           <div className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 lg:grid-cols-10 gap-2">
@@ -158,7 +158,7 @@ export default function MarketGrid({
           {filtered.length === 0 && (
             <div className="text-center py-12">
               <p className="text-5xl mb-4">🔍</p>
-              <p className="text-gray-500">No vellymons match your filters.</p>
+              <p className="text-gray-500">No cinderlings match your filters.</p>
             </div>
           )}
         </div>
@@ -224,7 +224,7 @@ export default function MarketGrid({
                 ) : (
                   <BuyButton
                     modelUuid={selected.uuid}
-                    vellymonName={selected.name}
+                    cinderlingName={selected.name}
                   />
                 )}
               </div>
@@ -233,7 +233,7 @@ export default function MarketGrid({
             <div className="bg-white rounded-xl shadow-sm p-8 text-center sticky top-4">
               <p className="text-4xl mb-3">👆</p>
               <p className="text-gray-500 text-sm">
-                Click a vellymon to see its details
+                Click a cinderling to see its details
               </p>
             </div>
           )}
@@ -293,7 +293,7 @@ export default function MarketGrid({
               ) : (
                 <BuyButton
                   modelUuid={selected.uuid}
-                  vellymonName={selected.name}
+                  cinderlingName={selected.name}
                 />
               )}
             </div>

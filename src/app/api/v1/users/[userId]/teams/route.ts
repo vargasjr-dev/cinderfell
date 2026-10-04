@@ -8,7 +8,7 @@
  *   {
  *     "name": "Team Name",
  *     "slots": [
- *       { "vellymonInstanceUuid": "<uuid>", "slotIndex": 0, "isActive": true },
+ *       { "cinderlingInstanceUuid": "<uuid>", "slotIndex": 0, "isActive": true },
  *       ...
  *     ]
  *   }
@@ -19,14 +19,14 @@ import { db } from "../../../../../../../data/db";
 import {
   team,
   teamSlot,
-  vellymonInstance,
+  cinderlingInstance,
   user,
 } from "../../../../../../../data/schema";
 import { eq } from "drizzle-orm";
 import { validateApiKey } from "../../../../../../lib/apiKeyAuth.server";
 import createTeam from "../../../../../../data/createTeam.server";
 import type { SlotInput } from "../../../../../../data/createTeam.server";
-import getVellymonModel from "../../../../../../data/getVellymonModel.server";
+import getCinderlingModel from "../../../../../../data/getCinderlingModel.server";
 import "../../../../../../../server/powers";
 
 async function requireUser(userId: string) {
@@ -68,28 +68,28 @@ export async function GET(
         .select({
           slotIndex: teamSlot.slotIndex,
           isActive: teamSlot.isActive,
-          vellymonInstanceUuid: teamSlot.vellymonInstanceUuid,
+          cinderlingInstanceUuid: teamSlot.cinderlingInstanceUuid,
         })
         .from(teamSlot)
         .where(eq(teamSlot.teamUuid, t.uuid));
 
-      // Enrich with vellymon names
+      // Enrich with cinderling names
       const enrichedSlots = await Promise.all(
         slots.map(async (s) => {
           const [inst] = await db
-            .select({ modelUuid: vellymonInstance.modelUuid })
-            .from(vellymonInstance)
-            .where(eq(vellymonInstance.uuid, s.vellymonInstanceUuid))
+            .select({ modelUuid: cinderlingInstance.modelUuid })
+            .from(cinderlingInstance)
+            .where(eq(cinderlingInstance.uuid, s.cinderlingInstanceUuid))
             .limit(1);
-          let vellymonName = "Unknown";
+          let cinderlingName = "Unknown";
           if (inst) {
             try {
-              vellymonName = getVellymonModel(inst.modelUuid).name;
+              cinderlingName = getCinderlingModel(inst.modelUuid).name;
             } catch {
               /* skip */
             }
           }
-          return { ...s, vellymonName };
+          return { ...s, cinderlingName };
         }),
       );
 

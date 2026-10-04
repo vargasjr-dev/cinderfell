@@ -7,7 +7,7 @@ import { team } from "../../../../data/schema";
 import { eq } from "drizzle-orm";
 import { listAiProfiles } from "~/data/aiProfiles.server";
 import type { AiProfile } from "~/data/aiProfiles.server";
-import { VELLYMON_LIBRARY } from "../../../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../../../server/cinderlings";
 import "../../../../server/powers";
 import { getPower } from "../../../../server/specialPowers";
 import PracticeSetup from "./PracticeSetup";
@@ -31,7 +31,7 @@ export default async function PracticePage() {
     description: p.description,
   }));
 
-  const vellymons = VELLYMON_LIBRARY.map((v) => ({
+  const cinderlings = CINDERLING_LIBRARY.map((v) => ({
     name: v.name,
     hp: v.hp,
     attack: v.attack,
@@ -59,7 +59,7 @@ export default async function PracticePage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-xl p-6">
-        <PracticeSetup teams={teams} subscribed={subscribed} profiles={profiles} vellymons={vellymons} />
+        <PracticeSetup teams={teams} subscribed={subscribed} profiles={profiles} cinderlings={cinderlings} />
       </div>
 
       <div className="mt-4 text-center">

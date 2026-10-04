@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * auto-match.ts — plays a full AI vs AI vellymon match and uploads it.
+ * auto-match.ts — plays a full AI vs AI cinderling match and uploads it.
  *
  * Usage:
  *   bun scripts/auto-match.ts --p1 <profileId> --p2 <profileId>   Run two profiles head-to-head
@@ -13,7 +13,7 @@
 
 import { resolve, join } from "node:path";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
-import { VELLYMON_LIBRARY } from "../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../server/cinderlings";
 import { buildTeamSetup } from "../server/matchSetup";
 import {
   initializeGame,
@@ -38,7 +38,7 @@ import type { TurnTimerState } from "../server/turnTimer";
 
 // ─── State dir ────────────────────────────────────────────────────────────────
 
-const STATE_DIR = resolve(new URL(".", import.meta.url).pathname, "../.vellymon");
+const STATE_DIR = resolve(new URL(".", import.meta.url).pathname, "../.cinderling");
 if (!existsSync(STATE_DIR)) mkdirSync(STATE_DIR, { recursive: true });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ if (!isRandom && p1Flag !== -1 && p2Flag !== -1) {
   };
 } else {
   // --random or no args: pick random teams from the library
-  const picked = shuffle(VELLYMON_LIBRARY).slice(0, 16);
+  const picked = shuffle(CINDERLING_LIBRARY).slice(0, 16);
   p1Config = {
     id: "random-1",
     name: "Random Team 1",
@@ -166,8 +166,8 @@ if (!isRandom && p1Flag !== -1 && p2Flag !== -1) {
 
 function resolveTeamTemplates(names: string[]) {
   return names.map((name) => {
-    const t = VELLYMON_LIBRARY.find((v) => v.name.toLowerCase() === name.toLowerCase());
-    if (!t) throw new Error(`Unknown vellymon name: "${name}"`);
+    const t = CINDERLING_LIBRARY.find((v) => v.name.toLowerCase() === name.toLowerCase());
+    if (!t) throw new Error(`Unknown cinderling name: "${name}"`);
     return t;
   });
 }
@@ -261,7 +261,7 @@ match.gameState = gs;
 const winner = getWinner(gs);
 const outPath = join(STATE_DIR, `${id}.json`);
 writeFileSync(outPath, JSON.stringify(match, null, 2));
-console.log(`\n✅ Match saved → .vellymon/${id}.json`);
+console.log(`\n✅ Match saved → .cinderling/${id}.json`);
 console.log(`   Turns: ${gs.turn} | Snapshots: ${match.turnSnapshots.length}`);
 console.log(
   winner
@@ -281,10 +281,10 @@ if (existsSync(configPath)) {
     if (cfg.apiKey) apiKey = cfg.apiKey;
   } catch {}
 }
-apiKey = process.env.VELLYMON_UPLOAD_API_KEY ?? apiKey;
+apiKey = process.env.CINDERLING_UPLOAD_API_KEY ?? apiKey;
 
 if (!apiKey) {
-  console.error("\n❌ No API key — set VELLYMON_UPLOAD_API_KEY or add to .vellymon/config.json");
+  console.error("\n❌ No API key — set CINDERLING_UPLOAD_API_KEY or add to .cinderling/config.json");
   process.exit(1);
 }
 

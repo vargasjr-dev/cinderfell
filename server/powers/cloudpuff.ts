@@ -5,7 +5,7 @@
  * A tiny cloud raining gentle nourishment over the team.
  *
  * Hook: onTurnStart
- * Effect: heal all allied vellymons by 1 HP
+ * Effect: heal all allied cinderlings by 1 HP
  */
 
 import {

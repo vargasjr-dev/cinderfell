@@ -22,13 +22,13 @@ export default async function RankedPage() {
     slots: t.slots.map((s) => ({
       uuid: s.uuid,
       slotIndex: s.slotIndex,
-      vellymon: s.vellymon
+      cinderling: s.cinderling
         ? {
-            name: s.vellymon.name,
-            health: s.vellymon.health,
-            attack: s.vellymon.attack,
-            speed: s.vellymon.speed,
-            imageUrl: s.vellymon.imageUrl,
+            name: s.cinderling.name,
+            health: s.cinderling.health,
+            attack: s.cinderling.attack,
+            speed: s.cinderling.speed,
+            imageUrl: s.cinderling.imageUrl,
           }
         : null,
     })),

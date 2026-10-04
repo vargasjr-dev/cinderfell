@@ -1,10 +1,10 @@
 /**
  * Power Registry Loader
  *
- * Import this file to register all vellymon special powers.
+ * Import this file to register all cinderling special powers.
  * Each power file self-registers via registerPower() on import.
  *
- * Add new powers here as they're created (one import per vellymon).
+ * Add new powers here as they're created (one import per cinderling).
  */
 
 import "./aerobolt";

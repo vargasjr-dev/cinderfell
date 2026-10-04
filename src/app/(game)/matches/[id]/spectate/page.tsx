@@ -3,7 +3,7 @@
  *
  * No authentication required. Polls /api/spectate/[id] every 2s.
  * Works for:
- *  - Local CLI matches (reads .vellymon/[id].json from filesystem)
+ *  - Local CLI matches (reads .cinderling/[id].json from filesystem)
  *  - Web matches (TODO: add DB fallback in route.ts)
  */
 

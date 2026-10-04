@@ -1,5 +1,5 @@
 /**
- * Map configurations for vellymon matches.
+ * Map configurations for cinderling matches.
  *
  * Each map defines its dimensions and a string-based layout:
  *   1 = Team 1 spawn

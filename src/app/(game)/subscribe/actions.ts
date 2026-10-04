@@ -9,7 +9,7 @@ import { user } from "../../../../data/schema";
 import { eq } from "drizzle-orm";
 
 /**
- * Create a Stripe Checkout Session for the Vellymon Premium subscription.
+ * Create a Stripe Checkout Session for the Cinderling Premium subscription.
  * Admins are routed through the test Stripe account so they can exercise the
  * full payment flow without touching live billing.
  * Returns the checkout URL to redirect the user to.

@@ -5,24 +5,24 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import TurnHistory, { type TurnSnapshot } from "../play/TurnHistory";
-import type { VellymonDisplay as CanvasVellymon } from "../play/BattleCanvas";
+import type { CinderlingDisplay as CanvasCinderling } from "../play/BattleCanvas";
 import {
   type RawGameState,
   type RawTeam,
   type RawTurnLog,
   type Vec2,
   buildUnifiedSteps,
-  buildVellymonLookup,
+  buildCinderlingLookup,
 } from "../play/turnAnimation";
 import { useTurnAnimation } from "../play/useTurnAnimation";
 
 // ─── Power description lookup (client-safe) ───────────────────────────────────
-import { VELLYMON_LIBRARY } from "../../../../../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../../../../../server/cinderlings";
 import { getPower } from "../../../../../../server/specialPowers";
 import "../../../../../../server/powers"; // side-effect: registers all powers
 
 const POWER_DESC_BY_NAME = new Map<string, string>(
-  VELLYMON_LIBRARY.flatMap((v) => {
+  CINDERLING_LIBRARY.flatMap((v) => {
     if (!v.specialPowerId) return [];
     const power = getPower(v.specialPowerId);
     if (!power?.description) return [];
@@ -31,7 +31,7 @@ const POWER_DESC_BY_NAME = new Map<string, string>(
 );
 
 const POWER_NAME_BY_NAME = new Map<string, string>(
-  VELLYMON_LIBRARY.flatMap((v) => {
+  CINDERLING_LIBRARY.flatMap((v) => {
     if (!v.specialPowerId) return [];
     const power = getPower(v.specialPowerId);
     if (!power?.name) return [];
@@ -53,7 +53,7 @@ type AttackDisplay = {
   range: number;
 };
 
-type VellymonDisplay = {
+type CinderlingDisplay = {
   uuid: string;
   name: string;
   hp: number;
@@ -71,7 +71,7 @@ type TeamDisplay = {
   id: 1 | 2;
   name: string;
   energy: number;
-  active: VellymonDisplay[];
+  active: CinderlingDisplay[];
   benchCount: number;
   knockedCount: number;
 };
@@ -277,11 +277,11 @@ export default function SpectateClient({ matchId, initialTurn = 0 }: Props) {
     router.replace(url, { scroll: false });
   }, [replayIndex, isReplay, pathname, router]);
 
-  // Mon card overlay — tapping any vellymon on the board opens its card.
+  // Mon card overlay — tapping any cinderling on the board opens its card.
   const [selectedMonUuid, setSelectedMonUuid] = useState<string | null>(null);
 
   // Stable callback so BattleCanvas's draw effect doesn't re-run on every render.
-  const handleSelectVellymon = useCallback(
+  const handleSelectCinderling = useCallback(
     (uuid: string | null) => setSelectedMonUuid(uuid),
     [],
   );
@@ -296,9 +296,9 @@ export default function SpectateClient({ matchId, initialTurn = 0 }: Props) {
     const fromSnap = turnSnapshots[replayIndex];
     const toSnap = turnSnapshots[nextIdx];
     const log = turnLogs[replayIndex] ?? null;
-    const lookup = buildVellymonLookup(fromSnap);
+    const lookup = buildCinderlingLookup(fromSnap);
 
-    // Sort commands by vellymon speed (fastest first)
+    // Sort commands by cinderling speed (fastest first)
     const cmds = log?.commandResults ?? [];
     const getSpeed = (uuid: string): number => {
       for (const team of fromSnap.teams) {
@@ -309,7 +309,7 @@ export default function SpectateClient({ matchId, initialTurn = 0 }: Props) {
     };
     const sortedCmds = [...cmds].sort(
       (x, y) =>
-        getSpeed(y.command.vellymonUuid) - getSpeed(x.command.vellymonUuid),
+        getSpeed(y.command.cinderlingUuid) - getSpeed(x.command.cinderlingUuid),
     );
 
     const steps = buildUnifiedSteps(
@@ -344,17 +344,17 @@ export default function SpectateClient({ matchId, initialTurn = 0 }: Props) {
   const [t1, t2] = teams ?? [null, null];
 
   // Stable empty set — passing `new Set()` inline creates a new reference each
-  // render, which fires the vellymons useEffect in BattleCanvas and clears
+  // render, which fires the cinderlings useEffect in BattleCanvas and clears
   // committed displayVmsRef positions during multi-step animations.
   const emptyCommandedUuids = useMemo(() => new Set<string>(), []);
 
-  const allVellymons = useMemo(
+  const allCinderlings = useMemo(
     () => [
-      ...(t1?.active.map((v: VellymonDisplay) => ({
+      ...(t1?.active.map((v: CinderlingDisplay) => ({
         ...v,
         teamId: t1.id as 1 | 2,
       })) ?? []),
-      ...(t2?.active.map((v: VellymonDisplay) => ({
+      ...(t2?.active.map((v: CinderlingDisplay) => ({
         ...v,
         teamId: t2.id as 1 | 2,
       })) ?? []),
@@ -368,10 +368,10 @@ export default function SpectateClient({ matchId, initialTurn = 0 }: Props) {
   const currentLog: RawTurnLog | null =
     isReplay && replayIndex > 0 ? (turnLogs[replayIndex - 1] ?? null) : null;
 
-  const vellymonLookup = useMemo(() => {
+  const cinderlingLookup = useMemo(() => {
     if (!currentLog || !turnSnapshots)
       return new Map<string, { name: string; teamId: 1 | 2 }>();
-    return buildVellymonLookup(turnSnapshots[replayIndex - 1]);
+    return buildCinderlingLookup(turnSnapshots[replayIndex - 1]);
   }, [currentLog, turnSnapshots, replayIndex]);
 
   const hasLog = currentLog !== null && turnLogs.length > 0;
@@ -510,7 +510,7 @@ export default function SpectateClient({ matchId, initialTurn = 0 }: Props) {
           <div className="absolute top-0 left-0 right-0 z-10">
             <TurnLogDrawer
               log={currentLog}
-              lookup={vellymonLookup}
+              lookup={cinderlingLookup}
               aiTeamIds={aiTeamIds}
               matchId={matchId}
             />
@@ -529,14 +529,14 @@ export default function SpectateClient({ matchId, initialTurn = 0 }: Props) {
           boardWidth={boardWidth}
           boardHeight={boardHeight}
           spaces={boardSpaces}
-          vellymons={allVellymons as CanvasVellymon[]}
+          cinderlings={allCinderlings as CanvasCinderling[]}
           yourTeamId={1}
-          selectedVellymon={selectedMonUuid}
-          onSelectVellymon={handleSelectVellymon}
+          selectedCinderling={selectedMonUuid}
+          onSelectCinderling={handleSelectCinderling}
           commandedUuids={emptyCommandedUuids}
           overlays={overlays ?? undefined}
           tween={activeTween ?? undefined}
-          tapAllVellymons
+          tapAllCinderlings
         />
       </div>
 
@@ -730,8 +730,8 @@ function TurnLogDrawer({
         })}
 
         {log.commandResults.map((r, i) => {
-          const info = lookup.get(r.command.vellymonUuid);
-          const name = info?.name ?? r.command.vellymonUuid;
+          const info = lookup.get(r.command.cinderlingUuid);
+          const name = info?.name ?? r.command.cinderlingUuid;
           const teamId = info?.teamId ?? 1;
           const teamColor = teamId === 1 ? "text-blue-400" : "text-red-400";
           const icon =
@@ -813,7 +813,7 @@ function TurnLogDrawer({
             {allBench.map((e, i) => (
               <div key={i} className="flex items-center gap-1.5 text-xs">
                 <span className="text-gray-400 font-semibold w-20 truncate">
-                  {e.vellymonName}
+                  {e.cinderlingName}
                 </span>
                 <span className="text-gray-500">🔄</span>
                 <span
@@ -854,7 +854,7 @@ function MonCardOverlay({
   onClose: () => void;
 }) {
   if (!teams) return null;
-  let vm: VellymonDisplay | undefined;
+  let vm: CinderlingDisplay | undefined;
   let teamId: 1 | 2 = 1;
   for (const t of teams) {
     const found = t.active.find((v) => v.uuid === uuid);

@@ -111,7 +111,7 @@ function StripeEnvPanel({
                   label={
                     config.product.exists
                       ? `${config.product.name} (${config.product.id})`
-                      : "Vellymon Premium — not found"
+                      : "Cinderling Premium — not found"
                   }
                 />
               </div>

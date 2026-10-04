@@ -1,7 +1,7 @@
 import { auth } from "~/lib/auth.server";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import getVellymonRoster from "~/data/getVellymonRoster.server";
+import getCinderlingRoster from "~/data/getCinderlingRoster.server";
 import getTeams from "~/data/getTeams.server";
 import TeamBuilder from "~/app/(game)/teams/TeamBuilder";
 
@@ -15,7 +15,7 @@ export default async function EditTeamPage({
   const session = (await auth.api.getSession({ headers: headersList }))!;
 
   const [roster, teams] = await Promise.all([
-    getVellymonRoster(session.user.id),
+    getCinderlingRoster(session.user.id),
     getTeams(session.user.id),
   ]);
 
@@ -49,7 +49,7 @@ export default async function EditTeamPage({
         teamUuid={team.uuid}
         initialName={team.name}
         initialSlots={team.slots.map((s) => ({
-          vellymonInstanceUuid: s.vellymonInstanceUuid,
+          cinderlingInstanceUuid: s.cinderlingInstanceUuid,
           slotIndex: s.slotIndex,
           isActive: s.isActive,
         }))}

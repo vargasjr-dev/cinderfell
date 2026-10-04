@@ -58,7 +58,7 @@ export default async function AdminPage() {
           💳 Stripe Configuration
         </h2>
         <p className="text-gray-600 mb-4">
-          Manage the Vellymon Premium subscription product and verify Stripe
+          Manage the Cinderling Premium subscription product and verify Stripe
           integration.
         </p>
         <Link

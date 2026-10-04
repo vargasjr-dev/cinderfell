@@ -1,5 +1,5 @@
 /**
- * Vellymon Game Engine — Public API
+ * Cinderling Game Engine — Public API
  *
  * All engine modules exposed through a single entry point.
  * Import from 'server' to access the complete engine.
@@ -13,7 +13,7 @@ export type {
   Position,
   BoardSpace,
   Attack,
-  VellymonState,
+  CinderlingState,
   TeamState,
   WinCondition,
   WinResult,
@@ -29,7 +29,7 @@ export {
   getWinner,
   getGameSummary,
   type TeamSetup,
-  type VellymonSetup,
+  type CinderlingSetup,
   type TurnLog,
 } from "./engine";
 

@@ -30,7 +30,7 @@ registerPower({
     "Harvesting heals Sproutail for 3 HP.",
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
       if (ctx.command.type !== "harvest") return [];
 
       return [

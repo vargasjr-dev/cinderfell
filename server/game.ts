@@ -19,7 +19,7 @@ export type Attack = {
   energyCost: number;
 };
 
-export type VellymonStats = {
+export type CinderlingStats = {
   speed: number;
   health: number;
   attack: number;
@@ -29,19 +29,19 @@ export type VellymonStats = {
   attacks: Attack[];
 };
 
-export type Vellymon = {
+export type Cinderling = {
   id: number;
   position: Position;
   startingHealth: number;
   currentEnergy: number;
-} & VellymonStats;
+} & CinderlingStats;
 
 type Player = {
   joined: boolean;
   ws: WebSocket;
   name: string;
   ready: boolean;
-  team: Vellymon[];
+  team: Cinderling[];
   battery: number;
 };
 
@@ -58,7 +58,7 @@ const MAX_PRIORITY = 8;
 const DEFAULT_BATTERY_MULTIPLIER = 8;
 
 export type Command = {
-  vellymonId: number;
+  cinderlingId: number;
   commandId: number;
   direction: number;
 };
@@ -79,36 +79,36 @@ type GameEventBase = {
 type SpawnEvent = GameEventBase & {
   type: typeof SPAWN_EVENT_ID;
   destinationPos: Position;
-  vellymonId: number;
+  cinderlingId: number;
 };
 
 type MoveEvent = GameEventBase & {
   type: typeof MOVE_EVENT_ID;
   sourcePos: Position;
   destinationPos: Position;
-  vellymonId: number;
+  cinderlingId: number;
 };
 
 type AttackEvent = GameEventBase & {
   type: typeof ATTACK_EVENT_ID;
   locs: ReadonlyArray<Position>;
-  vellymonId: number;
+  cinderlingId: number;
 };
 
 type ResolveEvent = GameEventBase & {
   type: typeof RESOLVE_EVENT_ID;
-  vellymonIdToSpawn: number[];
-  vellymonIdToMove: number[];
-  vellymonIdToHealth: number[];
+  cinderlingIdToSpawn: number[];
+  cinderlingIdToMove: number[];
+  cinderlingIdToHealth: number[];
   missedAttacks: number[];
-  vellymonIdsBlocked: number[];
+  cinderlingIdsBlocked: number[];
   myBatteryHit: boolean;
   opponentBatteryHit: boolean;
 };
 
 type DeathEvent = GameEventBase & {
   type: typeof DEATH_EVENT_ID;
-  vellymonId: number;
+  cinderlingId: number;
   returnHealth: number;
 };
 
@@ -131,7 +131,7 @@ export type Game = {
   healthChecks: number;
   gameSessionId: string;
   board: Map;
-  nextVellymonId: 0;
+  nextCinderlingId: 0;
   primary?: Player;
   secondary?: Player;
   turn: number;
@@ -174,7 +174,7 @@ const posEquals = (l: Position, r: Position) => l.x === r.x && l.y === r.y;
 const posPlus = (l: Position, r: Position) => ({ x: l.x + r.x, y: l.y + r.y });
 
 const spawn = (
-  v: Vellymon,
+  v: Cinderling,
   pos: Position,
   isPrimary: boolean,
   priority: number
@@ -182,7 +182,7 @@ const spawn = (
   if (!posEquals(v.position, NULL_VEC)) return [];
   const evt = {
     destinationPos: pos,
-    vellymonId: v.id,
+    cinderlingId: v.id,
     type: SPAWN_EVENT_ID,
     primaryBatteryCost: isPrimary ? DEFAULT_SPAWN_POWER : 0,
     secondaryBatteryCost: isPrimary ? 0 : DEFAULT_SPAWN_POWER,
@@ -191,7 +191,7 @@ const spawn = (
   return [evt];
 };
 const move = (
-  v: Vellymon,
+  v: Cinderling,
   dir: number,
   isPrimary: boolean,
   priority: number
@@ -200,7 +200,7 @@ const move = (
   const evt = {
     sourcePos: v.position,
     destinationPos: posPlus(v.position, directionToVector(dir)),
-    vellymonId: v.id,
+    cinderlingId: v.id,
     type: MOVE_EVENT_ID,
     primaryBatteryCost: isPrimary ? DEFAULT_MOVE_POWER : 0,
     secondaryBatteryCost: isPrimary ? 0 : DEFAULT_MOVE_POWER,
@@ -209,7 +209,7 @@ const move = (
   return [evt];
 };
 const attack = (
-  v: Vellymon,
+  v: Cinderling,
   dir: number,
   isPrimary: boolean,
   priority: number
@@ -217,7 +217,7 @@ const attack = (
   if (posEquals(v.position, NULL_VEC)) return [];
   const evt = {
     locs: [posPlus(v.position, directionToVector(dir))],
-    vellymonId: v.id,
+    cinderlingId: v.id,
     type: ATTACK_EVENT_ID,
     primaryBatteryCost: isPrimary ? DEFAULT_ATTACK_POWER : 0,
     secondaryBatteryCost: isPrimary ? 0 : DEFAULT_ATTACK_POWER,
@@ -225,7 +225,7 @@ const attack = (
   } as const;
   return [evt];
 };
-const damage = (attacker: Vellymon /*victim: Vellymon*/) => attacker.attack;
+const damage = (attacker: Cinderling /*victim: Cinderling*/) => attacker.attack;
 const spaceToId = (board: Map, p: Position) => p.y * board.width + p.x;
 const vecToSpace = (board: Map, p: Position) => {
   if (p.y < 0 || p.y >= board.height || p.x < 0 || p.x >= board.width)
@@ -256,13 +256,13 @@ export const commandsToEvents = (game: LiveGame): GameEvent[] => {
     ...history[game.turn][game.primary.name],
     ...history[game.turn][game.secondary.name],
   ];
-  const allVellymons = [...primary.team, ...secondary.team];
-  const getVellymon = Object.fromEntries(allVellymons.map((v) => [v.id, v]));
-  const vellymonIdToTurnObject = Object.fromEntries(
-    allVellymons.map((v) => [
+  const allCinderlings = [...primary.team, ...secondary.team];
+  const getCinderling = Object.fromEntries(allCinderlings.map((v) => [v.id, v]));
+  const cinderlingIdToTurnObject = Object.fromEntries(
+    allCinderlings.map((v) => [
       v.id,
       {
-        vellymonId: v.id,
+        cinderlingId: v.id,
         priority: v.speed,
         num: {
           [SPAWN_COMMAND_ID]: 0,
@@ -277,15 +277,15 @@ export const commandsToEvents = (game: LiveGame): GameEvent[] => {
   const events: GameEvent[] = [];
   for (let p = MAX_PRIORITY; p > 0; p--) {
     const currentCmds = new Set<Command>(
-      Object.values(vellymonIdToTurnObject)
+      Object.values(cinderlingIdToTurnObject)
         .filter(
           (vto) =>
-            vto.priority === p && commands.some((c) => c.vellymonId == vto.vellymonId)
+            vto.priority === p && commands.some((c) => c.cinderlingId == vto.cinderlingId)
         )
         .map((vto) => {
           vto.priority--;
           const commandIndex = commands.findIndex(
-            (c) => c.vellymonId === vto.vellymonId
+            (c) => c.cinderlingId === vto.cinderlingId
           );
           return commands.splice(commandIndex, 1)[0];
         })
@@ -293,45 +293,45 @@ export const commandsToEvents = (game: LiveGame): GameEvent[] => {
     const priorityEvents: GameEvent[] = [];
     currentCmds.forEach((c) => {
       if (
-        !vellymonIdToTurnObject[c.vellymonId].isActive &&
+        !cinderlingIdToTurnObject[c.cinderlingId].isActive &&
         !(c.commandId === SPAWN_COMMAND_ID)
       ) {
         currentCmds.delete(c);
       }
     });
     currentCmds.forEach((c) => {
-      const primaryVellymon = getVellymon[c.vellymonId];
-      const isPrimary = primary.team.includes(primaryVellymon);
+      const primaryCinderling = getCinderling[c.cinderlingId];
+      const isPrimary = primary.team.includes(primaryCinderling);
       if (c.commandId === SPAWN_COMMAND_ID) {
         priorityEvents.push(
           ...spawn(
-            primaryVellymon,
+            primaryCinderling,
             getQueuePosition(board, c.direction, isPrimary),
             isPrimary,
             p
           )
         );
       } else if (c.commandId === MOVE_COMMAND_ID) {
-        priorityEvents.push(...move(primaryVellymon, c.direction, isPrimary, p));
+        priorityEvents.push(...move(primaryCinderling, c.direction, isPrimary, p));
       } else if (c.commandId === ATTACK_COMMAND_ID) {
-        priorityEvents.push(...attack(primaryVellymon, c.direction, isPrimary, p));
+        priorityEvents.push(...attack(primaryCinderling, c.direction, isPrimary, p));
       }
     });
 
     if (priorityEvents.length > 0) {
       const resolveEvent = {
-        vellymonIdToSpawn: Object.fromEntries(
+        cinderlingIdToSpawn: Object.fromEntries(
           priorityEvents
             .filter((e): e is SpawnEvent => e.type === SPAWN_EVENT_ID)
-            .map((e) => [e.vellymonId, e.destinationPos])
+            .map((e) => [e.cinderlingId, e.destinationPos])
         ),
-        vellymonIdToMove: Object.fromEntries(
+        cinderlingIdToMove: Object.fromEntries(
           priorityEvents
             .filter((e): e is MoveEvent => e.type === MOVE_EVENT_ID)
-            .map((e) => [e.vellymonId, e.destinationPos])
+            .map((e) => [e.cinderlingId, e.destinationPos])
         ),
-        vellymonIdToHealth: {} as Record<number, number>,
-        vellymonIdsBlocked: new Set<number>(),
+        cinderlingIdToHealth: {} as Record<number, number>,
+        cinderlingIdsBlocked: new Set<number>(),
         missedAttacks: new Set<Position>(),
         primaryBatteryCost: 0,
         secondaryBatteryCost: 0,
@@ -343,13 +343,13 @@ export const commandsToEvents = (game: LiveGame): GameEvent[] => {
       priorityEvents
         .filter((e): e is AttackEvent => e.type === ATTACK_EVENT_ID)
         .forEach((e) => {
-          const attacker = getVellymon[e.vellymonId];
-          allVellymons
-            .filter((vellymon) => e.locs.some((l) => posEquals(l, vellymon.position)))
+          const attacker = getCinderling[e.cinderlingId];
+          allCinderlings
+            .filter((cinderling) => e.locs.some((l) => posEquals(l, cinderling.position)))
             .forEach((v) => {
               const dmg = damage(attacker /*v*/);
-              resolveEvent.vellymonIdToHealth[v.id] =
-                (resolveEvent.vellymonIdToHealth[v.id] || v.health) - dmg;
+              resolveEvent.cinderlingIdToHealth[v.id] =
+                (resolveEvent.cinderlingIdToHealth[v.id] || v.health) - dmg;
             });
           const locSpaces = e.locs.map((p) => vecToSpace(board, p));
           locSpaces
@@ -368,13 +368,13 @@ export const commandsToEvents = (game: LiveGame): GameEvent[] => {
               (v): v is Space =>
                 !!v &&
                 v?.type !== BATTERY_SPACE_ID &&
-                !allVellymons.some((vel) => posEquals(vel.position, v))
+                !allCinderlings.some((vel) => posEquals(vel.position, v))
             )
             .forEach((v) => {
               resolveEvent.missedAttacks.add(v);
             });
           if (locSpaces.some((v) => v === null))
-            resolveEvent.vellymonIdsBlocked.add(attacker.id);
+            resolveEvent.cinderlingIdsBlocked.add(attacker.id);
         });
 
       let valid = false;
@@ -382,117 +382,117 @@ export const commandsToEvents = (game: LiveGame): GameEvent[] => {
         valid = true;
 
         // Move x Move
-        const spacesToVellymonIds: {
+        const spacesToCinderlingIds: {
           [space: number]: { id: number; isSpawn: boolean }[];
         } = {};
-        Object.entries(resolveEvent.vellymonIdToSpawn).forEach(
-          ([vellymonId, space]) => {
-            const id = Number(vellymonId);
-            spacesToVellymonIds[spaceToId(board, space)] = [
-              ...(spacesToVellymonIds[spaceToId(board, space)] || []),
+        Object.entries(resolveEvent.cinderlingIdToSpawn).forEach(
+          ([cinderlingId, space]) => {
+            const id = Number(cinderlingId);
+            spacesToCinderlingIds[spaceToId(board, space)] = [
+              ...(spacesToCinderlingIds[spaceToId(board, space)] || []),
               { id, isSpawn: true },
             ];
           }
         );
-        Object.entries(resolveEvent.vellymonIdToMove).forEach(
-          ([vellymonId, space]) => {
-            const id = Number(vellymonId);
-            spacesToVellymonIds[spaceToId(board, space)] = [
-              ...(spacesToVellymonIds[spaceToId(board, space)] || []),
+        Object.entries(resolveEvent.cinderlingIdToMove).forEach(
+          ([cinderlingId, space]) => {
+            const id = Number(cinderlingId);
+            spacesToCinderlingIds[spaceToId(board, space)] = [
+              ...(spacesToCinderlingIds[spaceToId(board, space)] || []),
               { id, isSpawn: true },
             ];
           }
         );
-        Object.values(spacesToVellymonIds)
-          .filter((vellymonIds) => vellymonIds.length > 1)
-          .forEach((vellymonIds) =>
-            vellymonIds.forEach((v) => {
-              if (v.isSpawn) delete resolveEvent.vellymonIdToSpawn[v.id];
-              else delete resolveEvent.vellymonIdToMove[v.id];
-              resolveEvent.vellymonIdsBlocked.add(v.id);
+        Object.values(spacesToCinderlingIds)
+          .filter((cinderlingIds) => cinderlingIds.length > 1)
+          .forEach((cinderlingIds) =>
+            cinderlingIds.forEach((v) => {
+              if (v.isSpawn) delete resolveEvent.cinderlingIdToSpawn[v.id];
+              else delete resolveEvent.cinderlingIdToMove[v.id];
+              resolveEvent.cinderlingIdsBlocked.add(v.id);
               valid = false;
             })
           );
 
         // Spawn x Still
         const spawnsToBlock = Object.entries(
-          resolveEvent.vellymonIdToSpawn
+          resolveEvent.cinderlingIdToSpawn
         ).filter(([, space]) => {
-          const other = allVellymons.find((v) => posEquals(v.position, space));
+          const other = allCinderlings.find((v) => posEquals(v.position, space));
           if (other == null) return false;
-          return !Object.keys(resolveEvent.vellymonIdToMove).some(
+          return !Object.keys(resolveEvent.cinderlingIdToMove).some(
             (m) => other.id === Number(m)
           );
         });
-        spawnsToBlock.forEach(([vellymonId]) => {
-          const id = Number(vellymonId);
-          delete resolveEvent.vellymonIdToSpawn[id];
-          resolveEvent.vellymonIdsBlocked.add(id);
+        spawnsToBlock.forEach(([cinderlingId]) => {
+          const id = Number(cinderlingId);
+          delete resolveEvent.cinderlingIdToSpawn[id];
+          resolveEvent.cinderlingIdsBlocked.add(id);
           valid = false;
         });
 
         // Move x Still/Swap
-        const movesToBlock = Object.entries(resolveEvent.vellymonIdToMove).filter(
-          ([vellymonId, pos]) => {
+        const movesToBlock = Object.entries(resolveEvent.cinderlingIdToMove).filter(
+          ([cinderlingId, pos]) => {
             const space = vecToSpace(board, pos);
             if (!space || space.type === BATTERY_SPACE_ID) return true;
-            const self = getVellymon[vellymonId];
-            const other = allVellymons.find((v) => posEquals(v.position, pos));
+            const self = getCinderling[cinderlingId];
+            const other = allCinderlings.find((v) => posEquals(v.position, pos));
             if (other == null) return false;
-            return !Object.entries(resolveEvent.vellymonIdToMove).some(
+            return !Object.entries(resolveEvent.cinderlingIdToMove).some(
               (m) =>
                 other.id === Number(m[0]) && !posEquals(self.position, m[1])
             );
           }
         );
-        movesToBlock.forEach(([vellymonId]) => {
-          const id = Number(vellymonId);
-          delete resolveEvent.vellymonIdToMove[id];
-          resolveEvent.vellymonIdsBlocked.add(id);
+        movesToBlock.forEach(([cinderlingId]) => {
+          const id = Number(cinderlingId);
+          delete resolveEvent.cinderlingIdToMove[id];
+          resolveEvent.cinderlingIdsBlocked.add(id);
           valid = false;
         });
       }
       priorityEvents.push({
         ...resolveEvent,
         type: RESOLVE_EVENT_ID,
-        vellymonIdToSpawn: Object.entries(resolveEvent.vellymonIdToSpawn).flatMap(
+        cinderlingIdToSpawn: Object.entries(resolveEvent.cinderlingIdToSpawn).flatMap(
           ([k, p]) => [Number(k), p.x, p.y]
         ),
-        vellymonIdToMove: Object.entries(resolveEvent.vellymonIdToMove).flatMap(
+        cinderlingIdToMove: Object.entries(resolveEvent.cinderlingIdToMove).flatMap(
           ([k, p]) => [Number(k), p.x, p.y]
         ),
-        vellymonIdToHealth: Object.entries(resolveEvent.vellymonIdToHealth).flatMap(
+        cinderlingIdToHealth: Object.entries(resolveEvent.cinderlingIdToHealth).flatMap(
           ([k, v]) => [Number(k), v]
         ),
-        vellymonIdsBlocked: Array.from(resolveEvent.vellymonIdsBlocked),
+        cinderlingIdsBlocked: Array.from(resolveEvent.cinderlingIdsBlocked),
         missedAttacks: Array.from(resolveEvent.missedAttacks).flatMap((p) => [
           p.x,
           p.y,
         ]),
       });
 
-      const delayResolved = Object.keys(resolveEvent.vellymonIdToHealth).filter(
+      const delayResolved = Object.keys(resolveEvent.cinderlingIdToHealth).filter(
         (h) =>
-          Object.keys(resolveEvent.vellymonIdToMove).some((m) => m === h) ||
-          Object.keys(resolveEvent.vellymonIdsBlocked).some((b) => b === h)
+          Object.keys(resolveEvent.cinderlingIdToMove).some((m) => m === h) ||
+          Object.keys(resolveEvent.cinderlingIdsBlocked).some((b) => b === h)
       );
       if (delayResolved.length > 0) {
-        const delayedVellymonIdToHealth = Object.fromEntries(
-          delayResolved.map((vellymonId) => {
-            const id = Number(vellymonId);
-            const health = resolveEvent.vellymonIdToHealth[id];
-            delete resolveEvent.vellymonIdToHealth[id];
+        const delayedCinderlingIdToHealth = Object.fromEntries(
+          delayResolved.map((cinderlingId) => {
+            const id = Number(cinderlingId);
+            const health = resolveEvent.cinderlingIdToHealth[id];
+            delete resolveEvent.cinderlingIdToHealth[id];
             return [id, health];
           })
         );
         const delayResolveEvent: ResolveEvent = {
           type: RESOLVE_EVENT_ID,
-          vellymonIdToSpawn: [],
-          vellymonIdToMove: [],
-          vellymonIdToHealth: Object.entries(delayedVellymonIdToHealth).flatMap(
+          cinderlingIdToSpawn: [],
+          cinderlingIdToMove: [],
+          cinderlingIdToHealth: Object.entries(delayedCinderlingIdToHealth).flatMap(
             ([k, p]) => [Number(k), p]
           ),
-          vellymonIdsBlocked: [],
+          cinderlingIdsBlocked: [],
           missedAttacks: [],
           primaryBatteryCost: 0,
           secondaryBatteryCost: 0,
@@ -502,22 +502,22 @@ export const commandsToEvents = (game: LiveGame): GameEvent[] => {
         };
         priorityEvents.push(delayResolveEvent);
       }
-      Object.entries(resolveEvent.vellymonIdToSpawn).forEach(([id, pos]) => {
-        getVellymon[id].position = pos;
+      Object.entries(resolveEvent.cinderlingIdToSpawn).forEach(([id, pos]) => {
+        getCinderling[id].position = pos;
       });
-      Object.entries(resolveEvent.vellymonIdToMove).forEach(([id, pos]) => {
-        getVellymon[id].position = pos;
+      Object.entries(resolveEvent.cinderlingIdToMove).forEach(([id, pos]) => {
+        getCinderling[id].position = pos;
       });
-      Object.entries(resolveEvent.vellymonIdToHealth).forEach(([id, health]) => {
-        getVellymon[id].health = health;
+      Object.entries(resolveEvent.cinderlingIdToHealth).forEach(([id, health]) => {
+        getCinderling[id].health = health;
       });
     }
-    Object.entries(vellymonIdToTurnObject).forEach(
+    Object.entries(cinderlingIdToTurnObject).forEach(
       ([id, obj]) =>
-        (obj.isActive = !posEquals(getVellymon[id].position, NULL_VEC))
+        (obj.isActive = !posEquals(getCinderling[id].position, NULL_VEC))
     );
 
-    const processPriorityFinish = (team: Vellymon[], isPrimary: boolean) => {
+    const processPriorityFinish = (team: Cinderling[], isPrimary: boolean) => {
       const evts: GameEvent[] = [];
       team.forEach((v) => {
         if (v.health <= 0) {
@@ -527,7 +527,7 @@ export const commandsToEvents = (game: LiveGame): GameEvent[] => {
           evts.push({
             type: DEATH_EVENT_ID,
             returnHealth: v.startingHealth,
-            vellymonId: v.id,
+            cinderlingId: v.id,
             primaryBatteryCost: isPrimary ? DEFAULT_DEATH_MULTIPLIER : 0,
             secondaryBatteryCost: isPrimary ? 0 : DEFAULT_DEATH_MULTIPLIER,
             priority: p,

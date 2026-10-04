@@ -38,7 +38,7 @@ registerPower({
       return [
         {
           type: "cost_mod",
-          vellymonId: target.uuid,
+          cinderlingId: target.uuid,
           amount: -1,
         },
       ];

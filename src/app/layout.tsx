@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vellymon Game",
-  description: "A multiplayer RPG game where you battle with your army of vellymons",
+  title: "Cinderling Game",
+  description: "A multiplayer RPG game where you battle with your army of cinderlings",
 };
 
 export default function RootLayout({

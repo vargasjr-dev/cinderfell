@@ -13,7 +13,7 @@ import {
   Rectangle,
 } from "pixi.js";
 
-export type VellymonDisplay = {
+export type CinderlingDisplay = {
   uuid: string;
   name: string;
   hp: number;
@@ -71,15 +71,15 @@ export type Overlays = {
 };
 
 /**
- * Tween: when `key` changes, BattleCanvas smoothly interpolates vellymon
+ * Tween: when `key` changes, BattleCanvas smoothly interpolates cinderling
  * positions from `from` → `to` over `duration` ms using its own Pixi ticker —
  * zero React state updates per frame, so no re-render flicker.
  */
 export type TweenTarget = {
   /** Changing this value starts a new tween. */
   key: number | string;
-  from: VellymonDisplay[];
-  to: VellymonDisplay[];
+  from: CinderlingDisplay[];
+  to: CinderlingDisplay[];
   duration: number;
   onComplete?: () => void;
 };
@@ -87,7 +87,7 @@ export type TweenTarget = {
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 export type PendingCommandDisplay = {
-  vellymonUuid: string;
+  cinderlingUuid: string;
   type: "move" | "attack" | "harvest";
   /** Cardinal unit vector in game space — orientation-agnostic */
   vec?: { dx: number; dy: number };
@@ -97,18 +97,18 @@ type Props = {
   boardWidth: number;
   boardHeight: number;
   spaces: BoardSpace[];
-  vellymons: VellymonDisplay[];
+  cinderlings: CinderlingDisplay[];
   yourTeamId: 1 | 2;
-  selectedVellymon: string | null;
-  onSelectVellymon: (uuid: string | null) => void;
+  selectedCinderling: string | null;
+  onSelectCinderling: (uuid: string | null) => void;
   commandedUuids: Set<string>;
-  /** Pending commands — shown as faint badge overlays on each vellymon tile */
+  /** Pending commands — shown as faint badge overlays on each cinderling tile */
   pendingCommandDisplays?: PendingCommandDisplay[];
   overlays?: Overlays;
-  /** When provided and key changes, animates vellymon positions internally via Pixi ticker. */
+  /** When provided and key changes, animates cinderling positions internally via Pixi ticker. */
   tween?: TweenTarget;
-  /** When true, all vellymons (not just yours) fire pointertap — used in spectate/replay mode. */
-  tapAllVellymons?: boolean;
+  /** When true, all cinderlings (not just yours) fire pointertap — used in spectate/replay mode. */
+  tapAllCinderlings?: boolean;
 };
 
 // ─── Colors ───────────────────────────────────────────────────────────────────
@@ -158,7 +158,7 @@ const SPRITE_CROP_FRAC = 0.25;
 
 /**
  * Convert a (possibly fractional) grid position to canvas pixel center.
- * Supports sub-tile positions for smooth vellymon animation.
+ * Supports sub-tile positions for smooth cinderling animation.
  */
 function gridToScreen(
   gx: number,
@@ -190,11 +190,11 @@ function gridToScreen(
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-function lerpVellymons(
-  from: VellymonDisplay[],
-  to: VellymonDisplay[],
+function lerpCinderlings(
+  from: CinderlingDisplay[],
+  to: CinderlingDisplay[],
   t: number,
-): VellymonDisplay[] {
+): CinderlingDisplay[] {
   return from.map((fv) => {
     const tv = to.find((v) => v.uuid === fv.uuid);
     const toPos = tv ?? fv;
@@ -215,35 +215,35 @@ export default function BattleCanvas({
   boardWidth,
   boardHeight,
   spaces,
-  vellymons,
+  cinderlings,
   yourTeamId,
-  selectedVellymon,
-  onSelectVellymon,
+  selectedCinderling,
+  onSelectCinderling,
   commandedUuids,
   pendingCommandDisplays,
   overlays,
   tween,
-  tapAllVellymons,
+  tapAllCinderlings,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<Application | null>(null);
 
-  // Ref that overrides the `vellymons` prop during an active tween.
+  // Ref that overrides the `cinderlings` prop during an active tween.
   // Null = use the prop as-is. This is the key to avoiding React re-renders per frame.
-  const displayVmsRef = useRef<VellymonDisplay[] | null>(null);
+  const displayVmsRef = useRef<CinderlingDisplay[] | null>(null);
   const activeTweenKeyRef = useRef<number | string | null>(null);
 
   const stateRef = useRef({
     boardWidth,
     boardHeight,
     spaces,
-    vellymons,
+    cinderlings,
     yourTeamId,
-    selectedVellymon,
+    selectedCinderling,
     commandedUuids,
     pendingCommandDisplays: pendingCommandDisplays ?? [],
     overlays,
-    tapAllVellymons: false,
+    tapAllCinderlings: false,
   });
   const drawRef = useRef<() => void>();
 
@@ -251,13 +251,13 @@ export default function BattleCanvas({
     boardWidth,
     boardHeight,
     spaces,
-    vellymons,
+    cinderlings,
     yourTeamId,
-    selectedVellymon,
+    selectedCinderling,
     commandedUuids,
     pendingCommandDisplays: pendingCommandDisplays ?? [],
     overlays,
-    tapAllVellymons: tapAllVellymons ?? false,
+    tapAllCinderlings: tapAllCinderlings ?? false,
   };
 
   const draw = useCallback(() => {
@@ -269,14 +269,14 @@ export default function BattleCanvas({
       boardHeight: bh,
       spaces: sp,
       yourTeamId: myTeam,
-      selectedVellymon: selVm,
+      selectedCinderling: selVm,
       commandedUuids: cmdSet,
       pendingCommandDisplays: pendingCmds,
       overlays: ovl,
-      tapAllVellymons: tapAll,
+      tapAllCinderlings: tapAll,
     } = stateRef.current;
     // Use tween-interpolated positions when active; fall back to prop
-    const vms = displayVmsRef.current ?? stateRef.current.vellymons;
+    const vms = displayVmsRef.current ?? stateRef.current.cinderlings;
 
     app.stage.removeChildren();
 
@@ -308,8 +308,8 @@ export default function BattleCanvas({
     const spaceMap = new Map<string, BoardSpace>();
     for (const s of sp) spaceMap.set(`${s.x},${s.y}`, s);
 
-    // Map integer positions → vellymon (for tile coloring only)
-    const vmIntMap = new Map<string, VellymonDisplay>();
+    // Map integer positions → cinderling (for tile coloring only)
+    const vmIntMap = new Map<string, CinderlingDisplay>();
     for (const v of vms) {
       if (!v.isKO) vmIntMap.set(`${Math.round(v.x)},${Math.round(v.y)}`, v);
     }
@@ -416,7 +416,7 @@ export default function BattleCanvas({
           tile.cursor = "pointer";
           const vuuid = vm.uuid;
           tile.on("pointertap", () => {
-            onSelectVellymon(selVm === vuuid ? null : vuuid);
+            onSelectCinderling(selVm === vuuid ? null : vuuid);
           });
         }
 
@@ -466,7 +466,7 @@ export default function BattleCanvas({
       }
     }
 
-    // ── Pass 2: Vellymon sprites at fractional positions ──────────────────
+    // ── Pass 2: Cinderling sprites at fractional positions ──────────────────
     for (const vm of vms) {
       if (vm.isKO) continue;
       const { centerX, centerY } = gridToScreen(
@@ -533,7 +533,7 @@ export default function BattleCanvas({
       }
 
       // Pending command badge — faint icon overlaid on the mon
-      const pendingCmd = pendingCmds.find((c) => c.vellymonUuid === vm.uuid);
+      const pendingCmd = pendingCmds.find((c) => c.cinderlingUuid === vm.uuid);
       if (pendingCmd && vm.teamId === myTeam) {
         const typeIcon =
           pendingCmd.type === "move"
@@ -678,7 +678,7 @@ export default function BattleCanvas({
         boardContainer.addChild(t);
       }
     }
-  }, [onSelectVellymon]);
+  }, [onSelectCinderling]);
 
   drawRef.current = draw;
 
@@ -720,7 +720,7 @@ export default function BattleCanvas({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Guard: don't redraw via React when a tween ticker is running.
-  // When vellymons prop changes (replayIndex advances after full animation), clear
+  // When cinderlings prop changes (replayIndex advances after full animation), clear
   // the committed displayVmsRef so the new snapshot takes over.
   useEffect(() => {
     if (activeTweenKeyRef.current !== null) return; // ticker running — skip
@@ -730,9 +730,9 @@ export default function BattleCanvas({
     boardWidth,
     boardHeight,
     spaces,
-    vellymons,
+    cinderlings,
     yourTeamId,
-    selectedVellymon,
+    selectedCinderling,
     commandedUuids,
     draw,
   ]);
@@ -755,14 +755,14 @@ export default function BattleCanvas({
     const ticker = () => {
       const raw = Math.min((performance.now() - startTime) / duration, 1);
       const t = easeInOut(raw);
-      displayVmsRef.current = lerpVellymons(from, to, t);
+      displayVmsRef.current = lerpCinderlings(from, to, t);
       drawRef.current?.();
       if (raw >= 1) {
         app.ticker.remove(ticker);
         // Keep displayVmsRef at final position — don't revert to the React prop
         // (which is still fromSnap during multi-step animations). The prop guard
-        // below clears it only when vellymons actually advances to the next snapshot.
-        displayVmsRef.current = lerpVellymons(from, to, 1);
+        // below clears it only when cinderlings actually advances to the next snapshot.
+        displayVmsRef.current = lerpCinderlings(from, to, 1);
         activeTweenKeyRef.current = null;
         onComplete?.();
       }

@@ -1,14 +1,14 @@
 /**
  * Bench auto-entry and spawn space rules.
  *
- * When an active vellymon is KO'd:
- * - The next bench vellymon enters instantly at their pre-assigned spawn point
+ * When an active cinderling is KO'd:
+ * - The next bench cinderling enters instantly at their pre-assigned spawn point
  * - No delay, no in-match choice — all decided during team setup
- * - If the spawn point is occupied, the vellymon queues until it's free
+ * - If the spawn point is occupied, the cinderling queues until it's free
  *   (enters next turn the space is clear)
  *
  * Spawn spaces are one-way entry points:
- * - Vellymons cannot move back onto spawn spaces after leaving
+ * - Cinderlings cannot move back onto spawn spaces after leaving
  * - This prevents spawn-blocking strategies
  *
  * Bench order and spawn positions are pre-assigned during team setup.
@@ -17,14 +17,14 @@
 import type {
   GameState,
   TeamState,
-  VellymonState,
+  CinderlingState,
   Position,
 } from "./types";
 
 // ─── Bench Queue ─────────────────────────────────────────────────────────────
 
 /**
- * Check if a spawn position is clear (no vellymon occupying it).
+ * Check if a spawn position is clear (no cinderling occupying it).
  */
 function isSpawnClear(state: GameState, position: Position): boolean {
   for (const team of state.teams) {
@@ -42,7 +42,7 @@ function isSpawnClear(state: GameState, position: Position): boolean {
 /**
  * Process bench entries for a team after KOs have been resolved.
  *
- * For each KO'd active vellymon, if there's a bench vellymon waiting:
+ * For each KO'd active cinderling, if there's a bench cinderling waiting:
  * - Check if their pre-assigned spawn point is free
  * - If free: move them from bench to active at that position
  * - If occupied: they stay on the bench and try again next turn
@@ -55,13 +55,13 @@ export function processBenchEntries(
 ): BenchEntry[] {
   const entries: BenchEntry[] = [];
 
-  // Count how many active slots are open (KO'd vellymons)
+  // Count how many active slots are open (KO'd cinderlings)
   const koCount = team.active.filter((v) => v.isKO).length;
   if (koCount === 0 || team.bench.length === 0) return entries;
 
   // Process bench entries in order (bench is pre-sorted by player)
-  const toEnter: VellymonState[] = [];
-  const remaining: VellymonState[] = [];
+  const toEnter: CinderlingState[] = [];
+  const remaining: CinderlingState[] = [];
 
   for (const benchMon of team.bench) {
     if (toEnter.length >= koCount) {
@@ -91,8 +91,8 @@ export function processBenchEntries(
       toEnter.push(benchMon);
 
       entries.push({
-        vellymonUuid: benchMon.uuid,
-        vellymonName: benchMon.name,
+        cinderlingUuid: benchMon.uuid,
+        cinderlingName: benchMon.name,
         spawnPosition: { ...entryPos },
         status: "entered",
       });
@@ -101,21 +101,21 @@ export function processBenchEntries(
       remaining.push(benchMon);
 
       entries.push({
-        vellymonUuid: benchMon.uuid,
-        vellymonName: benchMon.name,
+        cinderlingUuid: benchMon.uuid,
+        cinderlingName: benchMon.name,
         spawnPosition: { ...benchMon.spawnPosition },
         status: "blocked",
       });
     }
   }
 
-  // Move entered vellymons from bench to active
+  // Move entered cinderlings from bench to active
   team.active = [
     ...team.active.filter((v) => !v.isKO || !toEnter.some((e) => e.uuid === v.uuid)),
     ...toEnter,
   ];
 
-  // Remove KO'd vellymons that have been replaced from active to knocked
+  // Remove KO'd cinderlings that have been replaced from active to knocked
   const replacedKOs = team.active.filter(
     (v) => v.isKO && !team.knocked.some((k) => k.uuid === v.uuid),
   );
@@ -129,8 +129,8 @@ export function processBenchEntries(
 }
 
 export type BenchEntry = {
-  vellymonUuid: string;
-  vellymonName: string;
+  cinderlingUuid: string;
+  cinderlingName: string;
   spawnPosition: Position;
   status: "entered" | "blocked";
 };
@@ -155,10 +155,10 @@ export function processAllBenchEntries(
 
 /**
  * Validate that a team's bench spawn assignments are valid.
- * Each bench vellymon must have a spawn position that:
+ * Each bench cinderling must have a spawn position that:
  * - Is on the correct team's side of the board
  * - Is a spawn-type space
- * - Is not assigned to another bench vellymon
+ * - Is not assigned to another bench cinderling
  *
  * Returns error messages or empty array if valid.
  */

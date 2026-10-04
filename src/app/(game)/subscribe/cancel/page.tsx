@@ -9,7 +9,7 @@ export default function SubscribeCancelPage() {
           No worries!
         </h1>
         <p className="text-gray-600 mb-6">
-          You can subscribe anytime. All vellymons, maps, and game modes are
+          You can subscribe anytime. All cinderlings, maps, and game modes are
           always free to play.
         </p>
 

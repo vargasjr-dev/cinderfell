@@ -9,10 +9,10 @@ const guideCards = [
     icon: "📖",
   },
   {
-    title: "Vellymon Directory",
+    title: "Cinderling Directory",
     description:
-      "Browse every vellymon — stats, attacks, and what makes each one unique.",
-    href: "/guide/vellymon",
+      "Browse every cinderling — stats, attacks, and what makes each one unique.",
+    href: "/guide/cinderling",
     icon: "📚",
   },
   {
@@ -30,7 +30,7 @@ export default function GuidePage() {
       <nav className="border-b border-blue-200 bg-white/60 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-gray-900">
-            vellymon
+            cinderling
           </Link>
           <div className="flex gap-4">
             <Link
@@ -52,11 +52,11 @@ export default function GuidePage() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4 text-gray-900">
-            How to Play Vellymon
+            How to Play Cinderling
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Vellymon is a simultaneous-action RPG where two players command
-            teams of vellymons on a tactical grid. Every turn, both players act
+            Cinderling is a simultaneous-action RPG where two players command
+            teams of cinderlings on a tactical grid. Every turn, both players act
             at the same time — no waiting.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function GuidePage() {
                 <div className="text-3xl mb-2">⚔️</div>
                 <h3 className="font-semibold text-gray-800">1v1 Matches</h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  8 vellymons per roster, 4 active on the field
+                  8 cinderlings per roster, 4 active on the field
                 </p>
               </div>
               <div>
@@ -120,7 +120,7 @@ export default function GuidePage() {
                 <div>
                   <h3 className="font-semibold text-gray-800">Elimination</h3>
                   <p className="text-sm text-gray-600">
-                    Knock out all of your opponent&apos;s vellymons — active and
+                    Knock out all of your opponent&apos;s cinderlings — active and
                     bench. Last team standing wins.
                   </p>
                 </div>

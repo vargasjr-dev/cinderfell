@@ -1,4 +1,4 @@
-import getVellymonByUuid from "~/data/getVellymon.server";
+import getCinderlingByUuid from "~/data/getCinderling.server";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -7,32 +7,32 @@ interface PageProps {
 export default async function PlayerDetailPage({ params }: PageProps) {
   // Auth guaranteed by (game)/layout.tsx — no session needed here
   const { id } = await params;
-  const vellymon = await getVellymonByUuid(id);
+  const cinderling = await getCinderlingByUuid(id);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-xl p-8">
-        <h1 className="text-4xl font-bold mb-8 text-center">{vellymon.name}</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center">{cinderling.name}</h1>
 
         <div className="space-y-4">
           <div className="border-b pb-4">
             <p className="text-gray-600 text-sm">Health</p>
-            <p className="text-2xl font-semibold">{vellymon.health}</p>
+            <p className="text-2xl font-semibold">{cinderling.health}</p>
           </div>
 
           <div className="border-b pb-4">
             <p className="text-gray-600 text-sm">Attack</p>
-            <p className="text-2xl font-semibold">{vellymon.attack}</p>
+            <p className="text-2xl font-semibold">{cinderling.attack}</p>
           </div>
 
           <div className="border-b pb-4">
             <p className="text-gray-600 text-sm">Speed</p>
-            <p className="text-2xl font-semibold">{vellymon.speed}</p>
+            <p className="text-2xl font-semibold">{cinderling.speed}</p>
           </div>
 
           <div className="border-b pb-4">
             <p className="text-gray-600 text-sm">Energy</p>
-            <p className="text-2xl font-semibold">{vellymon.energy}</p>
+            <p className="text-2xl font-semibold">{cinderling.energy}</p>
           </div>
 
           <div className="mt-6">

@@ -23,7 +23,7 @@ export default async function CreateCosmeticPage() {
           🎨 AI Cosmetic Builder
         </h1>
         <p className="text-gray-600 mt-1">
-          Design custom skins and effects for your vellymons using AI.
+          Design custom skins and effects for your cinderlings using AI.
         </p>
       </div>
 

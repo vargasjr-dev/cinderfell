@@ -19,7 +19,7 @@ export default function SubscriptionCard({
         <div className="flex items-center gap-3 mb-2">
           <span className="text-2xl">⭐</span>
           <h2 className="text-lg font-semibold text-gray-900">
-            Vellymon Premium
+            Cinderling Premium
           </h2>
         </div>
         <p className="text-sm text-gray-600 mb-1">

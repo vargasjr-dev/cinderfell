@@ -7,10 +7,10 @@ import {
   getGameStateAction,
   submitCommandsAction,
   concedeAction,
-  getVellymonInfoAction,
+  getCinderlingInfoAction,
   getMatchRewardsAction,
   type PlayCommand,
-  type VellymonInfo,
+  type CinderlingInfo,
   type MatchRewards,
 } from "./actions";
 import { useRouter } from "next/navigation";
@@ -26,10 +26,10 @@ import {
   type RawTurnLog,
   type RawCommandResult,
   buildUnifiedSteps,
-  buildVellymonLookup,
+  buildCinderlingLookup,
 } from "./turnAnimation";
 import { useTurnAnimation } from "./useTurnAnimation";
-import VellymonDrawer from "./VellymonDrawer";
+import CinderlingDrawer from "./CinderlingDrawer";
 
 type Vec2 = { dx: number; dy: number };
 
@@ -105,7 +105,7 @@ type AttackDisplay = {
   range: number;
 };
 
-type VellymonDisplay = {
+type CinderlingDisplay = {
   uuid: string;
   name: string;
   hp: number;
@@ -124,7 +124,7 @@ type TeamDisplay = {
   id: 1 | 2;
   name: string;
   energy: number;
-  active: VellymonDisplay[];
+  active: CinderlingDisplay[];
   benchCount: number;
   knockedCount: number;
 };
@@ -219,7 +219,7 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
       harvestYield?: number;
     }>
   >([]);
-  const [selectedVellymon, setSelectedVellymon] = useState<string | null>(null);
+  const [selectedCinderling, setSelectedCinderling] = useState<string | null>(null);
   const [pendingCommands, setPendingCommands] = useState<PlayCommand[]>([]);
   const [gameOver, setGameOver] = useState<{
     winner: string;
@@ -237,9 +237,9 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
   // Sparring (AI opponent) metadata
   const [isSparring, setIsSparring] = useState(false);
 
-  // Vellymon display metadata — fetched once from server (library + power registry)
-  const [vellymonInfoCache, setVellymonInfoCache] = useState<
-    Record<string, VellymonInfo>
+  // Cinderling display metadata — fetched once from server (library + power registry)
+  const [cinderlingInfoCache, setCinderlingInfoCache] = useState<
+    Record<string, CinderlingInfo>
   >({});
   const fetchedNamesRef = useRef<Set<string>>(new Set());
 
@@ -381,7 +381,7 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
     [userId, isAdminSelfMatch, play],
   );
 
-  // Fetch vellymon display metadata once when teams are known
+  // Fetch cinderling display metadata once when teams are known
   useEffect(() => {
     if (!teams) return;
     const allNames = [...teams[0].active, ...teams[1].active].map(
@@ -390,8 +390,8 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
     const unfetched = allNames.filter((n) => !fetchedNamesRef.current.has(n));
     if (unfetched.length === 0) return;
     unfetched.forEach((n) => fetchedNamesRef.current.add(n));
-    getVellymonInfoAction(unfetched).then((info) => {
-      setVellymonInfoCache((prev) => ({ ...prev, ...info }));
+    getCinderlingInfoAction(unfetched).then((info) => {
+      setCinderlingInfoCache((prev) => ({ ...prev, ...info }));
     });
   }, [teams]);
 
@@ -438,13 +438,13 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
     };
   }, [matchUuid, parseState]);
 
-  // Add command for a vellymon, then auto-deselect so user can pick the next one
+  // Add command for a cinderling, then auto-deselect so user can pick the next one
   const addCommand = useCallback((cmd: PlayCommand) => {
     setPendingCommands((prev) => {
-      const filtered = prev.filter((c) => c.vellymonUuid !== cmd.vellymonUuid);
+      const filtered = prev.filter((c) => c.cinderlingUuid !== cmd.cinderlingUuid);
       return [...filtered, cmd];
     });
-    setSelectedVellymon(null);
+    setSelectedCinderling(null);
     play("blip");
   }, [play]);
 
@@ -452,12 +452,12 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
   const addDirectionalCommand = useCallback(
     (
       type: "move" | "attack" | "harvest",
-      vellymonUuid: string,
+      cinderlingUuid: string,
       screenVec: Vec2,
       attackIndex?: number,
     ) => {
       const gameVec = screenVecToGameVec(screenVec, isPortrait, yourTeam?.id ?? 1);
-      addCommand({ type, vellymonUuid, vec: gameVec, attackIndex });
+      addCommand({ type, cinderlingUuid, vec: gameVec, attackIndex });
     },
     [addCommand, isPortrait, yourTeam?.id],
   );
@@ -514,7 +514,7 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
         isAdminSelfMatch ? activeTeamId : undefined,
       );
       setPendingCommands([]);
-      setSelectedVellymon(null);
+      setSelectedCinderling(null);
 
       if (isAdminSelfMatch && activeTeamId === 1) {
         // Admin match: switch to P2's perspective
@@ -533,13 +533,13 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
         ]?.log as RawTurnLog | undefined;
         const gs = data.gameState as RawGameState;
 
-        // Run animation before applying state (so vellymons don't teleport)
+        // Run animation before applying state (so cinderlings don't teleport)
         if (fromSnap && rawLog) {
-          const lookup = buildVellymonLookup(fromSnap);
-          // Filter out "Vellymon not found" — the mon was KO'd earlier this turn,
+          const lookup = buildCinderlingLookup(fromSnap);
+          // Filter out "Cinderling not found" — the mon was KO'd earlier this turn,
           // its queued command should produce no animation.
           const cmds = (rawLog.commandResults ?? []).filter(
-            (r: RawCommandResult) => r.reason !== "Vellymon not found",
+            (r: RawCommandResult) => r.reason !== "Cinderling not found",
           );
           const getSpeed = (uuid: string): number => {
             for (const t of fromSnap.teams) {
@@ -550,8 +550,8 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
           };
           const sortedCmds = [...cmds].sort(
             (x, y) =>
-              getSpeed(y.command.vellymonUuid) -
-              getSpeed(x.command.vellymonUuid),
+              getSpeed(y.command.cinderlingUuid) -
+              getSpeed(x.command.cinderlingUuid),
           );
           const steps = buildUnifiedSteps(
             sortedCmds,
@@ -613,8 +613,8 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
     }
   }, [matchUuid, isAdminSelfMatch, activeTeamId]);
 
-  // Build all vellymons for the canvas
-  const allVellymons = useMemo(
+  // Build all cinderlings for the canvas
+  const allCinderlings = useMemo(
     () => [
       ...(teams?.[0]?.active.map((v) => ({
         ...v,
@@ -630,21 +630,21 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
 
   // Check your team first; fall back to opponent (read-only scouting view)
   const selectedYourVm = yourTeam?.active.find(
-    (v) => v.uuid === selectedVellymon && !v.isKO,
+    (v) => v.uuid === selectedCinderling && !v.isKO,
   );
   const selectedOpponentVm = !selectedYourVm
-    ? opponentTeam?.active.find((v) => v.uuid === selectedVellymon && !v.isKO)
+    ? opponentTeam?.active.find((v) => v.uuid === selectedCinderling && !v.isKO)
     : undefined;
   const selectedVm = selectedYourVm ?? selectedOpponentVm ?? null;
   const isOpponentVm = !!selectedOpponentVm;
 
   const pendingForSelected = pendingCommands.find(
-    (c) => c.vellymonUuid === selectedVellymon,
+    (c) => c.cinderlingUuid === selectedCinderling,
   );
 
-  // Vellymons that have pending commands (for board indicators)
+  // Cinderlings that have pending commands (for board indicators)
   const commandedUuids = useMemo(
-    () => new Set(pendingCommands.map((c) => c.vellymonUuid)),
+    () => new Set(pendingCommands.map((c) => c.cinderlingUuid)),
     [pendingCommands],
   );
 
@@ -652,7 +652,7 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
   const pendingCommandDisplays = useMemo<PendingCommandDisplay[]>(
     () =>
       pendingCommands.map((c) => ({
-        vellymonUuid: c.vellymonUuid,
+        cinderlingUuid: c.cinderlingUuid,
         type: c.type,
         vec: c.vec,
       })),
@@ -774,22 +774,22 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
               boardWidth={boardWidth}
               boardHeight={boardHeight}
               spaces={boardSpaces}
-              vellymons={allVellymons}
+              cinderlings={allCinderlings}
               yourTeamId={yourTeam?.id ?? 1}
-              selectedVellymon={selectedVellymon}
-              onSelectVellymon={setSelectedVellymon}
-              tapAllVellymons={true}
+              selectedCinderling={selectedCinderling}
+              onSelectCinderling={setSelectedCinderling}
+              tapAllCinderlings={true}
               commandedUuids={commandedUuids}
               pendingCommandDisplays={pendingCommandDisplays}
               overlays={animOverlays ?? undefined}
               tween={activeTween ?? undefined}
             />
 
-            {/* Vellymon drawer — own mon → full command UI; opponent → read-only scout */}
+            {/* Cinderling drawer — own mon → full command UI; opponent → read-only scout */}
             {selectedVm && !waitingForSwitch && (
-              <VellymonDrawer
-                vellymon={selectedVm}
-                info={vellymonInfoCache[selectedVm.name]}
+              <CinderlingDrawer
+                cinderling={selectedVm}
+                info={cinderlingInfoCache[selectedVm.name]}
                 teamEnergy={
                   isOpponentVm
                     ? (opponentTeam?.energy ?? 0)
@@ -805,7 +805,7 @@ export default function PlayPollingClient({ matchUuid, userId }: Props) {
                     : (type, screenVec, attackIndex) =>
                         addDirectionalCommand(type, selectedVm.uuid, screenVec, attackIndex)
                 }
-                onClose={() => setSelectedVellymon(null)}
+                onClose={() => setSelectedCinderling(null)}
                 readOnly={isOpponentVm}
               />
             )}

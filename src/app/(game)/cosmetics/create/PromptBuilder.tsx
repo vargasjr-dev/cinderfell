@@ -4,16 +4,16 @@ import { useState } from "react";
 import { generateCosmeticAction, type RosterItem } from "./actions";
 import { GENERATION_COSTS } from "../../../../../lib/cosmetic-generator";
 import type { CosmeticType } from "../../../../../lib/cosmetics";
-import VellymonPremiumLogo from "~/components/VellymonPremiumLogo";
+import CinderlingPremiumLogo from "~/components/CinderlingPremiumLogo";
 
-const COSMETIC_TYPES: { value: CosmeticType; label: string; needsVellymon: boolean }[] = [
-  { value: "skin", label: "🎨 Skin", needsVellymon: true },
-  { value: "vfx_harvest", label: "✨ Harvest VFX", needsVellymon: true },
-  { value: "vfx_attack", label: "⚡ Attack VFX", needsVellymon: true },
-  { value: "vfx_ko", label: "💥 KO VFX", needsVellymon: true },
-  { value: "board_theme", label: "🗺️ Board Theme", needsVellymon: false },
-  { value: "profile_border", label: "🖼️ Profile Border", needsVellymon: false },
-  { value: "title", label: "🏷️ Title", needsVellymon: false },
+const COSMETIC_TYPES: { value: CosmeticType; label: string; needsCinderling: boolean }[] = [
+  { value: "skin", label: "🎨 Skin", needsCinderling: true },
+  { value: "vfx_harvest", label: "✨ Harvest VFX", needsCinderling: true },
+  { value: "vfx_attack", label: "⚡ Attack VFX", needsCinderling: true },
+  { value: "vfx_ko", label: "💥 KO VFX", needsCinderling: true },
+  { value: "board_theme", label: "🗺️ Board Theme", needsCinderling: false },
+  { value: "profile_border", label: "🖼️ Profile Border", needsCinderling: false },
+  { value: "title", label: "🏷️ Title", needsCinderling: false },
 ];
 
 const THEMES = [
@@ -51,7 +51,7 @@ export default function PromptBuilder({
   subscribed,
 }: PromptBuilderProps) {
   const [type, setType] = useState<CosmeticType>("skin");
-  const [vellymonId, setVellymonId] = useState<string>(roster[0]?.uuid ?? "");
+  const [cinderlingId, setCinderlingId] = useState<string>(roster[0]?.uuid ?? "");
   const [prompt, setPrompt] = useState("");
   const [theme, setTheme] = useState("default");
   const [colorPalette, setColorPalette] = useState("auto");
@@ -73,7 +73,7 @@ export default function PromptBuilder({
     setResult(null);
 
     const res = await generateCosmeticAction(
-      selectedType.needsVellymon ? vellymonId : null,
+      selectedType.needsCinderling ? cinderlingId : null,
       type,
       prompt.trim(),
       {
@@ -95,13 +95,13 @@ export default function PromptBuilder({
     return (
       <div className="text-center py-12">
         <div className="flex justify-center mb-5">
-          <VellymonPremiumLogo />
+          <CinderlingPremiumLogo />
         </div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">
           Premium Required
         </h2>
         <p className="text-gray-600 mb-4">
-          Subscribe to Vellymon Premium to generate custom cosmetics with AI.
+          Subscribe to Cinderling Premium to generate custom cosmetics with AI.
         </p>
         <a
           href="/subscribe"
@@ -140,20 +140,20 @@ export default function PromptBuilder({
         </div>
       </div>
 
-      {/* Vellymon Selector (when needed) */}
-      {selectedType.needsVellymon && (
+      {/* Cinderling Selector (when needed) */}
+      {selectedType.needsCinderling && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Vellymon
+            Select Cinderling
           </label>
           {roster.length === 0 ? (
             <p className="text-gray-500 text-sm">
-              No vellymons in your roster. Visit the Market first!
+              No cinderlings in your roster. Visit the Market first!
             </p>
           ) : (
             <select
-              value={vellymonId}
-              onChange={(e) => setVellymonId(e.target.value)}
+              value={cinderlingId}
+              onChange={(e) => setCinderlingId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             >
               {roster.map((v) => (

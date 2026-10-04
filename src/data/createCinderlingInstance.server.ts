@@ -1,7 +1,7 @@
 import { db } from "../../data/db";
-import { vellymonInstance } from "../../data/schema";
+import { cinderlingInstance } from "../../data/schema";
 
-const createVellymonInstance = async ({
+const createCinderlingInstance = async ({
   model,
   userId,
   address,
@@ -14,7 +14,7 @@ const createVellymonInstance = async ({
   network: number;
   version: string;
 }): Promise<string> => {
-  const [instance] = await db.insert(vellymonInstance).values({
+  const [instance] = await db.insert(cinderlingInstance).values({
     modelUuid: model,
     userId,
     address,
@@ -25,4 +25,4 @@ const createVellymonInstance = async ({
   return instance.uuid;
 };
 
-export default createVellymonInstance;
+export default createCinderlingInstance;

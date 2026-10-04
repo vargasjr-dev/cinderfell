@@ -6,7 +6,7 @@ export default function StrategyPage() {
       <nav className="border-b border-blue-200 bg-white/60 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-gray-900">
-            vellymon
+            cinderling
           </Link>
           <div className="flex gap-4">
             <Link href="/guide" className="text-blue-600 font-medium">
@@ -50,21 +50,21 @@ export default function StrategyPage() {
             <StrategyCard
               emoji="💀"
               name="Elimination"
-              desc="Go aggressive — stack high-ATK vellymons, push into the enemy side, and knock them out one by one."
+              desc="Go aggressive — stack high-ATK cinderlings, push into the enemy side, and knock them out one by one."
               strength="Punishes passive play"
               weakness="Burns energy fast on attacks"
             />
             <StrategyCard
               emoji="🏴"
               name="Occupation"
-              desc="Control the three occupation points. Put durable vellymons on them and hold for 2 uncontested ticks."
+              desc="Control the three occupation points. Put durable cinderlings on them and hold for 2 uncontested ticks."
                 strength="Hard to dislodge once planted"
               weakness="Spread thin across 3 points"
             />
             <StrategyCard
               emoji="⚡"
               name="Accumulation"
-              desc="Farm energy — use fast vellymons to harvest nodes and race to 120 before your opponent reacts."
+              desc="Farm energy — use fast cinderlings to harvest nodes and race to 120 before your opponent reacts."
               strength="Can ignore fights entirely"
               weakness="Fragile to early aggression"
             />
@@ -79,28 +79,28 @@ export default function StrategyPage() {
         {/* Team Composition */}
         <Section title="Team Composition">
           <p className="mb-4">
-            Your roster has 8 vellymons — 4 active, 4 on the bench. Here are
+            Your roster has 8 cinderlings — 4 active, 4 on the bench. Here are
             some roles to consider when building your team:
           </p>
 
           <RoleCard
             name="The Anchor"
-            desc="A high-HP vellymon that holds a key position (usually an occupation point). Hard to kill, keeps your board presence stable."
+            desc="A high-HP cinderling that holds a key position (usually an occupation point). Hard to kill, keeps your board presence stable."
             example="Buldrok (HP 120, SPD 1) — slowest but nearly indestructible."
           />
           <RoleCard
             name="The Striker"
-            desc="A high-ATK vellymon that threatens knockouts. Your main source of Elimination pressure."
+            desc="A high-ATK cinderling that threatens knockouts. Your main source of Elimination pressure."
             example="Blastova (ATK 20, HP 45) — hits like a supernova, but burns bright and dies fast."
           />
           <RoleCard
             name="The Scout"
-            desc="A fast vellymon that acts first each turn. Controls tempo: grabs harvest nodes, reaches zones early, picks off weakened targets."
+            desc="A fast cinderling that acts first each turn. Controls tempo: grabs harvest nodes, reaches zones early, picks off weakened targets."
             example="Blinkatt (SPD 10, ATK 11) — phases in, strikes, phases out."
           />
           <RoleCard
             name="The Harvester"
-            desc="A vellymon dedicated to energy generation. Usually mid-speed with decent HP to survive while farming."
+            desc="A cinderling dedicated to energy generation. Usually mid-speed with decent HP to survive while farming."
             example="Cloudpuff (HP 78, SPD 7) — floats around harvesting without a care."
           />
         </Section>
@@ -119,7 +119,7 @@ export default function StrategyPage() {
             />
             <Principle
               title="Harvest with purpose"
-              desc="Spending a turn to Harvest isn't wasted — it's investment. A vellymon harvesting is a vellymon funding 2-4 more attacks for your team."
+              desc="Spending a turn to Harvest isn't wasted — it's investment. A cinderling harvesting is a cinderling funding 2-4 more attacks for your team."
             />
             <Principle
               title="Track your opponent's energy"
@@ -148,11 +148,11 @@ export default function StrategyPage() {
             />
             <Principle
               title="Don't clump"
-              desc="If all your vellymons are on adjacent spaces, area effects and special powers that target positions become devastating."
+              desc="If all your cinderlings are on adjacent spaces, area effects and special powers that target positions become devastating."
             />
             <Principle
               title="Block spawn points"
-              desc="When you KO an opponent's vellymon, their replacement enters at a spawn point. If you're standing on it, you control when and how they can re-enter."
+              desc="When you KO an opponent's cinderling, their replacement enters at a spawn point. If you're standing on it, you control when and how they can re-enter."
             />
           </div>
         </Section>
@@ -160,7 +160,7 @@ export default function StrategyPage() {
         {/* Special Powers */}
         <Section title="Learning Special Powers">
           <p className="mb-4">
-            Every vellymon has a hidden special power. You won&apos;t know
+            Every cinderling has a hidden special power. You won&apos;t know
             what it does until you see it in action. Here&apos;s how to
             approach the unknown:
           </p>
@@ -175,7 +175,7 @@ export default function StrategyPage() {
             />
             <Principle
               title="Build for synergy"
-              desc="Once you learn what a vellymon's power does, think about how it combos with others. A healer next to a tank. A speed booster behind a striker. The library rewards experimentation."
+              desc="Once you learn what a cinderling's power does, think about how it combos with others. A healer next to a tank. A speed booster behind a striker. The library rewards experimentation."
             />
           </div>
         </Section>
@@ -187,10 +187,10 @@ export default function StrategyPage() {
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
-              href="/guide/vellymon"
+              href="/guide/cinderling"
               className="inline-block bg-white text-blue-600 border-2 border-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
             >
-              Browse Vellymons →
+              Browse Cinderlings →
             </Link>
             <Link
               href="/signup"

@@ -1,7 +1,7 @@
 /**
- * GET /api/v1/users/[userId]/vellymons
+ * GET /api/v1/users/[userId]/cinderlings
  *
- * List all vellymon instances owned by a user.
+ * List all cinderling instances owned by a user.
  * Returns instanceUuid, modelUuid, name, imageUrl for each — enough for the
  * caller to build a team slot payload for the teams endpoints.
  *
@@ -10,10 +10,10 @@
 
 import { NextResponse } from "next/server";
 import { db } from "../../../../../../../data/db";
-import { vellymonInstance, user } from "../../../../../../../data/schema";
+import { cinderlingInstance, user } from "../../../../../../../data/schema";
 import { eq } from "drizzle-orm";
 import { validateApiKey } from "../../../../../../lib/apiKeyAuth.server";
-import getVellymonModel from "../../../../../../data/getVellymonModel.server";
+import getCinderlingModel from "../../../../../../data/getCinderlingModel.server";
 import "../../../../../../../server/powers"; // trigger power registration
 
 export async function GET(
@@ -40,17 +40,17 @@ export async function GET(
 
   const instances = await db
     .select({
-      uuid: vellymonInstance.uuid,
-      modelUuid: vellymonInstance.modelUuid,
+      uuid: cinderlingInstance.uuid,
+      modelUuid: cinderlingInstance.modelUuid,
     })
-    .from(vellymonInstance)
-    .where(eq(vellymonInstance.userId, userId));
+    .from(cinderlingInstance)
+    .where(eq(cinderlingInstance.userId, userId));
 
-  const vellymons = instances.map((inst) => {
+  const cinderlings = instances.map((inst) => {
     let name = "Unknown";
     let imageUrl: string | undefined;
     try {
-      const model = getVellymonModel(inst.modelUuid);
+      const model = getCinderlingModel(inst.modelUuid);
       name = model.name;
       imageUrl = model.imageUrl;
     } catch {
@@ -64,5 +64,5 @@ export async function GET(
     };
   });
 
-  return NextResponse.json({ userId, vellymons });
+  return NextResponse.json({ userId, cinderlings });
 }

@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { purchaseVellymon } from "./actions";
+import { purchaseCinderling } from "./actions";
 import { useToast } from "~/components/Toast";
 
 interface BuyButtonProps {
   modelUuid: string;
-  vellymonName: string;
+  cinderlingName: string;
 }
 
-export default function BuyButton({ modelUuid, vellymonName }: BuyButtonProps) {
+export default function BuyButton({ modelUuid, cinderlingName }: BuyButtonProps) {
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
   const router = useRouter();
@@ -18,9 +18,9 @@ export default function BuyButton({ modelUuid, vellymonName }: BuyButtonProps) {
   const handleBuy = async () => {
     setLoading(true);
     try {
-      const res = await purchaseVellymon(modelUuid);
+      const res = await purchaseCinderling(modelUuid);
       if (res.success) {
-        addToast(`${vellymonName} added to your roster!`, "success");
+        addToast(`${cinderlingName} added to your roster!`, "success");
         router.refresh();
       } else {
         addToast(res.message, "error");

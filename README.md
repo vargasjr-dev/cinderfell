@@ -1,4 +1,4 @@
-# vellymon.game
+# Cinderfell
 
 A multiplayer RPG game built with Next.js, deployed on Vercel.
 
@@ -29,7 +29,7 @@ Required environment variables (set in Vercel):
 
 - `DATABASE_URL` - Neon PostgreSQL connection string
 - `BETTER_AUTH_SECRET` - Secret for better-auth sessions (generate with `openssl rand -base64 32`)
-- `BETTER_AUTH_URL` - Base URL for auth callbacks (e.g., `https://vellymon.game`)
+- `BETTER_AUTH_URL` - Base URL for auth callbacks (e.g., `https://cinderling.game`)
 - `GOOGLE_CLIENT_ID` - Google OAuth client ID
 - `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
 - `VERCEL_TOKEN` - Vercel API token for creating sandboxes
@@ -40,8 +40,8 @@ Required GitHub secrets (for database sync workflow):
 
 ## Game Architecture
 
-### Vellymons
-Each player can collect and battle with vellymons. Vellymons have stats:
+### Cinderlings
+Each player can collect and battle with cinderlings. Cinderlings have stats:
 - Health
 - Attack
 - Speed

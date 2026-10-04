@@ -2,12 +2,12 @@
  * Shared helpers for AI player models (Claude + Jev).
  *
  * Both models need the same inputs: a description of the game state and the
- * set of legal actions available to each vellymon.  They differ in how they
+ * set of legal actions available to each cinderling.  They differ in how they
  * consume them — Claude reads prose and writes JSON commands; Jev answers
  * typed Choice questions with one option per valid action.
  */
 
-import type { GameState, TeamState, VellymonState, Vec2 } from "./types";
+import type { GameState, TeamState, CinderlingState, Vec2 } from "./types";
 import type { Command } from "./commands";
 import { generateAICommands } from "./ai-opponent";
 
@@ -26,7 +26,7 @@ export function vecName(vec: Vec2): string {
   return `(${vec.dx},${vec.dy})`;
 }
 
-/** One legal action a vellymon could take this turn. */
+/** One legal action a cinderling could take this turn. */
 export type ValidAction = {
   /** Stable identifier, e.g. "attack_0_right" or "move_left". */
   key: string;
@@ -38,12 +38,12 @@ export type ValidAction = {
 };
 
 /**
- * Enumerate every legal action for a vellymon this turn: attacks that have a
+ * Enumerate every legal action for a cinderling this turn: attacks that have a
  * target in range (and affordable energy), unblocked moves, and adjacent
  * harvestable tiles.  Mirrors the engine's scanForTarget blocking rules.
  */
 export function enumerateValidActions(
-  v: VellymonState,
+  v: CinderlingState,
   aiTeam: TeamState,
   enemyTeam: TeamState,
   state: GameState,
@@ -104,7 +104,7 @@ export function enumerateValidActions(
 
 /** True if scanning from v along vec finds an enemy within range (with blocker rules). */
 function scanHasEnemy(
-  v: VellymonState,
+  v: CinderlingState,
   vec: Vec2,
   range: number,
   arcOver: boolean,
@@ -132,7 +132,7 @@ function scanHasEnemy(
   return false;
 }
 
-function canMoveTo(v: VellymonState, vec: Vec2, state: GameState): boolean {
+function canMoveTo(v: CinderlingState, vec: Vec2, state: GameState): boolean {
   const pos = v.position!;
   const tx = pos.x + vec.dx;
   const ty = pos.y + vec.dy;
@@ -158,11 +158,11 @@ export function describeGameState(
   const lines: string[] = [
     `TURN ${state.turn} — YOUR TEAM: Team ${aiTeamId} "${aiTeam.name}" (energy: ${aiTeam.energy})`,
     "",
-    "YOUR VELLYMONS:",
+    "YOUR CINDERLINGS:",
   ];
 
-  const activeVellymons = aiTeam.active.filter((v) => !v.isKO && v.position != null);
-  for (const v of activeVellymons) {
+  const activeCinderlings = aiTeam.active.filter((v) => !v.isKO && v.position != null);
+  for (const v of activeCinderlings) {
     const pos = v.position!;
     const attacks = v.attacks
       .map((a, i) => `[${i}] ${a.name} (cost:${a.energyCost}, dmg:${a.damage}, range:${a.range})`)
@@ -180,7 +180,7 @@ export function describeGameState(
   lines.push("", `ENEMY TEAM: Team ${enemyTeam.id} "${enemyTeam.name}" (energy: ${enemyTeam.energy})`);
   const enemyActive = enemyTeam.active.filter((v) => !v.isKO && v.position != null);
   if (enemyActive.length === 0) {
-    lines.push("  (no active vellymons)");
+    lines.push("  (no active cinderlings)");
   }
   for (const v of enemyActive) {
     const pos = v.position!;
@@ -202,19 +202,19 @@ export function describeGameState(
 }
 
 /**
- * Rule-based fallback command for a single vellymon.  Runs the deterministic
+ * Rule-based fallback command for a single cinderling.  Runs the deterministic
  * ai-opponent strategy and picks that mon's command out of the result.
  */
 export function fallbackCommandFor(
   state: GameState,
   aiTeamId: 1 | 2,
-  vellymonUuid: string,
+  cinderlingUuid: string,
 ): Command {
   const all = generateAICommands(state, aiTeamId);
   return (
-    all.find((c) => c.vellymonUuid === vellymonUuid) ?? {
+    all.find((c) => c.cinderlingUuid === cinderlingUuid) ?? {
       type: "move",
-      vellymonUuid,
+      cinderlingUuid,
       vec: { dx: 0, dy: -1 },
     }
   );

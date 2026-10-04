@@ -1,8 +1,8 @@
 /**
- * LLM-based AI opponent for Vellymon.
+ * LLM-based AI opponent for Cinderling.
  *
  * Replaces the rule-based ai-opponent.ts when an AI profile has a system prompt.
- * One LLM call per team per turn covers all of that team's active vellymons.
+ * One LLM call per team per turn covers all of that team's active cinderlings.
  *
  * The request + raw response are persisted to the llmRequest DB table for
  * debugging in spectate/watch mode. Rows older than 7 days are pruned on insert.
@@ -14,7 +14,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { db } from "../data/db";
 import { llmRequest } from "../data/schema";
 import { lt } from "drizzle-orm";
-import type { GameState, TeamState, VellymonState, BoardSpace } from "./types";
+import type { GameState, TeamState, CinderlingState, BoardSpace } from "./types";
 import type { Command } from "./commands";
 import { generateAICommands } from "./ai-opponent";
 import { describeGameState } from "./ai-shared";
@@ -48,9 +48,9 @@ export async function generateLlmAICommands(
   }
 
   const aiTeam = state.teams[aiTeamId - 1];
-  const activeVellymons = aiTeam.active.filter((v) => !v.isKO && v.position != null);
+  const activeCinderlings = aiTeam.active.filter((v) => !v.isKO && v.position != null);
 
-  if (activeVellymons.length === 0) {
+  if (activeCinderlings.length === 0) {
     return [];
   }
 
@@ -74,7 +74,7 @@ export async function generateLlmAICommands(
 
     const block = message.content[0];
     rawResponse = block?.type === "text" ? block.text : JSON.stringify(message.content);
-    commands = parseCommands(rawResponse, activeVellymons);
+    commands = parseCommands(rawResponse, activeCinderlings);
   } catch (err) {
     errorMessage = err instanceof Error ? err.message : String(err);
     rawResponse = "";
@@ -121,18 +121,18 @@ export function buildSystemPrompt(profileDescription: string, matchRulesContext:
     "",
     "GAME MECHANICS:",
     "- Board: a grid where teams start on opposite sides (Team 1 spawns left, Team 2 spawns right).",
-    "- Each turn every vellymon issues exactly one command simultaneously.",
+    "- Each turn every cinderling issues exactly one command simultaneously.",
     "- Commands: attack, move, or harvest.",
     "- Energy: shared per team. Attacks cost energy. Harvesting adjacent harvestable tiles gains energy.",
-    "- Win: KO all enemy vellymons (elimination), or accumulate energy to the win threshold (accumulation).",
+    "- Win: KO all enemy cinderlings (elimination), or accumulate energy to the win threshold (accumulation).",
     "- Attacks scan in a cardinal direction — the first enemy in range takes damage.",
     "- Moves are blocked by occupied tiles, walls, and void spaces.",
     "",
     "OUTPUT FORMAT: Respond with ONLY a JSON object on a single line with no markdown:",
-    '{"commands":[{"vellymonUuid":"...","type":"attack","attackIndex":0,"vec":{"dx":1,"dy":0}},{"vellymonUuid":"...","type":"move","vec":{"dx":-1,"dy":0}},{"vellymonUuid":"...","type":"harvest","vec":{"dx":0,"dy":1}}]}',
+    '{"commands":[{"cinderlingUuid":"...","type":"attack","attackIndex":0,"vec":{"dx":1,"dy":0}},{"cinderlingUuid":"...","type":"move","vec":{"dx":-1,"dy":0}},{"cinderlingUuid":"...","type":"harvest","vec":{"dx":0,"dy":1}}]}',
     "",
     "RULES:",
-    "- Include exactly one command per vellymon listed in YOUR VELLYMONS.",
+    "- Include exactly one command per cinderling listed in YOUR CINDERLINGS.",
     "- vec must be a cardinal direction: {\"dx\":1,\"dy\":0}, {\"dx\":-1,\"dy\":0}, {\"dx\":0,\"dy\":1}, {\"dx\":0,\"dy\":-1}.",
     "- For attack: vec is the direction to fire; attackIndex is which attack (0-indexed).",
     "- For move: the target tile must be adjacent, in-bounds, and unoccupied.",
@@ -148,7 +148,7 @@ function buildUserMessage(state: GameState, aiTeam: TeamState, aiTeamId: 1 | 2):
 
 // ─── Response parsing ─────────────────────────────────────────────────────────
 
-function parseCommands(raw: string, activeVellymons: VellymonState[]): Command[] | null {
+function parseCommands(raw: string, activeCinderlings: CinderlingState[]): Command[] | null {
   try {
     // Extract JSON from the response (model may wrap it in markdown)
     const jsonMatch = raw.match(/\{[\s\S]*"commands"[\s\S]*\}/);
@@ -156,7 +156,7 @@ function parseCommands(raw: string, activeVellymons: VellymonState[]): Command[]
 
     const parsed = JSON.parse(jsonMatch[0]) as {
       commands?: Array<{
-        vellymonUuid?: string;
+        cinderlingUuid?: string;
         type?: string;
         attackIndex?: number;
         vec?: { dx?: number; dy?: number };
@@ -165,7 +165,7 @@ function parseCommands(raw: string, activeVellymons: VellymonState[]): Command[]
 
     if (!Array.isArray(parsed.commands)) return null;
 
-    const validUuids = new Set(activeVellymons.map((v) => v.uuid));
+    const validUuids = new Set(activeCinderlings.map((v) => v.uuid));
     const validVecs = [
       { dx: 1, dy: 0 }, { dx: -1, dy: 0 },
       { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
@@ -175,8 +175,8 @@ function parseCommands(raw: string, activeVellymons: VellymonState[]): Command[]
     const seen = new Set<string>();
 
     for (const c of parsed.commands) {
-      if (!c.vellymonUuid || !validUuids.has(c.vellymonUuid)) continue;
-      if (seen.has(c.vellymonUuid)) continue; // one command per mon
+      if (!c.cinderlingUuid || !validUuids.has(c.cinderlingUuid)) continue;
+      if (seen.has(c.cinderlingUuid)) continue; // one command per mon
 
       const dx = typeof c.vec?.dx === "number" ? c.vec.dx : 0;
       const dy = typeof c.vec?.dy === "number" ? c.vec.dy : 0;
@@ -184,21 +184,21 @@ function parseCommands(raw: string, activeVellymons: VellymonState[]): Command[]
       if (!vec) continue;
 
       if (c.type === "attack" && typeof c.attackIndex === "number") {
-        commands.push({ type: "attack", vellymonUuid: c.vellymonUuid, attackIndex: c.attackIndex, vec });
-        seen.add(c.vellymonUuid);
+        commands.push({ type: "attack", cinderlingUuid: c.cinderlingUuid, attackIndex: c.attackIndex, vec });
+        seen.add(c.cinderlingUuid);
       } else if (c.type === "move") {
-        commands.push({ type: "move", vellymonUuid: c.vellymonUuid, vec });
-        seen.add(c.vellymonUuid);
+        commands.push({ type: "move", cinderlingUuid: c.cinderlingUuid, vec });
+        seen.add(c.cinderlingUuid);
       } else if (c.type === "harvest") {
-        commands.push({ type: "harvest", vellymonUuid: c.vellymonUuid, vec });
-        seen.add(c.vellymonUuid);
+        commands.push({ type: "harvest", cinderlingUuid: c.cinderlingUuid, vec });
+        seen.add(c.cinderlingUuid);
       }
     }
 
     // Fill any missing mons with a default fallback move (so we always have all commands)
-    for (const v of activeVellymons) {
+    for (const v of activeCinderlings) {
       if (!seen.has(v.uuid)) {
-        commands.push({ type: "move", vellymonUuid: v.uuid, vec: { dx: 0, dy: -1 } });
+        commands.push({ type: "move", cinderlingUuid: v.uuid, vec: { dx: 0, dy: -1 } });
       }
     }
 

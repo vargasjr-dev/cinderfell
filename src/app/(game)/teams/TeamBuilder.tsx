@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "~/components/Toast";
-import VellymonCard from "~/components/VellymonCard";
+import CinderlingCard from "~/components/CinderlingCard";
 import { createTeamAction, updateTeamAction } from "./actions";
 import type { SlotInput } from "~/data/createTeam.server";
 import { TEAM_NAME_MAX_LENGTH } from "~/data/teamConstants";
 
-type RosterVellymon = {
+type RosterCinderling = {
   uuid: string;
   name: string;
   health: number;
@@ -21,13 +21,13 @@ type RosterVellymon = {
 };
 
 type ExistingSlot = {
-  vellymonInstanceUuid: string;
+  cinderlingInstanceUuid: string;
   slotIndex: number;
   isActive: boolean;
 };
 
 type TeamBuilderProps = {
-  roster: RosterVellymon[];
+  roster: RosterCinderling[];
   mode: "create" | "edit";
   teamUuid?: string;
   initialName?: string;
@@ -35,7 +35,7 @@ type TeamBuilderProps = {
 };
 
 type BuilderSlot = {
-  vellymonInstanceUuid: string;
+  cinderlingInstanceUuid: string;
   isActive: boolean;
 };
 
@@ -52,33 +52,33 @@ export default function TeamBuilder({
   const [name, setName] = useState(initialName);
   const [slots, setSlots] = useState<BuilderSlot[]>(
     initialSlots.map((s) => ({
-      vellymonInstanceUuid: s.vellymonInstanceUuid,
+      cinderlingInstanceUuid: s.cinderlingInstanceUuid,
       isActive: s.isActive,
     })),
   );
   const [saving, setSaving] = useState(false);
 
-  const assignedUuids = new Set(slots.map((s) => s.vellymonInstanceUuid));
+  const assignedUuids = new Set(slots.map((s) => s.cinderlingInstanceUuid));
 
   // Get model UUIDs already in slots (for dupe-type prevention)
   const assignedModelUuids = new Set(
     slots
-      .map((s) => roster.find((r) => r.uuid === s.vellymonInstanceUuid)?.modelUuid)
+      .map((s) => roster.find((r) => r.uuid === s.cinderlingInstanceUuid)?.modelUuid)
       .filter(Boolean),
   );
 
   const availableRoster = roster.filter((v) => {
     if (assignedUuids.has(v.uuid)) return false;
-    // Don't show vellymons whose type is already in the team
+    // Don't show cinderlings whose type is already in the team
     if (assignedModelUuids.has(v.modelUuid)) return false;
     return true;
   });
 
-  const addVellymon = (instanceUuid: string) => {
+  const addCinderling = (instanceUuid: string) => {
     if (slots.length >= 8) return;
     setSlots((prev) => [
       ...prev,
-      { vellymonInstanceUuid: instanceUuid, isActive: false },
+      { cinderlingInstanceUuid: instanceUuid, isActive: false },
     ]);
   };
 
@@ -100,7 +100,7 @@ export default function TeamBuilder({
 
     // Auto-set first 4 slots as active lineup, rest as bench
     const slotInputs: SlotInput[] = slots.map((s, i) => ({
-      vellymonInstanceUuid: s.vellymonInstanceUuid,
+      cinderlingInstanceUuid: s.cinderlingInstanceUuid,
       slotIndex: i,
       isActive: i < 4,
     }));
@@ -125,7 +125,7 @@ export default function TeamBuilder({
     }
   };
 
-  const getVellymon = (uuid: string) => roster.find((v) => v.uuid === uuid);
+  const getCinderling = (uuid: string) => roster.find((v) => v.uuid === uuid);
 
   return (
     <div className="space-y-8">
@@ -171,24 +171,24 @@ export default function TeamBuilder({
             Team Slots ({slots.length}/8)
           </h2>
           <span className="text-sm text-gray-500">
-            Pick up to 8 vellymons
+            Pick up to 8 cinderlings
           </span>
         </div>
 
         {slots.length === 0 ? (
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <p className="text-gray-400">
-              Add vellymons from your roster below
+              Add cinderlings from your roster below
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {slots.map((slot, index) => {
-              const v = getVellymon(slot.vellymonInstanceUuid);
+              const v = getCinderling(slot.cinderlingInstanceUuid);
               if (!v) return null;
               return (
-                <div key={`${slot.vellymonInstanceUuid}-${index}`} className="relative">
-                  <VellymonCard
+                <div key={`${slot.cinderlingInstanceUuid}-${index}`} className="relative">
+                  <CinderlingCard
                     name={v.name}
                     health={v.health}
                     attack={v.attack}
@@ -220,7 +220,7 @@ export default function TeamBuilder({
         {roster.length === 0 ? (
           <div className="bg-gray-50 rounded-lg p-8 text-center">
             <p className="text-gray-400">
-              No vellymons in your roster. Visit the Market first!
+              No cinderlings in your roster. Visit the Market first!
             </p>
           </div>
         ) : availableRoster.length === 0 ? (
@@ -228,7 +228,7 @@ export default function TeamBuilder({
             <p className="text-gray-400 text-sm">
               {slots.length >= 8
                 ? "Team is full (8/8 slots)"
-                : "All eligible roster vellymons are assigned"}
+                : "All eligible roster cinderlings are assigned"}
             </p>
           </div>
         ) : (
@@ -236,11 +236,11 @@ export default function TeamBuilder({
             {availableRoster.map((v) => (
               <button
                 key={v.uuid}
-                onClick={() => addVellymon(v.uuid)}
+                onClick={() => addCinderling(v.uuid)}
                 disabled={slots.length >= 8}
                 className="text-left disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <VellymonCard
+                <CinderlingCard
                   name={v.name}
                   health={v.health}
                   attack={v.attack}

@@ -22,7 +22,7 @@ registerPower({
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
       if (ctx.command.type !== "harvest") return [];
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
       return [{ type: "energy", team: ctx.team, amount: 2 }];
     },
   },

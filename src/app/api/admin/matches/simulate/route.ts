@@ -24,7 +24,7 @@ import { isAdmin } from "~/lib/admin";
 import { db } from "../../../../../../data/db";
 import { aiProfile, matchSnapshot } from "../../../../../../data/schema";
 import { eq } from "drizzle-orm";
-import { VELLYMON_LIBRARY } from "../../../../../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../../../../../server/cinderlings";
 import { buildTeamSetup } from "../../../../../../server/matchSetup";
 import { getMapById, parseBoardFromMap } from "../../../../../../server/maps";
 import "../../../../../../server/powers"; // register all special powers
@@ -105,7 +105,7 @@ export async function POST(req: Request) {
     config: ParticipantConfig,
   ): Promise<{ name: string; teamNames: string[]; profileId?: string; systemPrompt?: string; strategy?: string; model?: AIPlayerModel }> {
     if (config.type === "random") {
-      const picked = shuffle(VELLYMON_LIBRARY).slice(0, 8);
+      const picked = shuffle(CINDERLING_LIBRARY).slice(0, 8);
       return { name: "Random Team", teamNames: picked.map((v) => v.name) };
     }
     const [row] = await db
@@ -143,10 +143,10 @@ export async function POST(req: Request) {
   // ── Build team setups ─────────────────────────────────────────────────────
   function resolveTemplates(names: string[]) {
     return names.map((name) => {
-      const t = VELLYMON_LIBRARY.find(
+      const t = CINDERLING_LIBRARY.find(
         (v) => v.name.toLowerCase() === name.toLowerCase(),
       );
-      if (!t) throw new Error(`Unknown vellymon: "${name}"`);
+      if (!t) throw new Error(`Unknown cinderling: "${name}"`);
       return t;
     });
   }

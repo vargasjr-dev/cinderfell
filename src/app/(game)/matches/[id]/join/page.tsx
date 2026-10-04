@@ -145,8 +145,8 @@ export default async function JoinMatchPage({
           </h2>
           <p className="text-gray-600 mb-6">
             {isPlayBothSides
-              ? "You need a different team with 4+ active vellymons to play both sides."
-              : "Teams need at least 4 active vellymons to compete."}
+              ? "You need a different team with 4+ active cinderlings to play both sides."
+              : "Teams need at least 4 active cinderlings to compete."}
           </p>
           <Link
             href="/roster/teams/new"

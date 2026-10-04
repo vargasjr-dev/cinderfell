@@ -1,8 +1,8 @@
 /**
- * Vellymon stat archetypes — the template system for the 64-mon library.
+ * Cinderling stat archetypes — the template system for the 64-mon library.
  *
- * Each vellymon is built from an archetype that defines stat ranges,
- * attack templates, and design constraints. Individual vellymons
+ * Each cinderling is built from an archetype that defines stat ranges,
+ * attack templates, and design constraints. Individual cinderlings
  * vary within their archetype's ranges for diversity.
  *
  * Stat budget: HP + (Attack × 5) + (Speed × 8) ≈ 160
@@ -26,7 +26,7 @@ export type AttackTemplate = {
   energyCost: number;
   range: number;
   /**
-   * When true, this attack arcs over allied vellymons during target scanning
+   * When true, this attack arcs over allied cinderlings during target scanning
    * instead of stopping at them. It still stops at enemies and void tiles.
    * Represents physically lobbing a projectile over your own team.
    */
@@ -43,7 +43,7 @@ export type Archetype = {
   hp: StatRange;
   attack: StatRange;
   speed: StatRange;
-  /** Attack templates this archetype draws from (pick 2 per vellymon) */
+  /** Attack templates this archetype draws from (pick 2 per cinderling) */
   attackPool: AttackTemplate[];
   count: number;
 };
@@ -134,8 +134,8 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/** Total vellymons across all archetypes */
-export const TOTAL_VELLYMONS = Object.values(ARCHETYPES).reduce(
+/** Total cinderlings across all archetypes */
+export const TOTAL_CINDERLINGS = Object.values(ARCHETYPES).reduce(
   (sum, a) => sum + a.count,
   0,
 );

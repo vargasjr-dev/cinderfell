@@ -9,7 +9,7 @@
  *   {
  *     "name": "New Name",
  *     "slots": [
- *       { "vellymonInstanceUuid": "<uuid>", "slotIndex": 0, "isActive": true },
+ *       { "cinderlingInstanceUuid": "<uuid>", "slotIndex": 0, "isActive": true },
  *       ...
  *     ]
  *   }
@@ -20,14 +20,14 @@ import { db } from "../../../../../../../../data/db";
 import {
   team,
   teamSlot,
-  vellymonInstance,
+  cinderlingInstance,
 } from "../../../../../../../../data/schema";
 import { eq, and } from "drizzle-orm";
 import { validateApiKey } from "../../../../../../../lib/apiKeyAuth.server";
 import updateTeam from "../../../../../../../data/updateTeam.server";
 import deleteTeam from "../../../../../../../data/deleteTeam.server";
 import type { SlotInput } from "../../../../../../../data/createTeam.server";
-import getVellymonModel from "../../../../../../../data/getVellymonModel.server";
+import getCinderlingModel from "../../../../../../../data/getCinderlingModel.server";
 import "../../../../../../../../server/powers";
 
 async function getTeamWithSlots(teamUuid: string, userId: string) {
@@ -42,7 +42,7 @@ async function getTeamWithSlots(teamUuid: string, userId: string) {
     .select({
       slotIndex: teamSlot.slotIndex,
       isActive: teamSlot.isActive,
-      vellymonInstanceUuid: teamSlot.vellymonInstanceUuid,
+      cinderlingInstanceUuid: teamSlot.cinderlingInstanceUuid,
     })
     .from(teamSlot)
     .where(eq(teamSlot.teamUuid, teamUuid));
@@ -50,19 +50,19 @@ async function getTeamWithSlots(teamUuid: string, userId: string) {
   const enrichedSlots = await Promise.all(
     slots.map(async (s) => {
       const [inst] = await db
-        .select({ modelUuid: vellymonInstance.modelUuid })
-        .from(vellymonInstance)
-        .where(eq(vellymonInstance.uuid, s.vellymonInstanceUuid))
+        .select({ modelUuid: cinderlingInstance.modelUuid })
+        .from(cinderlingInstance)
+        .where(eq(cinderlingInstance.uuid, s.cinderlingInstanceUuid))
         .limit(1);
-      let vellymonName = "Unknown";
+      let cinderlingName = "Unknown";
       if (inst) {
         try {
-          vellymonName = getVellymonModel(inst.modelUuid).name;
+          cinderlingName = getCinderlingModel(inst.modelUuid).name;
         } catch {
           /* skip */
         }
       }
-      return { ...s, vellymonName };
+      return { ...s, cinderlingName };
     }),
   );
 

@@ -10,7 +10,7 @@
 | Feedback | Root Cause |
 |----------|-----------|
 | 3 active instead of 4 | `auto-match.ts` script used `slice(0, 3)` and hardcoded spawn positions `y: i+1` instead of importing `getDefaultSpawnPositions` from the engine. The CLI's `buildTeamSetup` was already correct. |
-| Only 2 of 3 on spawn spaces | My script placed vellymons at y=1,2,3 but actual board spawn spaces (with 4 spawns over height=5) are at y=0,1,3,4. Two overlapped (y=1 and y=3), one missed. |
+| Only 2 of 3 on spawn spaces | My script placed cinderlings at y=1,2,3 but actual board spawn spaces (with 4 spawns over height=5) are at y=0,1,3,4. Two overlapped (y=1 and y=3), one missed. |
 | 20 energy instead of 120 | `GAME_CONFIG.energy.starting = 20` in `server/config.ts`. Should be 120. |
 | Jolting turn transitions | SpectateClient replaces full game state on index change — no animation layer. BattleCanvas is PixiJS and fully capable of tweening. |
 | No per-turn action log | `turnLogs` (command results, damage, KOs) are captured by CLI but never uploaded or surfaced in spectate. |
@@ -25,17 +25,17 @@
 
 ### Changes
 
-**`vellymon-check/server/config.ts`**
+**`cinderling-check/server/config.ts`**
 - `energy.starting: 20 → 120`
 
-**`vellymon-check/scripts/auto-match.ts`**
+**`cinderling-check/scripts/auto-match.ts`**
 - Delete custom `buildTeamSetup` implementation
 - Import `getDefaultSpawnPositions` from `../server/board` and `GAME_CONFIG` from `../server/config`  
 - Rewrite `buildTeamSetup` to mirror the CLI exactly: use `getDefaultSpawnPositions` for spawn positions, `slice(0, GAME_CONFIG.teams.activeSlots)` for active (= 4), rest to bench
 - Import `calculateDamage` from `../server/archetypes` for correct attack damage values
 
 ### Acceptance
-- `vellymon match create` → board shows 4 active vellymons per side on the correct spawn spaces (y=0,1,3,4)
+- `cinderling match create` → board shows 4 active cinderlings per side on the correct spawn spaces (y=0,1,3,4)
 - Both teams start with 120⚡
 - Re-run `bun scripts/auto-match.ts` and verify turn output shows 4 alive per team + energy ~120
 
@@ -68,8 +68,8 @@ turnLogs: json("turnLogs"),  // TurnLogEntry[], parallel to turnSnapshots
 type TurnLogEntry = {
   turn: number;
   commandResults: Array<{
-    vellymonUuid: string;
-    vellymonName: string;
+    cinderlingUuid: string;
+    cinderlingName: string;
     teamId: 1 | 2;
     command: { type: string; direction?: string; attackIndex?: number };
     success: boolean;
@@ -78,7 +78,7 @@ type TurnLogEntry = {
     targetKO?: boolean;
     energyGained?: number;
   }>;
-  benchEntries: { team1: string[]; team2: string[] };  // names of vellymons entering
+  benchEntries: { team1: string[]; team2: string[] };  // names of cinderlings entering
   winResult: { winner: 1 | 2; condition: string } | null;
 };
 ```
@@ -87,7 +87,7 @@ type TurnLogEntry = {
 - Accept `turnLogs?: TurnLogEntry[]` in POST body
 - Store alongside `turnSnapshots`
 
-### `vellymon-check/scripts/auto-match.ts`
+### `cinderling-check/scripts/auto-match.ts`
 - Include `match.turnLogs` in the upload body (already captured, just not sent)
 
 ### Spectate API: `src/app/api/spectate/[id]/route.ts`
@@ -97,7 +97,7 @@ type TurnLogEntry = {
 - Add state: `logOpen: boolean`
 - The turn counter button (already clickable) → toggles `logOpen`
 - When `logOpen`: render a bottom sheet/drawer showing `turnLogs[replayIndex - 1]` (the log for the turn that just resolved to reach this snapshot):
-  - Each command result as a row: `[vellymon name] [team color] → [action] [direction] [✓/✗] [damage if attack] [KO!]`
+  - Each command result as a row: `[cinderling name] [team color] → [action] [direction] [✓/✗] [damage if attack] [KO!]`
   - Bench entries section if any
   - Win result if final turn
 - Drawer slides up from bottom, ~280px tall, scrollable, dark theme matching the spectate UI
@@ -129,17 +129,17 @@ User clicks → (Phase 1: Preview) → (Phase 2: Execute) → (Phase 3: Impact) 
 ```
 
 **Phase 1 — Preview** (500ms per command, sequential)  
-Show what each vellymon *intends* to do, one by one in speed-priority order (from `turnLogs[i].commandResults`):
+Show what each cinderling *intends* to do, one by one in speed-priority order (from `turnLogs[i].commandResults`):
 - Move: render a translucent ghost piece at the destination tile + directional arrow
 - Attack: render a red targeting arc/highlight on the attack direction
 - Harvest: render a green glow pulse on the current tile
 - After all previewed: brief pause (300ms)
 
 **Phase 2 — Execute** (400ms, simultaneous)  
-All vellymons animate to their new positions at once:
+All cinderlings animate to their new positions at once:
 - Move commands: tween sprite from `oldPos` → `newPos` via PixiJS ticker (lerp, ~20 frames at 60fps)
 - Failed moves: shake effect (rapid small oscillation in the blocked direction)
-- New vellymons entering from bench: fade in on spawn space
+- New cinderlings entering from bench: fade in on spawn space
 
 **Phase 3 — Impact** (300ms)  
 After movement lands:
@@ -163,7 +163,7 @@ type AnimationLayer = {
 animationLayer?: AnimationLayer;
 ```
 
-Inside `draw()`, render ghost layer above normal vellymons using semi-transparent sprites + arrow Graphics primitives. Tween sprites use PixiJS ticker for per-frame interpolation.
+Inside `draw()`, render ghost layer above normal cinderlings using semi-transparent sprites + arrow Graphics primitives. Tween sprites use PixiJS ticker for per-frame interpolation.
 
 **`SpectateClient.tsx`** — animation state machine:
 ```ts
@@ -188,10 +188,10 @@ PixiJS ticker registration:
 - Turn log button still clickable during idle phase only
 
 ### Acceptance
-- Click `→` → preview arrows appear sequentially for each vellymon
-- After ~2-3s total, vellymons slide to new positions simultaneously
+- Click `→` → preview arrows appear sequentially for each cinderling
+- After ~2-3s total, cinderlings slide to new positions simultaneously
 - Damage numbers flash and fade
-- KO'd vellymons fade out
+- KO'd cinderlings fade out
 - HP bars animate
 - Going ← is instant
 - Works cleanly for turns with 0 attacks (pure movement game)

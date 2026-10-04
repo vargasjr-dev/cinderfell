@@ -3,7 +3,7 @@
  *
  * Every time Joltmink moves, it builds up static. After 2
  * moves, the next attack zaps the target for +5 bonus damage.
- * Speed becomes a weapon — the fastest vellymon charges up
+ * Speed becomes a weapon — the fastest cinderling charges up
  * with every dash.
  *
  * Hook: onAfterCommand (move to charge, attack to discharge)
@@ -31,7 +31,7 @@ registerPower({
     "After 2 moves, next attack deals +5 bonus damage.",
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
 
       if (ctx.command.type === "move") {
         chargeCount++;

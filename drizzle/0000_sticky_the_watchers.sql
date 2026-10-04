@@ -24,7 +24,7 @@ CREATE TABLE "aiProfile" (
 CREATE TABLE "cosmetic" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"userId" text NOT NULL,
-	"vellymonId" uuid,
+	"cinderlingId" uuid,
 	"type" text NOT NULL,
 	"name" text NOT NULL,
 	"imageUrl" text,
@@ -37,7 +37,7 @@ CREATE TABLE "cosmetic" (
 CREATE TABLE "cosmeticLoadout" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"userId" text NOT NULL,
-	"vellymonId" uuid NOT NULL,
+	"cinderlingId" uuid NOT NULL,
 	"equippedSkinId" uuid,
 	"equippedVfxIds" json DEFAULT '[]'::json,
 	"updatedAt" timestamp DEFAULT now() NOT NULL
@@ -105,7 +105,7 @@ CREATE TABLE "season" (
 	"startDate" timestamp NOT NULL,
 	"endDate" timestamp NOT NULL,
 	"status" text DEFAULT 'upcoming' NOT NULL,
-	"newVellymonId" integer,
+	"newCinderlingId" integer,
 	"createdAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -140,7 +140,7 @@ CREATE TABLE "team" (
 CREATE TABLE "teamSlot" (
 	"uuid" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"teamUuid" uuid NOT NULL,
-	"vellymonInstanceUuid" uuid NOT NULL,
+	"cinderlingInstanceUuid" uuid NOT NULL,
 	"slotIndex" integer NOT NULL,
 	"isActive" boolean DEFAULT false NOT NULL
 );
@@ -227,15 +227,15 @@ CREATE TABLE "userSeasonProgress" (
 	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "vellymonInstance" (
+CREATE TABLE "cinderlingInstance" (
 	"uuid" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"address" varchar(64) NOT NULL,
 	"network" integer NOT NULL,
 	"version" varchar(17) NOT NULL,
 	"userId" varchar(32) NOT NULL,
 	"modelUuid" uuid NOT NULL,
-	CONSTRAINT "vellymonInstance_address_unique" UNIQUE("address"),
-	CONSTRAINT "vellymonInstance_network_unique" UNIQUE("network")
+	CONSTRAINT "cinderlingInstance_address_unique" UNIQUE("address"),
+	CONSTRAINT "cinderlingInstance_network_unique" UNIQUE("network")
 );
 --> statement-breakpoint
 CREATE TABLE "verification" (
@@ -264,7 +264,7 @@ ALTER TABLE "seasonTrack" ADD CONSTRAINT "seasonTrack_seasonId_season_id_fk" FOR
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "team" ADD CONSTRAINT "team_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "teamSlot" ADD CONSTRAINT "teamSlot_teamUuid_team_uuid_fk" FOREIGN KEY ("teamUuid") REFERENCES "public"."team"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "teamSlot" ADD CONSTRAINT "teamSlot_vellymonInstanceUuid_vellymonInstance_uuid_fk" FOREIGN KEY ("vellymonInstanceUuid") REFERENCES "public"."vellymonInstance"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "teamSlot" ADD CONSTRAINT "teamSlot_cinderlingInstanceUuid_cinderlingInstance_uuid_fk" FOREIGN KEY ("cinderlingInstanceUuid") REFERENCES "public"."cinderlingInstance"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "userAchievement" ADD CONSTRAINT "userAchievement_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "userCurrency" ADD CONSTRAINT "userCurrency_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "userLoginStreak" ADD CONSTRAINT "userLoginStreak_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -275,10 +275,10 @@ ALTER TABLE "userSeasonProgress" ADD CONSTRAINT "userSeasonProgress_userId_user_
 ALTER TABLE "userSeasonProgress" ADD CONSTRAINT "userSeasonProgress_seasonId_season_id_fk" FOREIGN KEY ("seasonId") REFERENCES "public"."season"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "cosmetic_userId_idx" ON "cosmetic" USING btree ("userId");--> statement-breakpoint
-CREATE INDEX "cosmetic_vellymonId_idx" ON "cosmetic" USING btree ("vellymonId");--> statement-breakpoint
+CREATE INDEX "cosmetic_cinderlingId_idx" ON "cosmetic" USING btree ("cinderlingId");--> statement-breakpoint
 CREATE INDEX "cosmetic_type_idx" ON "cosmetic" USING btree ("type");--> statement-breakpoint
 CREATE INDEX "cosmeticLoadout_userId_idx" ON "cosmeticLoadout" USING btree ("userId");--> statement-breakpoint
-CREATE INDEX "cosmeticLoadout_vellymonId_idx" ON "cosmeticLoadout" USING btree ("vellymonId");--> statement-breakpoint
+CREATE INDEX "cosmeticLoadout_cinderlingId_idx" ON "cosmeticLoadout" USING btree ("cinderlingId");--> statement-breakpoint
 CREATE INDEX "currencyTransaction_userId_idx" ON "currencyTransaction" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "currencyTransaction_createdAt_idx" ON "currencyTransaction" USING btree ("createdAt");--> statement-breakpoint
 CREATE INDEX "gamePlayer_gameSessionUuid_idx" ON "gamePlayer" USING btree ("gameSessionUuid");--> statement-breakpoint
@@ -290,7 +290,7 @@ CREATE INDEX "seasonTrack_seasonId_idx" ON "seasonTrack" USING btree ("seasonId"
 CREATE INDEX "session_userId_idx" ON "session" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "team_userId_idx" ON "team" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "teamSlot_teamUuid_idx" ON "teamSlot" USING btree ("teamUuid");--> statement-breakpoint
-CREATE INDEX "teamSlot_vellymonInstanceUuid_idx" ON "teamSlot" USING btree ("vellymonInstanceUuid");--> statement-breakpoint
+CREATE INDEX "teamSlot_cinderlingInstanceUuid_idx" ON "teamSlot" USING btree ("cinderlingInstanceUuid");--> statement-breakpoint
 CREATE INDEX "userAchievement_userId_idx" ON "userAchievement" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "userAchievement_userId_achievementId_idx" ON "userAchievement" USING btree ("userId","achievementId");--> statement-breakpoint
 CREATE INDEX "userQuestProgress_userId_date_idx" ON "userQuestProgress" USING btree ("userId","date");--> statement-breakpoint

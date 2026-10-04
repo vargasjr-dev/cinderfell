@@ -8,7 +8,7 @@ import { db } from "../../../../data/db";
 import { gameSession, gamePlayer, team } from "../../../../data/schema";
 import { eq } from "drizzle-orm";
 import { listAiProfiles, getAiProfile, createAiProfile } from "~/data/aiProfiles.server";
-import { VELLYMON_LIBRARY } from "../../../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../../../server/cinderlings";
 import { buildSystemPrompt } from "../../../../server/ai-llm";
 
 /**
@@ -94,7 +94,7 @@ function nameToSlug(name: string): string {
 }
 
 /**
- * Auto-select vellymons using Claude Haiku based on the profile description.
+ * Auto-select cinderlings using Claude Haiku based on the profile description.
  * Falls back to random picks if ANTHROPIC_API_KEY is not set.
  */
 async function autoSelectMons(
@@ -102,21 +102,21 @@ async function autoSelectMons(
   existing: string[],
   count: number,
 ): Promise<string[]> {
-  const available = VELLYMON_LIBRARY.filter((v) => !existing.includes(v.name));
+  const available = CINDERLING_LIBRARY.filter((v) => !existing.includes(v.name));
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return available.sort(() => Math.random() - 0.5).slice(0, count).map((v) => v.name);
   }
   const Anthropic = (await import("@anthropic-ai/sdk")).default;
   const client = new Anthropic({ apiKey });
-  const fullRoster = VELLYMON_LIBRARY.map(
+  const fullRoster = CINDERLING_LIBRARY.map(
     (v) => `- ${v.name} (HP ${v.hp}, ATK ${v.attack}, SPD ${v.speed}) — "${v.flavor}"`,
   ).join("\n");
-  const systemPrompt = `You are a vellymon team-builder. Select vellymons whose stats best match an AI player profile's described playstyle.\n\nFull vellymon roster:\n${fullRoster}\n\nCall select_mons with exactly the number of picks requested.`;
+  const systemPrompt = `You are a cinderling team-builder. Select cinderlings whose stats best match an AI player profile's described playstyle.\n\nFull cinderling roster:\n${fullRoster}\n\nCall select_mons with exactly the number of picks requested.`;
   const existingNote = existing.length > 0 ? `\nAlready on team (do not pick): ${existing.join(", ")}` : "";
   const selectTool = {
     name: "select_mons",
-    description: `Select exactly ${count} vellymon${count > 1 ? "s" : ""} for the team.`,
+    description: `Select exactly ${count} cinderling${count > 1 ? "s" : ""} for the team.`,
     input_schema: {
       type: "object" as const,
       properties: { selections: { type: "array" as const, items: { type: "string" as const } } },
@@ -129,7 +129,7 @@ async function autoSelectMons(
     system: systemPrompt,
     tools: [selectTool],
     tool_choice: { type: "tool", name: "select_mons" },
-    messages: [{ role: "user", content: `Profile: "${description}"${existingNote}\nPick ${count} vellymon${count > 1 ? "s" : ""}.` }],
+    messages: [{ role: "user", content: `Profile: "${description}"${existingNote}\nPick ${count} cinderling${count > 1 ? "s" : ""}.` }],
   });
   const toolUse = msg.content.find((b) => b.type === "tool_use");
   let picked: string[] = [];
@@ -138,7 +138,7 @@ async function autoSelectMons(
     picked = Array.isArray(input.selections) ? input.selections : [];
   }
   const valid = picked.filter((n) =>
-    VELLYMON_LIBRARY.some((v) => v.name.toLowerCase() === n.toLowerCase() && !existing.includes(v.name)),
+    CINDERLING_LIBRARY.some((v) => v.name.toLowerCase() === n.toLowerCase() && !existing.includes(v.name)),
   );
   if (valid.length < count) {
     const remaining = available
@@ -174,15 +174,15 @@ export async function createProfileFromPracticeAction(formData: FormData) {
   let teamNames = teamNamesRaw.split(",").map((s) => s.trim()).filter(Boolean);
 
   const unknown = teamNames.filter(
-    (n) => !VELLYMON_LIBRARY.some((v) => v.name.toLowerCase() === n.toLowerCase()),
+    (n) => !CINDERLING_LIBRARY.some((v) => v.name.toLowerCase() === n.toLowerCase()),
   );
-  if (unknown.length > 0) throw new Error(`Unknown vellymon names: ${unknown.join(", ")}`);
+  if (unknown.length > 0) throw new Error(`Unknown cinderling names: ${unknown.join(", ")}`);
 
   if (teamNames.length < 8) {
     const autoPicked = await autoSelectMons(description, teamNames, 8 - teamNames.length);
     teamNames = [...teamNames, ...autoPicked];
   }
-  if (teamNames.length !== 8) throw new Error("Could not build an 8-vellymon team");
+  if (teamNames.length !== 8) throw new Error("Could not build an 8-cinderling team");
 
   await createAiProfile({ id, name, teamNames, randomness, description });
   revalidatePath("/practice");

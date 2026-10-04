@@ -1,7 +1,7 @@
 import { auth } from "~/lib/auth.server";
 import { headers } from "next/headers";
 import Link from "next/link";
-import getVellymonRoster from "~/data/getVellymonRoster.server";
+import getCinderlingRoster from "~/data/getCinderlingRoster.server";
 import getTeams from "~/data/getTeams.server";
 import { getPower } from "../../../../server/specialPowers";
 import "../../../../server/powers"; // trigger power registration
@@ -12,7 +12,7 @@ export default async function RosterPage() {
   const headersList = await headers();
   const session = (await auth.api.getSession({ headers: headersList }))!;
   const [roster, teams] = await Promise.all([
-    getVellymonRoster(session.user.id),
+    getCinderlingRoster(session.user.id),
     getTeams(session.user.id),
   ]);
 
@@ -38,7 +38,7 @@ export default async function RosterPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Your Roster</h1>
           <p className="text-gray-600 mt-1">
-            {roster.length} vellymon{roster.length !== 1 ? "s" : ""} collected
+            {roster.length} cinderling{roster.length !== 1 ? "s" : ""} collected
           </p>
         </div>
         <Link
@@ -53,10 +53,10 @@ export default async function RosterPage() {
         <div className="bg-white rounded-lg shadow-md p-12 text-center mb-12">
           <p className="text-5xl mb-4">🥚</p>
           <h2 className="text-xl font-bold text-gray-900 mb-2">
-            No vellymons yet
+            No cinderlings yet
           </h2>
           <p className="text-gray-600 mb-6">
-            Head to the Market to collect your first vellymon and start building
+            Head to the Market to collect your first cinderling and start building
             your roster.
           </p>
           <Link
@@ -93,7 +93,7 @@ export default async function RosterPage() {
           <p className="text-5xl mb-4">⚔️</p>
           <h2 className="text-xl font-bold text-gray-900 mb-2">No teams yet</h2>
           <p className="text-gray-600 mb-6">
-            Build a team of 8 vellymons with 4 in your active lineup to compete
+            Build a team of 8 cinderlings with 4 in your active lineup to compete
             in matches.
           </p>
           <Link

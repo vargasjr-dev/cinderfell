@@ -26,7 +26,7 @@ export default async function AdminStripePage() {
           💳 Stripe Setup
         </h1>
         <p className="text-gray-600 mt-1">
-          Manage the Vellymon Premium subscription product and price.
+          Manage the Cinderling Premium subscription product and price.
         </p>
       </div>
 

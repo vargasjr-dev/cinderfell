@@ -1,7 +1,7 @@
 /**
  * Match download API — fetch full match content by ID for offline analysis.
  *
- * Auth: same Bearer token as the upload API (VELLYMON_UPLOAD_API_KEY).
+ * Auth: same Bearer token as the upload API (CINDERLING_UPLOAD_API_KEY).
  *
  * GET /api/matches/download?id=<matchId>
  * Returns: { id, status, p1ProfileId, p2ProfileId, gameState, turnSnapshots, turnLogs, uploadedAt, updatedAt }
@@ -17,7 +17,7 @@ import { matchSnapshot } from "../../../../../data/schema";
 import { eq, or, desc, count } from "drizzle-orm";
 
 function checkAuth(req: Request): boolean {
-  const apiKey = process.env.VELLYMON_UPLOAD_API_KEY;
+  const apiKey = process.env.CINDERLING_UPLOAD_API_KEY;
   if (!apiKey) return false;
   const authHeader = req.headers.get("authorization") ?? "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";

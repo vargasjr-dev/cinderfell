@@ -1,13 +1,13 @@
 /**
- * Jev (TypeSafe System One) player model for Vellymon.
+ * Jev (TypeSafe System One) player model for Cinderling.
  *
  * Jev does not generate text — it evaluates typed questions against a state
  * block and returns structured decisions with calibrated probabilities.
  *
  * Interface design:
  *   state     = the shared game-state description (same text Claude reads)
- *   questions = one Choice question per active vellymon, whose criteria are
- *               that vellymon's enumerated legal actions this turn
+ *   questions = one Choice question per active cinderling, whose criteria are
+ *               that cinderling's enumerated legal actions this turn
  *
  * All questions are evaluated in parallel against the same state in a single
  * API call, so a full team turn costs one round-trip regardless of team size.
@@ -73,17 +73,17 @@ export async function generateJevAICommands(
 ): Promise<Command[]> {
   const aiTeam = state.teams[aiTeamId - 1];
   const enemyTeam = state.teams[aiTeamId === 1 ? 1 : 0];
-  const activeVellymons = aiTeam.active.filter((v) => !v.isKO && v.position != null);
+  const activeCinderlings = aiTeam.active.filter((v) => !v.isKO && v.position != null);
 
-  if (activeVellymons.length === 0) return [];
+  if (activeCinderlings.length === 0) return [];
 
   const stateText = describeGameState(state, aiTeam, aiTeamId, enemyTeam);
 
-  // Build one Choice question per vellymon from its legal actions
+  // Build one Choice question per cinderling from its legal actions
   const questions: Record<string, JevChoiceQuestion> = {};
   const actionsByMon = new Map<string, ValidAction[]>();
 
-  for (const v of activeVellymons) {
+  for (const v of activeCinderlings) {
     const actions = enumerateValidActions(v, aiTeam, enemyTeam, state);
     actionsByMon.set(v.uuid, actions);
     if (actions.length === 0) continue; // no legal actions — fallback below
@@ -143,7 +143,7 @@ export async function generateJevAICommands(
   // Assemble commands — energy budget applied in confidence order so the
   // most-certain attacks claim the shared team energy first.
   const commands: Command[] = [];
-  const pending = activeVellymons
+  const pending = activeCinderlings
     .map((v) => {
       const answer = answers?.[`mon_${v.uuid}`];
       const actions = actionsByMon.get(v.uuid) ?? [];
@@ -189,20 +189,20 @@ export async function generateJevAICommands(
   return commands;
 }
 
-function toCommand(vellymonUuid: string, action: ValidAction): Command {
+function toCommand(cinderlingUuid: string, action: ValidAction): Command {
   switch (action.kind) {
     case "attack":
       return {
         type: "attack",
-        vellymonUuid,
+        cinderlingUuid,
         attackIndex: action.attackIndex ?? 0,
         vec: action.vec,
       };
     case "harvest":
-      return { type: "harvest", vellymonUuid, vec: action.vec };
+      return { type: "harvest", cinderlingUuid, vec: action.vec };
     case "move":
     default:
-      return { type: "move", vellymonUuid, vec: action.vec };
+      return { type: "move", cinderlingUuid, vec: action.vec };
   }
 }
 

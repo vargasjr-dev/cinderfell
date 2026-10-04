@@ -4,7 +4,7 @@ import Link from "next/link";
 import { auth } from "~/lib/auth.server";
 import { isAdmin } from "~/lib/admin";
 import { listAiProfiles } from "~/data/aiProfiles.server";
-import { VELLYMON_LIBRARY } from "../../../../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../../../../server/cinderlings";
 import "../../../../../server/powers";
 import { getPower } from "../../../../../server/specialPowers";
 import ProfileCreateForm from "./ProfileCreateForm";
@@ -16,7 +16,7 @@ export default async function ProfilesPage() {
 
   const profiles = await listAiProfiles();
 
-  const allVellymons = VELLYMON_LIBRARY.map((v) => ({
+  const allCinderlings = CINDERLING_LIBRARY.map((v) => ({
     name: v.name,
     hp: v.hp,
     attack: v.attack,
@@ -76,7 +76,7 @@ export default async function ProfilesPage() {
       {/* Create form */}
       <div className="bg-white border border-gray-200 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Create Profile</h2>
-        <ProfileCreateForm vellymons={allVellymons} />
+        <ProfileCreateForm cinderlings={allCinderlings} />
       </div>
     </div>
   );

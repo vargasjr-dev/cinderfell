@@ -177,9 +177,9 @@ function EventRow({
     >
       <span className="text-sm flex-shrink-0 mt-0.5">{icon}</span>
       <div className="flex-1 min-w-0">
-        {event.vellymonName && (
+        {event.cinderlingName && (
           <span className={`text-xs font-bold ${color}`}>
-            {event.vellymonName}
+            {event.cinderlingName}
           </span>
         )}
         <span className="text-xs text-gray-300 ml-1">{event.detail}</span>
@@ -276,9 +276,9 @@ export function BattleLog({ history, maxVisible = 50 }: BattleLogProps) {
               <div className="flex items-start gap-1.5 px-1 py-0.5 text-[11px]">
                 <span className="flex-shrink-0">{icon}</span>
                 <span className="text-gray-400">
-                  {item.event.vellymonName && (
+                  {item.event.cinderlingName && (
                     <span className={`font-medium ${color}`}>
-                      {item.event.vellymonName}
+                      {item.event.cinderlingName}
                     </span>
                   )}{" "}
                   {item.event.detail}

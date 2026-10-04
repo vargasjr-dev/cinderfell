@@ -3,7 +3,7 @@ import { team, teamSlot } from "../../data/schema";
 import validateTeamSlots from "./validateTeamSlots.server";
 
 export type SlotInput = {
-  vellymonInstanceUuid: string;
+  cinderlingInstanceUuid: string;
   slotIndex: number;
   isActive: boolean;
 };
@@ -44,7 +44,7 @@ const createTeam = async ({
       await db.insert(teamSlot).values(
         slots.map((s) => ({
           teamUuid: newTeam.uuid,
-          vellymonInstanceUuid: s.vellymonInstanceUuid,
+          cinderlingInstanceUuid: s.cinderlingInstanceUuid,
           slotIndex: s.slotIndex,
           isActive: s.isActive,
         })),

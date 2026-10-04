@@ -15,7 +15,7 @@
  * Blood Rush makes it even more fragile — it wins by
  * ending fights fast before the clock runs out on itself.
  *
- * 64th and FINAL vellymon enrichment. ⚔️
+ * 64th and FINAL cinderling enrichment. ⚔️
  */
 
 import {

@@ -25,7 +25,7 @@ export type ClientMessage =
 /** Simplified command for the wire — direction as orientation-agnostic Vec2 */
 export type CommandPayload = {
   type: "move" | "attack" | "harvest";
-  vellymonUuid: string;
+  cinderlingUuid: string;
   /** Cardinal unit vector in game space, e.g. {dx:1,dy:0} for right */
   vec: { dx: number; dy: number };
   attackIndex?: number;
@@ -45,7 +45,7 @@ export type TeamPayload = {
   id: 1 | 2;
   name: string;
   energy: number;
-  active: VellymonPayload[];
+  active: CinderlingPayload[];
   benchCount: number;
   knockedCount: number;
 };
@@ -55,12 +55,12 @@ export type OpponentTeamPayload = {
   id: 1 | 2;
   name: string;
   energy: number;
-  active: OpponentVellymonPayload[];
+  active: OpponentCinderlingPayload[];
   benchCount: number;
   knockedCount: number;
 };
 
-export type VellymonPayload = {
+export type CinderlingPayload = {
   uuid: string;
   name: string;
   hp: number;
@@ -74,7 +74,7 @@ export type VellymonPayload = {
   attacks: { name: string; damage: number; energyCost: number; range: number }[];
 };
 
-export type OpponentVellymonPayload = {
+export type OpponentCinderlingPayload = {
   uuid: string;
   name: string;
   hp: number;
@@ -98,7 +98,7 @@ export type TurnResultPayload = {
 
 export type TurnEvent = {
   type: "move" | "attack" | "harvest" | "ko" | "bench_entry" | "occupation_tick";
-  vellymonName?: string;
+  cinderlingName?: string;
   detail: string;
 };
 

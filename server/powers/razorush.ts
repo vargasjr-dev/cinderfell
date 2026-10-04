@@ -30,13 +30,13 @@ registerPower({
     "Moving makes attacks 1 energy cheaper this turn.",
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
       if (ctx.command.type !== "move") return [];
 
       return [
         {
           type: "cost_mod",
-          vellymonId: ctx.self.uuid,
+          cinderlingId: ctx.self.uuid,
           amount: -1,
         },
       ];

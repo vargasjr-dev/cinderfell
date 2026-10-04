@@ -2,7 +2,7 @@
  * Match upload API — accepts a CLI match state and stores it in the DB
  * so the spectate view works from the deployed site.
  *
- * Auth: Bearer token checked against VELLYMON_UPLOAD_API_KEY env var.
+ * Auth: Bearer token checked against CINDERLING_UPLOAD_API_KEY env var.
  *
  * POST /api/matches/upload
  * Body: { id: string, gameState: object, turnSnapshots?: object[], status?: string }
@@ -15,10 +15,10 @@ import { matchSnapshot } from "../../../../../data/schema";
 
 export async function POST(req: Request) {
   // ── Auth ──────────────────────────────────────────────────────────────────
-  const apiKey = process.env.VELLYMON_UPLOAD_API_KEY;
+  const apiKey = process.env.CINDERLING_UPLOAD_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Upload API not configured (VELLYMON_UPLOAD_API_KEY not set)" },
+      { error: "Upload API not configured (CINDERLING_UPLOAD_API_KEY not set)" },
       { status: 503 },
     );
   }

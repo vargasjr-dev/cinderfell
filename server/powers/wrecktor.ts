@@ -30,7 +30,7 @@ registerPower({
     "Attacking creates a block on your space.",
   hooks: {
     onAfterCommand: (ctx: CommandHookContext): PowerEffect[] => {
-      if (ctx.command.vellymonUuid !== ctx.self.uuid) return [];
+      if (ctx.command.cinderlingUuid !== ctx.self.uuid) return [];
       if (ctx.command.type !== "attack") return [];
       if (!ctx.self.position) return [];
 

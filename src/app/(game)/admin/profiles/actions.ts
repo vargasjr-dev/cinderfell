@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "~/lib/auth.server";
 import { isAdmin } from "~/lib/admin";
 import { createAiProfile, archiveAiProfile } from "~/data/aiProfiles.server";
-import { VELLYMON_LIBRARY } from "../../../../../server/vellymonLibrary";
+import { CINDERLING_LIBRARY } from "../../../../../server/cinderlings";
 
 function assertAdmin(session: Awaited<ReturnType<typeof auth.api.getSession>>) {
   if (!isAdmin(session)) throw new Error("Forbidden");
@@ -23,8 +23,8 @@ function nameToSlug(name: string): string {
 }
 
 /**
- * Auto-select vellymons using Claude Haiku based on the profile description.
- * Returns a list of `count` names from VELLYMON_LIBRARY.
+ * Auto-select cinderlings using Claude Haiku based on the profile description.
+ * Returns a list of `count` names from CINDERLING_LIBRARY.
  * Falls back to random picks if ANTHROPIC_API_KEY is not set.
  */
 async function autoSelectMons(
@@ -32,7 +32,7 @@ async function autoSelectMons(
   existing: string[],
   count: number,
 ): Promise<string[]> {
-  const available = VELLYMON_LIBRARY.filter(
+  const available = CINDERLING_LIBRARY.filter(
     (v) => !existing.includes(v.name),
   );
 
@@ -49,16 +49,16 @@ async function autoSelectMons(
 
   // Full roster in the system prompt so Haiku has stable context per-call.
   // Stats drive selection — no archetype labels to avoid pigeonholing the meta.
-  const fullRoster = VELLYMON_LIBRARY.map(
+  const fullRoster = CINDERLING_LIBRARY.map(
     (v) =>
       `- ${v.name} (HP ${v.hp}, ATK ${v.attack}, SPD ${v.speed}) — "${v.flavor}"`,
   ).join("\n");
 
-  const systemPrompt = `You are a vellymon team-builder. Select vellymons whose stats best match an AI player profile's described playstyle.
+  const systemPrompt = `You are a cinderling team-builder. Select cinderlings whose stats best match an AI player profile's described playstyle.
 
 Prioritise raw stat alignment: a speed-focused profile gets high-SPD mons, an aggressive profile gets high-ATK mons, a durable profile gets high-HP mons. Mix and match freely — there are no prescribed combinations.
 
-Full vellymon roster:
+Full cinderling roster:
 ${fullRoster}
 
 Call select_mons with exactly the number of picks requested. Do not pick mons already on the team.`;
@@ -67,11 +67,11 @@ Call select_mons with exactly the number of picks requested. Do not pick mons al
     existing.length > 0 ? `\nAlready on team (do not pick): ${existing.join(", ")}` : "";
 
   const userMessage = `Profile description: "${description}"${existingNote}
-Pick ${count} vellymon${count > 1 ? "s" : ""} to add to the team.`;
+Pick ${count} cinderling${count > 1 ? "s" : ""} to add to the team.`;
 
   const selectTool = {
     name: "select_mons",
-    description: `Select exactly ${count} vellymon${count > 1 ? "s" : ""} for the team.`,
+    description: `Select exactly ${count} cinderling${count > 1 ? "s" : ""} for the team.`,
     input_schema: {
       type: "object" as const,
       properties: {
@@ -79,7 +79,7 @@ Pick ${count} vellymon${count > 1 ? "s" : ""} to add to the team.`;
           type: "array" as const,
           items: { type: "string" as const },
           description:
-            "Names of the selected vellymons, exactly as they appear in the roster.",
+            "Names of the selected cinderlings, exactly as they appear in the roster.",
         },
       },
       required: ["selections"],
@@ -110,7 +110,7 @@ Pick ${count} vellymon${count > 1 ? "s" : ""} to add to the team.`;
 
   // Validate each name is real and not already in team
   const valid = picked.filter((n) =>
-    VELLYMON_LIBRARY.some(
+    CINDERLING_LIBRARY.some(
       (v) => v.name.toLowerCase() === n.toLowerCase() && !existing.includes(v.name),
     ),
   );
@@ -155,10 +155,10 @@ export async function createProfileAction(formData: FormData) {
 
   // Validate any manually-picked names exist in the library
   const unknown = teamNames.filter(
-    (n) => !VELLYMON_LIBRARY.some((v) => v.name.toLowerCase() === n.toLowerCase()),
+    (n) => !CINDERLING_LIBRARY.some((v) => v.name.toLowerCase() === n.toLowerCase()),
   );
   if (unknown.length > 0) {
-    throw new Error(`Unknown vellymon names: ${unknown.join(", ")}`);
+    throw new Error(`Unknown cinderling names: ${unknown.join(", ")}`);
   }
 
   // Auto-fill remaining slots up to 8 (starters vs bench decided at pregame)
@@ -170,7 +170,7 @@ export async function createProfileAction(formData: FormData) {
 
   // Final validation: exactly 8
   if (teamNames.length !== 8) {
-    throw new Error("Could not build an 8-vellymon team");
+    throw new Error("Could not build an 8-cinderling team");
   }
 
   await createAiProfile({ id, name, teamNames, randomness, description, model });

@@ -41,17 +41,17 @@ export default function CosmeticGallery({
   const [localLoadouts, setLocalLoadouts] = useState(loadouts);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleEquip(cosmeticId: string, vellymonId: string) {
+  async function handleEquip(cosmeticId: string, cinderlingId: string) {
     setEquipping(cosmeticId);
     setError(null);
 
-    const isCurrentlyEquipped = localLoadouts[vellymonId] === cosmeticId;
+    const isCurrentlyEquipped = localLoadouts[cinderlingId] === cosmeticId;
     const newId = isCurrentlyEquipped ? null : cosmeticId;
 
-    const result = await equipCosmeticAction(vellymonId, newId);
+    const result = await equipCosmeticAction(cinderlingId, newId);
 
     if (result.success) {
-      setLocalLoadouts((prev) => ({ ...prev, [vellymonId]: newId }));
+      setLocalLoadouts((prev) => ({ ...prev, [cinderlingId]: newId }));
     } else {
       setError(result.error ?? "Failed");
     }
@@ -110,8 +110,8 @@ export default function CosmeticGallery({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {items.map((item) => {
               const isEquipped =
-                item.vellymonId !== null &&
-                localLoadouts[item.vellymonId] === item.id;
+                item.cinderlingId !== null &&
+                localLoadouts[item.cinderlingId] === item.id;
               const isDormant = !active;
 
               return (
@@ -144,12 +144,12 @@ export default function CosmeticGallery({
                     </p>
                   </div>
 
-                  {/* Equip Button (skins only, with vellymonId) */}
-                  {item.type === "skin" && item.vellymonId && !isDormant && (
+                  {/* Equip Button (skins only, with cinderlingId) */}
+                  {item.type === "skin" && item.cinderlingId && !isDormant && (
                     <div className="px-3 pb-3">
                       <button
                         onClick={() =>
-                          handleEquip(item.id, item.vellymonId!)
+                          handleEquip(item.id, item.cinderlingId!)
                         }
                         disabled={equipping === item.id}
                         className={`w-full px-3 py-1.5 rounded text-xs font-medium transition ${
