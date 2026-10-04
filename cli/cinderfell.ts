@@ -1,18 +1,18 @@
 #!/usr/bin/env bun
 /**
- * cinderling CLI — play and QA matches from the terminal.
+ * cinderfell CLI — play and QA matches from the terminal.
  *
  * Runs the engine in-memory (no DB needed). Match state stored as
- * local JSON files in .cinderling/ directory.
+ * local JSON files in .vellymon/ directory.
  *
  * Usage:
- *   cinderling match create              Create a new admin match
- *   cinderling match list                List local matches
- *   cinderling board <matchId>           Show the board
- *   cinderling status <matchId>          One-line match summary
- *   cinderling cmd <matchId> <teamId> <cinderlingId> <action> [direction]
- *   cinderling submit <matchId> <teamId> Submit team's turn (auto-resolves when both submit)
- *   cinderling report <matchId>          Generate JSON match report
+ *   cinderfell match create              Create a new admin match
+ *   cinderfell match list                List local matches
+ *   cinderfell board <matchId>           Show the board
+ *   cinderfell status <matchId>          One-line match summary
+ *   cinderfell cmd <matchId> <teamId> <cinderlingId> <action> [direction]
+ *   cinderfell submit <matchId> <teamId> Submit team's turn (auto-resolves when both submit)
+ *   cinderfell report <matchId>          Generate JSON match report
  */
 
 import { resolve, join } from "path";
@@ -72,7 +72,7 @@ function loadMatch(id: string): MatchFile {
   const path = savePath(id);
   if (!existsSync(path)) {
     console.error(`Match not found: ${id}`);
-    console.error(`Run 'cinderling match list' to see available matches.`);
+    console.error(`Run 'cinderfell match list' to see available matches.`);
     process.exit(1);
   }
   return JSON.parse(readFileSync(path, "utf-8"));
@@ -472,7 +472,7 @@ function cmdReport(matchId: string) {
  * works from the deployed site.
  *
  * Usage:
- *   cinderling upload <matchId> [--url <baseUrl>] [--key <apiKey>]
+ *   cinderfell upload <matchId> [--url <baseUrl>] [--key <apiKey>]
  *
  * Config (in priority order):
  *   1. CLI flags: --url, --key
@@ -602,7 +602,7 @@ switch (cmd) {
 
   default:
     console.log(`
-cinderling CLI — playtest matches from the terminal
+cinderfell CLI — playtest matches from the terminal
 
 Commands:
   cinderling match create                              Create a new match

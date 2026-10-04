@@ -15,7 +15,7 @@ const createGame = async (userId: string) => {
       token: process.env.VERCEL_TOKEN!,
       source: {
         type: 'git',
-        url: 'https://github.com/vargasjr-dev/cinderling.game.git',
+        url: 'https://github.com/vargasjr-dev/cinderfell.git',
         revision: 'main',
       },
       ports: [12345], // WebSocket game server port

@@ -1,7 +1,7 @@
 /**
  * matchSetup.ts — shared team setup builder for CLI matches and scripts.
  *
- * Lives in server/ so both cli/cinderling.ts and scripts/auto-match.ts
+ * Lives in server/ so both cli/cinderfell.ts and scripts/auto-match.ts
  * use the same logic with no duplication. Spawn positions always come
  * from the map — the same map the board is built from.
  */

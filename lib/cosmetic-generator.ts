@@ -55,7 +55,7 @@ export async function validateGeneration(
   if (!subscribed) {
     return {
       valid: false,
-      error: "Cinderling Premium subscription required to generate cosmetics.",
+      error: "Cinderfell Premium subscription required to generate cosmetics.",
       cost,
     };
   }

@@ -25,17 +25,17 @@
 
 ### Changes
 
-**`cinderling-check/server/config.ts`**
+**`cinderfell/server/config.ts`**
 - `energy.starting: 20 → 120`
 
-**`cinderling-check/scripts/auto-match.ts`**
+**`cinderfell/scripts/auto-match.ts`**
 - Delete custom `buildTeamSetup` implementation
 - Import `getDefaultSpawnPositions` from `../server/board` and `GAME_CONFIG` from `../server/config`  
 - Rewrite `buildTeamSetup` to mirror the CLI exactly: use `getDefaultSpawnPositions` for spawn positions, `slice(0, GAME_CONFIG.teams.activeSlots)` for active (= 4), rest to bench
 - Import `calculateDamage` from `../server/archetypes` for correct attack damage values
 
 ### Acceptance
-- `cinderling match create` → board shows 4 active cinderlings per side on the correct spawn spaces (y=0,1,3,4)
+- `cinderfell match create` → board shows 4 active cinderlings per side on the correct spawn spaces (y=0,1,3,4)
 - Both teams start with 120⚡
 - Re-run `bun scripts/auto-match.ts` and verify turn output shows 4 alive per team + energy ~120
 
@@ -87,7 +87,7 @@ type TurnLogEntry = {
 - Accept `turnLogs?: TurnLogEntry[]` in POST body
 - Store alongside `turnSnapshots`
 
-### `cinderling-check/scripts/auto-match.ts`
+### `cinderfell/scripts/auto-match.ts`
 - Include `match.turnLogs` in the upload body (already captured, just not sent)
 
 ### Spectate API: `src/app/api/spectate/[id]/route.ts`

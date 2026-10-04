@@ -1,5 +1,5 @@
 /**
- * Daily Quest catalog for cinderling.game.
+ * Daily Quest catalog for cinderfell.
  *
  * 10 quest templates across 3 categories. Each day, 3 are randomly assigned
  * per player (seeded by userId + date for stability). Progress tracking and

@@ -3,7 +3,7 @@
  * Matches the subscribe page header treatment: yellow-to-orange gradient,
  * star icon, wordmark. Use wherever a premium gate is shown.
  */
-export default function CinderlingPremiumLogo() {
+export default function CinderfellPremiumLogo() {
   return (
     <div className="inline-flex flex-col items-center gap-1">
       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-200">

@@ -37,14 +37,14 @@ export function getStripe(useTestMode = false): Stripe {
 // Instead of storing IDs as env vars, we query Stripe by hardcoded labels.
 // This works across test/live modes without config changes.
 
-const PREMIUM_PRODUCT_NAME = "Cinderling Premium";
+const PREMIUM_PRODUCT_NAME = "Cinderfell Premium";
 const PREMIUM_PRICE_LOOKUP_KEY = "vellymon_premium_monthly";
 
 let cachedPriceId: string | null = null;
 let cachedTestPriceId: string | null = null;
 
 /**
- * Resolve the Cinderling Premium monthly price ID from a given Stripe client.
+ * Resolve the Cinderfell Premium monthly price ID from a given Stripe client.
  * Uses lookup_key first (preferred), falls back to searching by product name.
  */
 async function lookupPremiumPriceId(stripe: Stripe): Promise<string> {
@@ -86,7 +86,7 @@ async function lookupPremiumPriceId(stripe: Stripe): Promise<string> {
 }
 
 /**
- * Look up the Cinderling Premium monthly price ID from Stripe.
+ * Look up the Cinderfell Premium monthly price ID from Stripe.
  * Admins use the test Stripe account; regular users use live.
  * Result is cached per mode for the lifetime of the server process.
  */

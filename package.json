@@ -43,7 +43,7 @@
     "eslint-config-next": "^15.0.0"
   },
   "bin": {
-    "cinderfell": "cli/cinderling.ts",
-    "vellymon": "cli/cinderling.ts"
+    "cinderfell": "cli/cinderfell.ts",
+    "vellymon": "cli/cinderfell.ts"
   }
 }

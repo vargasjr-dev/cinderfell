@@ -4,7 +4,7 @@ import { useState } from "react";
 import { generateCosmeticAction, type RosterItem } from "./actions";
 import { GENERATION_COSTS } from "../../../../../lib/cosmetic-generator";
 import type { CosmeticType } from "../../../../../lib/cosmetics";
-import CinderlingPremiumLogo from "~/components/CinderlingPremiumLogo";
+import CinderfellPremiumLogo from "~/components/CinderfellPremiumLogo";
 
 const COSMETIC_TYPES: { value: CosmeticType; label: string; needsCinderling: boolean }[] = [
   { value: "skin", label: "🎨 Skin", needsCinderling: true },
@@ -95,7 +95,7 @@ export default function PromptBuilder({
     return (
       <div className="text-center py-12">
         <div className="flex justify-center mb-5">
-          <CinderlingPremiumLogo />
+          <CinderfellPremiumLogo />
         </div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">
           Premium Required

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createProfileSparringMatchAction, createProfileFromPracticeAction } from "./actions";
 import { MAP_OPTIONS } from "~/lib/matchSettings";
-import CinderlingPremiumLogo from "~/components/CinderlingPremiumLogo";
+import CinderfellPremiumLogo from "~/components/CinderfellPremiumLogo";
 import MonTeamSelector, { type CinderlingData } from "../admin/profiles/MonTeamSelector";
 
 type TeamOption = { uuid: string; name: string };
@@ -23,7 +23,7 @@ function PremiumGate() {
   return (
     <div className="text-center py-12">
       <div className="flex justify-center mb-5">
-        <CinderlingPremiumLogo />
+        <CinderfellPremiumLogo />
       </div>
       <h2 className="text-xl font-bold text-gray-900 mb-2">Premium Required</h2>
       <p className="text-gray-600 mb-4">
