@@ -272,7 +272,7 @@ console.log(
 // ─── Upload ───────────────────────────────────────────────────────────────────
 
 const configPath = join(STATE_DIR, "config.json");
-let baseUrl = "https://vellymon.game";
+let baseUrl = "https://cinderfell.vercel.app";
 let apiKey: string | undefined;
 if (existsSync(configPath)) {
   try {

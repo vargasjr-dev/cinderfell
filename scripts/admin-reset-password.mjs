@@ -37,6 +37,6 @@ await sql`
   VALUES (${id}, ${email}, ${token}, ${expiresAt}, NOW(), NOW())
 `;
 
-const resetUrl = `https://vellymon.game/reset-password?token=${token}`;
+const resetUrl = `https://cinderfell.vercel.app/reset-password?token=${token}`;
 console.log(`RESET_URL=${resetUrl}`);
 console.log(`EMAIL=${email}`);
