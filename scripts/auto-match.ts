@@ -24,6 +24,7 @@ import {
   type TurnLog,
 } from "../server/engine";
 import { submitCommands } from "../server/turnTimer";
+import { APP_URL_FALLBACK } from "../src/lib/app-url";
 import { generateAICommands } from "../server/ai-opponent";
 import { generateAIPlayerCommands, isAIPlayerModel, type AIPlayerModel } from "../server/ai-player";
 import { getMapById, parseBoardFromMap } from "../server/maps";
@@ -272,7 +273,7 @@ console.log(
 // ─── Upload ───────────────────────────────────────────────────────────────────
 
 const configPath = join(STATE_DIR, "config.json");
-let baseUrl = "https://cinderfell.vercel.app";
+let baseUrl = APP_URL_FALLBACK;
 let apiKey: string | undefined;
 if (existsSync(configPath)) {
   try {

@@ -12,6 +12,7 @@
 import { NextResponse } from "next/server";
 import { db } from "../../../../../data/db";
 import { matchSnapshot } from "../../../../../data/schema";
+import { getBaseUrl } from "~/lib/app-url";
 
 export async function POST(req: Request) {
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -76,7 +77,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "DB upsert failed", detail: msg }, { status: 500 });
   }
 
-  const origin = req.headers.get("origin") ?? req.headers.get("host") ?? "cinderfell.vercel.app";
+  const origin = req.headers.get("origin") ?? req.headers.get("host") ?? getBaseUrl();
   const spectateUrl = `${origin.startsWith("http") ? "" : "https://"}${origin}/matches/${id}/spectate`;
 
   return NextResponse.json({ ok: true, id, spectateUrl });

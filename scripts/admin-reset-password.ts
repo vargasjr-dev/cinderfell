@@ -1,7 +1,7 @@
 /**
  * Admin reset password script — called by admin-reset-password.yml workflow.
  *
- * Usage: bun scripts/admin-reset-password.mjs <email>
+ * Usage: bun scripts/admin-reset-password.ts <email>
  *
  * Generates a secure reset token, inserts it into the verification table,
  * and prints RESET_URL=<url> for the workflow to capture.
@@ -9,14 +9,15 @@
 
 import { neon } from "@neondatabase/serverless";
 import { randomBytes } from "crypto";
+import { getBaseUrl } from "../src/lib/app-url";
 
 const email = process.argv[2];
 if (!email) {
-  console.error("Usage: bun scripts/admin-reset-password.mjs <email>");
+  console.error("Usage: bun scripts/admin-reset-password.ts <email>");
   process.exit(1);
 }
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL!);
 
 // Verify the account exists
 const users = await sql`SELECT id, email FROM "user" WHERE email = ${email} LIMIT 1`;
@@ -37,6 +38,6 @@ await sql`
   VALUES (${id}, ${email}, ${token}, ${expiresAt}, NOW(), NOW())
 `;
 
-const resetUrl = `https://cinderfell.vercel.app/reset-password?token=${token}`;
+const resetUrl = `${getBaseUrl()}/reset-password?token=${token}`;
 console.log(`RESET_URL=${resetUrl}`);
 console.log(`EMAIL=${email}`);
