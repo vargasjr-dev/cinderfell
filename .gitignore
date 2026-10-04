@@ -19,3 +19,6 @@ unity/[Uu]ser[Ss]ettings/
 .vellymon/
 .cinderling/
 .cinderfell/
+
+# drizzle-kit local artifacts (push-only workflow, migrations not tracked)
+drizzle/
