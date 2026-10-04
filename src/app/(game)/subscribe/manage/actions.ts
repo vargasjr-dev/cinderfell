@@ -62,5 +62,5 @@ function getBaseUrl(): string {
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
   }
-  return "https://vellymon.game";
+  return "https://cinderfell.vercel.app";
 }
