@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { auth } from "~/lib/auth.server";
 import { isAdmin } from "~/lib/admin";
+import { getBaseUrl } from "~/lib/app-url";
 import { getStripe, getPremiumPriceId } from "../../../../lib/stripe";
 import { db } from "../../../../data/db";
 import { user } from "../../../../data/schema";
@@ -73,13 +74,4 @@ export async function createCheckoutSession(): Promise<{
   }
 }
 
-function getBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
-  // VERCEL_PROJECT_PRODUCTION_URL is hostname-only (no scheme)
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  }
-  return "https://cinderfell.vercel.app";
-}
+
