@@ -43,7 +43,7 @@ export const auth = betterAuth({
 
       try {
         const result = await resend.emails.send({
-          from: process.env.EMAIL_FROM || "Cinderfell <noreply@vellymon.game>",
+          from: process.env.EMAIL_FROM || "Cinderfell <noreply@vargasjr.dev>",
           to: user.email,
           subject: "Reset your Cinderling password",
         html: `
