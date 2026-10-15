@@ -6,18 +6,16 @@ import Link from 'next/link';
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
   const [sendFailed, setSendFailed] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setSendFailed(false);
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/request-password-reset', {
+      const response = await fetch('/api/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -26,22 +24,16 @@ export default function ForgotPasswordPage() {
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
+        // The reset email failed to send — own it instead of a false success
+        setSendFailed(true);
+        return;
       }
 
       setSubmitted(true);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Something went wrong';
-      // Don't reveal whether the email exists
-      if (message.toLowerCase().includes('reset password isn\'t enabled')) {
-        setError('Password reset is temporarily unavailable. Please try again later.');
-      } else {
-        // The reset email failed to send — own it instead of a false success
-        setSendFailed(true);
-      }
+    } catch {
+      // The request itself failed (network error) — same failure state
+      setSendFailed(true);
     } finally {
       setLoading(false);
     }
@@ -129,12 +121,6 @@ export default function ForgotPasswordPage() {
               autoFocus
             />
           </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
 
           <button
             type="submit"
