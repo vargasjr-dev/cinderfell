@@ -266,7 +266,7 @@ export default async function HomePage() {
                     >
                       {cell && (
                         <img
-                          src={`/cinderling/${cell.sprite}.png`}
+                          src={`/cinderlings/${cell.sprite}.png`}
                           alt={cell.name}
                           className="w-full h-full object-contain p-1"
                         />
@@ -304,7 +304,7 @@ export default async function HomePage() {
               >
                 <div className="w-20 h-20 mx-auto mb-4 relative">
                   <Image
-                    src={`/cinderling/${mon.name.toLowerCase()}.png`}
+                    src={`/cinderlings/${mon.name.toLowerCase()}.png`}
                     alt={mon.name}
                     fill
                     className="object-contain"
@@ -321,7 +321,7 @@ export default async function HomePage() {
                 <div className="flex gap-3 text-xs text-slate-500">
                   <span>❤️ {mon.hp}</span>
                   <span>⚔️ {mon.atk}</span>
-                  <span>💨 {mon.spd}</span>
+                  <span>👟 {mon.spd}</span>
                 </div>
               </div>
             ))}
