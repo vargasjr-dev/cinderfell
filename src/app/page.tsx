@@ -164,22 +164,18 @@ export default async function HomePage() {
         ))}
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <div className="inline-block mb-8 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-sm font-semibold tracking-widest uppercase">
-            ⚡ Early Access: Join the Arena
-          </div>
-
           <h1 className="text-[clamp(4rem,15vw,9rem)] font-black leading-none tracking-tight mb-6">
             <span className="bg-gradient-to-r from-sky-400 via-white to-orange-400 bg-clip-text text-transparent">
-              VELLY
+              CINDER
             </span>
             <span className="bg-gradient-to-r from-orange-400 via-white to-sky-400 bg-clip-text text-transparent">
-              MON
+              FELL
             </span>
           </h1>
 
           <p className="text-xl sm:text-2xl text-slate-300 mb-3 font-light">
-            Elimination. Occupation.{" "}
-            <span className="text-white font-semibold">Accumulation.</span>
+            Accumulation. Occupation.{" "}
+            <span className="text-white font-semibold">Elimination.</span>
           </p>
           <p className="text-slate-400 mb-12 max-w-lg mx-auto leading-relaxed">
             Build a squad and outthink every opponent in a simultaneous-action
@@ -191,13 +187,7 @@ export default async function HomePage() {
               href="/signup"
               className="inline-flex items-center justify-center gap-2 px-10 py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-400 text-white font-bold text-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-105 transition-all duration-200"
             >
-              🎮 Play Now, It&apos;s Free
-            </a>
-            <a
-              href="/guide"
-              className="inline-flex items-center justify-center gap-2 px-10 py-4 rounded-xl border-2 border-sky-500/50 text-sky-400 font-bold text-lg hover:bg-sky-500/10 hover:border-sky-400 transition-all duration-200"
-            >
-              📖 How to Play
+              🎮 Play Now
             </a>
           </div>
         </div>
