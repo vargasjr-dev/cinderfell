@@ -158,13 +158,13 @@ export default function CinderlingDrawer({
             <span className="text-red-400">⚔️ ATK {cinderling.attack}</span>
             {cinderling.speed < cinderling.baseSpeed ? (
               <span className="text-red-400">
-                💨 SPD {cinderling.speed}{" "}
+                👟 SPD {cinderling.speed}{" "}
                 <span className="text-xs opacity-80">
                   (-{cinderling.baseSpeed - cinderling.speed})
                 </span>
               </span>
             ) : (
-              <span className="text-yellow-400">💨 SPD {cinderling.speed}</span>
+              <span className="text-yellow-400">👟 SPD {cinderling.speed}</span>
             )}
             <span className="text-blue-400">⚡ NRG {teamEnergy}</span>
           </div>
