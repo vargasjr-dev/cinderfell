@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError } from "better-auth/api";
 import { Resend } from "resend";
 import { db } from "../../data/db";
 
@@ -17,6 +18,10 @@ const socialProviders = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIEN
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
+
+// Surfaced to the user when the password reset email cannot be delivered
+const RESET_EMAIL_SUPPORT_MESSAGE =
+  "We couldn't send the password reset email. Please email support@cinderfell.vargasjr.dev and we'll get you back into your account.";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -38,7 +43,9 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       if (!resend) {
         console.error("[auth] RESEND_API_KEY not configured — cannot send password reset email");
-        return;
+        throw new APIError("INTERNAL_SERVER_ERROR", {
+          message: RESET_EMAIL_SUPPORT_MESSAGE,
+        });
       }
 
       try {
@@ -62,6 +69,9 @@ export const auth = betterAuth({
         void result; // success
       } catch (err) {
         console.error("[auth] Error sending password reset email:", err);
+        throw new APIError("INTERNAL_SERVER_ERROR", {
+          message: RESET_EMAIL_SUPPORT_MESSAGE,
+        });
       }
     },
   },
