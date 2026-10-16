@@ -50,6 +50,10 @@ type CinderlingSlot = {
     attack: number;
     speed: number;
     imageUrl?: string;
+    flavor?: string;
+    powerName?: string;
+    powerDescription?: string;
+    instanceUuid?: string;
   } | null;
 };
 
@@ -199,6 +203,133 @@ function LeaderboardPanel({
   );
 }
 
+// ─── CinderlingPreviewModal (tap a slot in the team preview) ────────────────
+
+function StatBar({
+  label,
+  value,
+  max,
+  color,
+}: {
+  label: string;
+  value: number;
+  max: number;
+  color: "green" | "red" | "blue";
+}) {
+  const pct = Math.min(100, Math.round((value / max) * 100));
+  const colorMap = {
+    green: "bg-green-500",
+    red: "bg-red-500",
+    blue: "bg-blue-500",
+  };
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs font-medium text-gray-500 w-8">{label}</span>
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden flex-1">
+        <div
+          className={`h-full rounded-full ${colorMap[color]}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <span className="text-xs font-bold text-gray-700 w-6 text-right">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function CinderlingPreviewModal({
+  slot,
+  onClose,
+}: {
+  slot: CinderlingSlot;
+  onClose: () => void;
+}) {
+  const cinderling = slot.cinderling;
+  if (!cinderling) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-sm max-h-[85vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-4 border-b">
+          <h3 className="text-lg font-bold text-gray-900 truncate">
+            {cinderling.name}
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-xl"
+            aria-label="Close preview"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="p-4">
+          {cinderling.imageUrl && (
+            <div className="relative w-full aspect-square max-h-48 bg-gray-50 rounded-lg overflow-hidden mb-4">
+              <Image
+                src={cinderling.imageUrl}
+                alt={cinderling.name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 100vw, 384px"
+              />
+            </div>
+          )}
+          {cinderling.flavor && (
+            <p className="text-sm text-gray-500 italic mb-4">
+              &ldquo;{cinderling.flavor}&rdquo;
+            </p>
+          )}
+          <div className="space-y-2 mb-4">
+            <StatBar
+              label="HP"
+              value={cinderling.health}
+              max={120}
+              color="green"
+            />
+            <StatBar
+              label="ATK"
+              value={cinderling.attack}
+              max={20}
+              color="red"
+            />
+            <StatBar
+              label="SPD"
+              value={cinderling.speed}
+              max={10}
+              color="blue"
+            />
+          </div>
+          {cinderling.powerName && (
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
+              <p className="text-xs font-bold text-purple-900 mb-1">
+                ✨ {cinderling.powerName}
+              </p>
+              <p className="text-xs text-purple-700">
+                {cinderling.powerDescription}
+              </p>
+            </div>
+          )}
+          {cinderling.instanceUuid && (
+            <Link
+              href={`/roster/${cinderling.instanceUuid}`}
+              className="block text-center text-sm text-blue-600 hover:text-blue-800 font-medium py-2 border border-blue-200 rounded-lg hover:bg-blue-50 transition"
+            >
+              View Full Page →
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function RankedPlayPage({
@@ -214,6 +345,7 @@ export default function RankedPlayPage({
   const [selectedTeamUuid, setSelectedTeamUuid] = useState<string | null>(
     teams.length === 1 ? teams[0].uuid : null,
   );
+  const [previewSlot, setPreviewSlot] = useState<CinderlingSlot | null>(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(6);
   const [searching, setSearching] = useState(false);
@@ -449,30 +581,44 @@ export default function RankedPlayPage({
                     {selectedTeam.name}
                   </h2>
 
-                  {/* All cinderlings — 4 col grid, 2 rows of 4 */}
-                  <div className="grid grid-cols-4 gap-2 flex-1 content-start">
-                    {selectedTeam.slots.map((slot) => (
-                      <div
-                        key={slot.uuid}
-                        className="flex flex-col items-center gap-1 bg-gray-50 rounded-lg p-2 border border-gray-100"
-                      >
-                        <CinderlingAvatar slot={slot} size="md" />
-                        <p className="text-[9px] font-semibold text-gray-700 text-center leading-tight truncate w-full">
-                          {slot.cinderling?.name ?? "?"}
-                        </p>
-                        {slot.cinderling && (
-                          <div className="flex flex-col gap-0.5 text-[8px] text-gray-400 text-center">
-                            <span>❤️ {slot.cinderling.health}</span>
-                            <span>⚔️ {slot.cinderling.attack}</span>
-                            <span>⚡ {slot.cinderling.speed}</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                  {/* All cinderlings — 2 col grid, 4 rows of 2 */}
+                  <div className="grid grid-cols-2 gap-2 flex-1 content-start">
+                    {selectedTeam.slots.map((slot) => {
+                      const cardClass =
+                        "flex flex-col items-center gap-1 bg-gray-50 rounded-lg p-2 border border-gray-100";
+                      const card = (
+                        <>
+                          <CinderlingAvatar slot={slot} size="md" />
+                          <p className="text-[9px] font-semibold text-gray-700 text-center leading-tight truncate w-full">
+                            {slot.cinderling?.name ?? "?"}
+                          </p>
+                          {slot.cinderling && (
+                            <div className="flex flex-col gap-0.5 text-[8px] text-gray-400 text-center">
+                              <span>❤️ {slot.cinderling.health}</span>
+                              <span>⚔️ {slot.cinderling.attack}</span>
+                              <span>⚡ {slot.cinderling.speed}</span>
+                            </div>
+                          )}
+                        </>
+                      );
+                      return slot.cinderling ? (
+                        <button
+                          key={slot.uuid}
+                          onClick={() => setPreviewSlot(slot)}
+                          className={`${cardClass} cursor-pointer transition hover:border-blue-300 hover:bg-blue-50`}
+                        >
+                          {card}
+                        </button>
+                      ) : (
+                        <div key={slot.uuid} className={cardClass}>
+                          {card}
+                        </div>
+                      );
+                    })}
 
                     {/* Empty slot placeholders up to 8 */}
                     {Array.from({
-                      length: Math.max(0, 4 - selectedTeam.slots.length),
+                      length: Math.max(0, 8 - selectedTeam.slots.length),
                     }).map((_, i) => (
                       <div
                         key={`empty-${i}`}
@@ -534,6 +680,13 @@ export default function RankedPlayPage({
           </>
         )}
       </div>
+
+      {previewSlot && previewSlot.cinderling && (
+        <CinderlingPreviewModal
+          slot={previewSlot}
+          onClose={() => setPreviewSlot(null)}
+        />
+      )}
     </div>
   );
 }

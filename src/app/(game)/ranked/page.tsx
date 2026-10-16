@@ -3,6 +3,8 @@ import { auth } from "~/lib/auth.server";
 import getTeams from "~/data/getTeams.server";
 import { getRankedPageData } from "./actions";
 import { STARS_PER_RANK } from "../../../../lib/ranked";
+import { getPower } from "../../../../server/specialPowers";
+import "../../../../server/powers"; // trigger power registration
 import RankedPlayPage from "./RankedPlayPage";
 
 export default async function RankedPage() {
@@ -15,23 +17,35 @@ export default async function RankedPage() {
   ]);
 
   // Strip to only what RankedPlayPage needs — no isActive (designation
-  // moves to the initial match flow, not team construction)
+  // moves to the initial match flow, not team construction). Slots carry
+  // flavor + power info + the instance uuid so the preview modal can show
+  // full cinderling details and link to /roster/{uuid}.
   const teamProps = teams.map((t) => ({
     uuid: t.uuid,
     name: t.name,
-    slots: t.slots.map((s) => ({
-      uuid: s.uuid,
-      slotIndex: s.slotIndex,
-      cinderling: s.cinderling
-        ? {
-            name: s.cinderling.name,
-            health: s.cinderling.health,
-            attack: s.cinderling.attack,
-            speed: s.cinderling.speed,
-            imageUrl: s.cinderling.imageUrl,
-          }
-        : null,
-    })),
+    slots: t.slots.map((s) => {
+      const power =
+        s.cinderling?.specialPowerId != null
+          ? getPower(s.cinderling.specialPowerId)
+          : undefined;
+      return {
+        uuid: s.uuid,
+        slotIndex: s.slotIndex,
+        cinderling: s.cinderling
+          ? {
+              name: s.cinderling.name,
+              health: s.cinderling.health,
+              attack: s.cinderling.attack,
+              speed: s.cinderling.speed,
+              imageUrl: s.cinderling.imageUrl,
+              flavor: s.cinderling.flavor,
+              powerName: power?.name,
+              powerDescription: power?.description,
+              instanceUuid: s.instanceUuid,
+            }
+          : null,
+      };
+    }),
   }));
 
   if (!data.hasActiveSeason) {
